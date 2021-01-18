@@ -20,32 +20,38 @@
 
             <div id="wallet-on" style="display:none">
                 <p id="statut-transaction"></p>
-                <p id="content-fund" style="display: none;">You have already paid for this content <span id = "funding-date"> </span> <br> <span id = "cancel-fund" style = "color:#ff5454;"> There is still time '' cancel your contribution</span>
-                    <p id="content-refund" style="display: none;">You canceled your contribution ... But you can always finance this content later! </p>
+                <p id="content-fund" style="display: none;">You have already paid for this Creator <span id="funding-date"> </span>
+                    <br>
+                    <p id="cancel-fund" style="display: none;"> There is still time to <span id="cancel-fund-button" style="color:#ff5454;">cancel</span> your contribution</p>
+                    <p id="content-refund" style="display: none;">You canceled your contribution ... But you can always finance this Creator later! </p>
                 </p>
                 <div id="vcomment-field">
                     <div id="pre-com">
-                        <p style="font-style:13px">Link a <span style = "color: #ff5454"> comment </span> with your contribution: </p>
-                        <div style="display: flex; flex-direction:row">
+                        <p style="font-style:13px">Link a <span style="color: #ff5454"> comment </span> with your contribution: </p>
+                        <div style="display: flex; flex-direction:column">
                             <i style="font-size:larger;float:right" class="far fa-comment-dots"></i>
                             <p id="comment" class="panel-title mt-10 editable" contenteditable="true" style="width:60vw;padding-left: 5%;">
                             </p>
+                            <button class="btn btn-primary btn-block" id="vcomment" type="submit" name=""></button>
+
                         </div>
-                        <div id="vcomment">
-                            <button class="btn btn-primary btn-block" id="combutton" type="submit" name="">Leave a comment</button>
-                        </div>
+
 
                     </div>
                     <div id="lcomment" style="display: none;">
-                        <p>Your comment :</p><br>
-                        <p style="font-style:italic; margin:0 3%;display: flex;" id="ownCom"> </p>
+                        <p>Your comment :</p>
+                        <div id="ownCom" style="display: flex;">
+                            <p id=ownCom-text></p>
+                            <i class='far fa-comment-dots'></i>
+                        </div>
                         <p id="ownComdate"></p>
+
                     </div>
                 </div>
             </div>
 
             <div id="wallet-off" style="display:none">
-                <p style="font-size:12px;padding: 3%;font-weight: bold;">No wallet yet. Come back to your profile to be able to support this content! <br> <span style="font-style:10px;font-weight: 100;">( N'oubliez pas de recharger la page ;) )</span></p>
+                <p style="font-size:12px;padding: 3%;font-weight: bold;">No wallet yet. Come back to your profile to be able to support this Creator! <br> <span style="font-style:10px;font-weight: 100;">( N'oubliez pas de recharger la page ;) )</span></p>
 
             </div>
 

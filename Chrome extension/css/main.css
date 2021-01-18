@@ -5,7 +5,6 @@ body {
 
 .panel .panel-body {
     padding: 0;
-
 }
 
 h1,
@@ -143,6 +142,12 @@ element.style {
     cursor: pointer;
 }
 
+#ownCom-text {
+    font-style: italic;
+    margin: 0 9%;
+    font-size: x-large;
+}
+
 #ownComdate {
     align-self: flex-end;
     font-size: 11px;
@@ -163,7 +168,7 @@ element.style {
 }
 
 .avatar img {
-    border: 1px solid #ff6262;
+    border: 3px solid #ff6262;
     background: #fadada;
     padding: 3%;
 }
@@ -253,10 +258,12 @@ canvas {
     z-index: 1;
 }
 
+
 /* #description-container::after {
     content: ' "'
 }
  */
+
 #vcomment-field,
 #verify-change {
     display: flex;
@@ -264,6 +271,7 @@ canvas {
     align-items: center;
     flex-direction: column;
 }
+
 
 /* #description-container::before {
     content: '" '
@@ -275,8 +283,8 @@ canvas {
 
 #pre-com i {
     font-size: larger;
-    padding: 5% 5% 5% 0;
-    border-right: 1px solid #353535;
+    float: right;
+    position: absolute;
 }
 
 .blinking {
@@ -396,7 +404,7 @@ div#email-container {
 
 button#check-iban {
     float: right;
-    width:35vw
+    width: 35vw
 }
 
 .btn.btn-primary:focus,
@@ -468,9 +476,11 @@ button#check-iban {
 #avatar-container i {
     visibility: hidden;
 }
+
 #avatar-container:hover i {
     visibility: visible;
 }
+
 .input-file {
     display: none;
 }
@@ -564,7 +574,7 @@ p {
 .second-trcontainer {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-end;
     flex-grow: 1
 }
 
@@ -806,6 +816,7 @@ input[type="range"]:focus+.rangeslider .rangeslider__handle {
     -webkit-box-shadow: 0 0 8px rgba(255, 0, 255, 0.9);
     box-shadow: 0 0 8px rgba(255, 0, 255, 0.9);
 }
+
 .panel-body.wallet-o.active {
     padding: 3%;
 }

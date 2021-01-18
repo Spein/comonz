@@ -1,270 +1,213 @@
 import * as blackhole from '/js/blackhole.js';
+import * as setUser from '/js/setUser.js';
+import * as setAuthor from '/js/setAuthor.js';
 
-setTimeout(getContent(), 500)
+setTimeout(getContent(), 500);
 var key;
-var tz = moment.tz.guess(true)
-
-function getContent() {
-    chrome.storage.local.get('key', function (retour) {
-        var commonzkey = retour.key;
-        chrome.storage.local.get('url', function (result) {
-            var url = result.url;
-            var currentUser = firebase.auth().currentUser.uid
-            $("#comment").html("   ")
-            const dataRef = firebase.database().ref('/users/' + currentUser + '/transactions').child(url)
-            if (commonzkey !== null) {
-                var comRef = firebase.database().ref('transactions/')
-                firebase.database().ref('/users/' + currentUser)
-                .once('value')
-                .then(function (snip) {
-
-                    var wallet = (snip.val() && snip.val().wallet);
-                    var fundDate
-                    var diffTime
-
-                    firebase.database().ref('/transactions/' + commonzkey + '/' + url + "/cTransactions/" + currentUser + "/date")
-                    .once('value')
-                    .then((data) => {
-                        if (data && data.val()) {
-                            diffTime = new Date(walletEndate).getTime() > new Date(data.val()).getTime()
-                            fundDate = moment.tz((data.val().substring(1, 25)), tz).fromNow()
-                        }
+var tz = moment.tz.guess(true);
 
 
-                        if (wallet) {
-                            var walletEndate = wallet.endDate
+async function getContent() {
+    const keyzz = await setAuthor.getComonzKey()
+    const rulzzz = await setAuthor.getUrl()
+    console.log(rulzzz)
+    const author = await setAuthor.getAuthorDetails(keyzz, rulzzz)
+    const user = await setUser.retrieveUser()
+    const userId = user.uid
+    const userCount = user.transactions[rulzzz].count
+    const userCom = author.comments[userId] ? author.comments[userId] : null
+    const userComdate = userCom ? moment.tz(userCom.date.substring(1, 25), tz).fromNow() : null
+    const comoners = Object.keys(author.transactions[rulzzz].cTransactions) ? Object.keys(author.transactions[rulzzz].cTransactions).length : 0
+    const comments = author.comments
+    console.log(author, user, userComdate, userCount)
 
-                            $("#wallet-on").show()
-                            $("#wallet-off").hide()
+    var authorDisplayname = author.details.displayName;
+    var authorphotoURL = author.details.photoURL;
+    var authorDescription = author.details.description;
 
+    const dateofFunding = author.transactions[rulzzz].cTransactions[userId] ? author.transactions[rulzzz].cTransactions[userId].date : null
 
-                            dataRef.on("value", function (snop) {
+    $('#avatarPic').attr('src', authorphotoURL);
+    $('#user-container').text(authorDisplayname);
+    $('#description-container').text(authorDescription);
+    $('#comment').html('   ');
+    var editables = document.getElementsByClassName('editable');
 
-                                if (snop.val() !== undefined && snop.val() !== null) {
-                                    console.log(snop.val())
-                                    var date = snop.val().onDate;
-                                    var count = snop.val().count;
-                                    comRef.on("value", function (snep) {
-                                        var userCom = snep.val() && snep.val()[currentUser]
-                                        if (userCom) {
-                                            var moDate = moment.tz((snep.val()[currentUser].date.substring(1, 25)), tz).fromNow();
+    if (user.walletStatus) {
+        $('#wallet-on').show();
+        $('#wallet-off').hide();
 
-                                            $("#comment").hide()
-                                            $("#ownCom").html("<i class='far fa-comment-dots'></i><p>" + snep.val()[currentUser].content) + "</p>"
-                                            $("#ownComdate").html(moDate)
-                                            $("#lcomment").show()
-                                            $("#pre-com").hide()
+        if (userCount > 0) {
+            setInterval(function() {
+                let progress = localStorage.getItem('progress')
+                console.log(progress)
+                $('#statut-transaction').html(
+                    '<p>CoMonZ dropped in :<br>' + progress + ' seconds</p>'
+                );
+            }, 1000);
+        }
+        if ((userCount >= -1 && !userCom)) {
+            $('#vcomment').hide();
+            for (var i = 0; i < editables.length; i++) {
+                (function(index) {
+                    editables[index].addEventListener('input', function() {
+                        if ($('#comment').html().length > 4 && userCount > 0) {
+                            $('#vcomment').show();
+                            $('#vcomment').prop('disabled', true)
+                            $('#vcomment').text('No room for Trollz')
+                        } else if ($('#comment').html().length > 4 && userCount === -1) {
+                            $('#vcomment').show();
+                            $('#vcomment').prop('disabled', false)
+                            $('#vcomment').text('Express your feelings')
 
-
-                                        } else {
-                                            $("#lcomment").hide()
-                                        }
-                                    })
-                                    if (count > 0) {
-                                        setInterval(function () {
-
-                                            chrome.storage.local.get('progress', function (result) {
-                                                $("#statut-transaction").html("<p>CoMonZ dropped in :<br>" + result.progress + " seconds</p>")
-
-                                            })
-                                        }, 1000)
-                                    }
-
-
-                                    $("#vcomment").hide()
-                                    if (count = 0) {
-                                        if ($("#comment").html() > 3) {
-                                            $("#vcomment").show()
-                                        }
-                                    }
-                                    $("#statut-transaction").hide()
-                                    $("#content-fund").show()
-                                    $('#funding-date').html(fundDate)
-                                    console.log(fundDate)
-                                    $("#date").text(date)
-                                    if ($("#comment").html() > 3) {
-                                        $("#vcomment").show()
-                                    } else {
-                                        $("#vcomment").hide()
-
-                                    }
-                                    var editables = document.getElementsByClassName("editable")
-                                    for (var i = 0; i < editables.length; i++) {
-                                        (function (index) {
-                                            editables[index].addEventListener("input", function () {
-                                                if ($("#comment").html().length > 1) {
-
-                                                    $("#vcomment").show()
-                                                } else {
-                                                    $("#vcomment").hide()
-                                                }
-                                            })
-                                        })(i);
-                                    }
-                                    console.log(diffTime)
-
-                                    if (diffTime) {
-                                        $("#cancel-fund").hide()
-                                    } else {
-                                        $("#cancel-fund").show()
-                                    }
-
-
-
-                                }
-
-                            })
-
-
-
-                            firebase.database().ref('/transactions/' + commonzkey).once('value').then(function (snip) {
-                                var author = (snip.val() && snip.val().authorId);
-
-                                firebase.database().ref('/users/' + author).once('value').then(function (snapshot) {
-
-                                    var authorDisplayname = (snapshot.val() && snapshot.val().displayName);
-                                    var authorphotoURL = (snapshot.val() && snapshot.val().photoURL);
-                                    var authorDescription = (snapshot.val() && snapshot.val().description);
-                                    $("#avatarPic").attr("src", authorphotoURL);
-                                    $("#user-container").text(authorDisplayname);
-                                    $("#description-container").text(authorDescription);
-
-
-
-                                })
-                            })
-
-                            firebase.database().ref('/transactions/' + commonzkey + '/' + url + '/cTransactions').once('value').then(function (snapshot) {
-                                if (snapshot.val()) {
-                                    var commoners = Object.keys(snapshot.val()).length;
-                                    blackhole.blackhole('#blackhole', commoners, 220, 220, 125);
-                                    $("#commoners").text("This work has already charmed " + commoners + " CoMonerZ")
-
-                                } else if (snapshot.val() == undefined) {
-                                    $("#statut-transaction").text("pas encore de support")
-                                    blackhole.blackhole('#blackhole', 1, 220, 220, 85);
-                                    firebase.database().ref('/users/' + currentUser + '/transactions/' + url).once('value').then(function (snip) {
-
-                                        if (snip.val() == null || snip.val() == undefined) {
-                                            $("#vcomment-field").hide()
-                                            $("#content-refund").show()
-
-                                        }
-
-                                    })
-                                }
-
-                            })
-
-                            var comRef = firebase.database().ref('transactions/' + commonzkey + "/" + url + "/comments")
-                            comRef.on("value", function (snep) {
-                                const comments = snep.val()
-                                if (comments) {
-                                    Object.keys(comments).forEach((userIds, index) => {
-                                        firebase.database().ref('users/' + userIds).once('value').then(function (snoip) {
-                                            var authorDisplayname = (snoip.val() && snoip.val().displayName);
-                                            var authorphotoURL = (snoip.val() && snoip.val().photoURL);
-
-                                            var div = document.getElementById("comments-list")
-                                            div.innerHTML += '<div class="transaction"><div class="first-trcontainer"><div class="comment-container"><p class="tr-title">' + comments[userIds].content + '</p></div><p class="tr-date">' + moment.tz((comments[userIds].date.substring(1, 25)), tz).fromNow() + '</p></div><div class="second-trcontainer"> <figure class="avatar avatar-sm"><img id="avatarPic" src="' + authorphotoURL + '" alt="Avatar"></figure><p>' + authorDisplayname + '</p></div></div>'
-
-                                        })
-                                    })
-                                }
-                            })
-                        } else {
-
-                            firebase.database().ref('/transactions/' + commonzkey).once('value').then(function (snip) {
-                                var author = (snip.val() && snip.val().authorId);
-
-                                firebase.database().ref('/users/' + author).once('value').then(function (snapshot) {
-
-                                    var authorDisplayname = (snapshot.val() && snapshot.val().displayName);
-                                    var authorphotoURL = (snapshot.val() && snapshot.val().photoURL);
-                                    var authorDescription = (snapshot.val() && snapshot.val().description);
-                                    $("#avatarPic").attr("src", authorphotoURL);
-                                    $("#user-container").text(authorDisplayname);
-                                    $("#description-container").text(authorDescription);
-
-
-
-                                })
-                            })
-
-                            $("#wallet-on").hide()
-                            $("#wallet-off").show()
-
-                        }
-                    })
-                })
-            }
-
-            function linkComment() {
-                var comRef = firebase.database().ref('transactions/' + commonzkey + "/" + url + "/comments/" + currentUser)
-                var date = new Date();
-                var parsedDate = JSON.stringify(date);
-                var comment = $("#comment").html()
-                $("#pre-com").hide()
-                $("#lcomment").show()
-                var moDate = moment.tz((parsedDate.substring(1, 22)), tz).fromNow();
-
-                $("#ownComdate").html(moDate)
-
-                $('#comments-list').html('')
-                console.log(comment)
-                if (comment.length > 0) {
-
-                    comRef.update({
-                        content: comment,
-                        date: parsedDate
-
+                        } else {}
                     });
+                })(i);
+            }
+        }
+        if (userCount === -1) {
+            for (var i = 0; i < editables.length; i++) {
+                (function(index) {
+                    editables[index].addEventListener('input', function() {
+                        if ($('#comment').html().length > 4 && userCount > 0) {
+                            $('#vcomment').show();
+                            $('#vcomment').prop('disabled', true)
+                            $('#vcomment').text('No room for Trollz')
+                        } else if ($('#comment').html().length > 4 && userCount === -1) {
+                            $('#vcomment').show();
+                            $('#vcomment').prop('disabled', false)
+                            $('#vcomment').text('Express your feelings')
+
+                        } else {}
+                    });
+                })(i);
+            }
+            if (dateofFunding) {
+                const diffTime = Date.parse(user.walletendDate.substring(1, 25)) > Date.parse(dateofFunding.substring(1, 25))
+                const fundDate = moment.tz(dateofFunding.substring(1, 25), tz).fromNow();
+                $('#statut-transaction').hide();
+                $('#content-fund').show();
+                $('#funding-date').html(fundDate);
+                console.log(diffTime)
+                if (diffTime) {
+                    $('#cancel-fund').show();
+                } else {
+                    $('#cancel-fund').hide();
 
                 }
+
             }
-            document.getElementById("vcomment").addEventListener('click', linkComment, false);
+        }
+    } else {
+        $('#wallet-on').hide();
+        $('#wallet-off').show();
+    }
 
 
-        })
 
-    })
+    if (comoners) {
+        blackhole.blackhole('#blackhole', comoners, 220, 220, 125);
+        $('#commoners').text(
+            'This work has already charmed ' + comoners + ' CoMonerZ. So they say...'
+        );
+        if (comments) {
+            refreshComments(comments)
 
-    function cancelFund() {
-        chrome.storage.local.get('url', function (result) {
-            var user = firebase.auth().currentUser.uid
-            chrome.storage.local.get('key', function (retour) {
-                var commonzkey = retour.key;
+            if (userCom) {
+                $('#comment').hide();
+                $('#ownCom-text').text(userCom.content)
+                $('#ownComdate').html(userComdate);
+                $('#lcomment').show();
+                $('#pre-com').hide();
+            } else {
+                $('#lcomment').hide();
+            }
+        }
 
-                var url = result.url;
-                var transRef = firebase.database().ref('transactions/' + commonzkey + "/" + url + "/cTransactions/" + user)
-                var comRef = firebase.database().ref('transactions/' + commonzkey + "/" + url + "/comments/" + user)
-                var userRef = firebase.database().ref('users/' + user + "/transactions/" + url)
-                transRef.remove()
-                comRef.remove()
-                userRef.remove()
-                console.log("remove completed")
-                $('#content-fund').hide()
-                $("#content-refund").show()
-                chrome.storage.local.set({ 'progress': 60 });
+    } else {
+        $('#statut-transaction').text('pas encore de support');
+        blackhole.blackhole('#blackhole', 1, 220, 220, 85);
+    }
 
 
-            })
+    function refreshComments(comments) {
+        Object.keys(comments).forEach((userId, index) => {
+            var commentsDiv = document.getElementById('comments-list');
+
+            commentsDiv.innerHTML +=
+                '<div class="transaction"><div class="first-trcontainer"><div class="comment-container"><p class="tr-title">' +
+                comments[userId].content +
+                '</p></div><p class="tr-date">' +
+                moment
+                .tz(comments[userId].date.substring(1, 25), tz)
+                .fromNow() +
+                '</p></div><div class="second-trcontainer"> <figure class="avatar avatar-sm"><img id="avatarPic" src="' +
+                comments[userId].photoURL +
+                '" alt="Avatar"></figure><p>' +
+                comments[userId].displayName +
+                '</p></div></div>';
         })
     }
-    document.getElementById("cancel-fund").addEventListener('click', cancelFund, false);
+    async function linkComment() {
+        const keyzz = await setAuthor.getComonzKey()
+        const rulzzz = await setAuthor.getUrl()
+        const user = await setUser.retrieveUser()
+        const author = await setAuthor.getAuthorDetails(keyzz, rulzzz)
+
+        var comRef = firebase
+            .database()
+            .ref('transactions/' + keyzz + '/' + rulzzz + '/comments/' + user.uid);
+        var date = new Date();
+        var parsedDate = JSON.stringify(date);
+        var comment = $('#comment').html();
+        $('#pre-com').hide();
+        $('#lcomment').show();
+        var moDate = moment.tz(parsedDate.substring(1, 22), tz).fromNow();
+
+        $('#ownCom').html(comment);
+
+        $('#ownComdate').html(moDate);
+        $('#comments-list').html('');
+        refreshComments(author.comments)
+
+        if (comment.length > 0) {
+            comRef.update({
+                content: comment,
+                date: parsedDate
+            });
+        }
+    }
+    document.getElementById('vcomment').addEventListener('click', linkComment, false);
+
+    async function cancelFund() {
+        const keyzz = await setAuthor.getComonzKey()
+        const rulzzz = await setAuthor.getUrl()
+        const user = await setUser.retrieveUser()
 
 
+        var transRef = firebase
+            .database()
+            .ref('transactions/' + keyzz + '/' + rulzzz + '/cTransactions/' + user.uid);
+        var comRef = firebase.database().ref('transactions/' + keyzz + '/' + rulzzz + '/comments/' + user.uid);
+        var userRef = firebase.database().ref('users/' + user.uid + '/transactions/' + rulzzz);
+        transRef.remove();
+        comRef.remove()
+        userRef.update({
+            count: 60,
+            status: 'canceled'
+        })
+        console.log('remove completed');
+        $('#content-fund').hide();
+        $('#content-refund').show();
+        chrome.storage.local.set({ progress: 60 });
 
+    }
+    document.getElementById('cancel-fund').addEventListener('click', cancelFund, false);
 
     function backProfile() {
-        $("#content-area").load("profile.html");
-        $("#content-area").show()
-
-
+        $('#content-area').load('profile.html');
+        $('#content-area').show();
     }
 
-
-
-    document.getElementById("profile-back").addEventListener('click', backProfile, false);
-
+    document.getElementById('profile-back').addEventListener('click', backProfile, false);
 }

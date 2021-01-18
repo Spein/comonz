@@ -4,9 +4,9 @@ import * as setUser from '/js/setUser.js';
 export function load() {
 
     setUser.retrieveUser().then(user => {
-
-        fillFields(user)
-    })
+            console.log(user)
+            fillFields(user)
+        })
         .then(
             checkSupport()
         )
@@ -30,11 +30,11 @@ export function checkProfile() {
 
 }
 export function checkSupport() {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
         var user = firebase.auth().currentUser.uid
         var url = tabs[0].url.replace(/[^\w\s]/gi, '_')
         console.log(url)
-        firebase.database().ref('/wishes/' + url).once('value').then(function (snapshot) {
+        firebase.database().ref('/wishes/' + url).once('value').then(function(snapshot) {
             if (snapshot.val() && snapshot.val()[user]) {
                 $("#wishes").html("<i style='color:#d95555' class='fas fa-seedling'></i><p>You have already indicated your interest in this content and we have probably already contacted its Creator</p>")
 
@@ -49,41 +49,49 @@ export function writeUserData() {
     var displayName = $("#displayName").text();
     var description = $("#description").text()
     if (email != currentUser.email) {
-        currentUser.updateEmail(email).then(function () {
-        }).catch(function (error) {
+        currentUser.updateEmail(email).then(function() {}).catch(function(error) {
             // An error happened.
         });
     }
+    var preSrc = document.querySelector('#file').files[0];
+    if (preSrc) {
+        setUser.createBlob()
+            .then(blob => setUser.storeImage(currentUser, blob))
+            .then(function(url) {
+                console.log(url)
+                db.ref('users/' + currentUser.uid).update({
+                    displayName: displayName,
+                    photoURL: url,
+                    email: email,
+                    description: description
 
-    setUser.createBlob()
-        .then(blob => setUser.storeImage(currentUser, blob))
-        .then(function (url) {
-            console.log(url)
-            db.ref('users/' + currentUser.uid).update({
-                displayName: displayName,
-                photoURL: url,
-                email: email,
-                description: description
-
-            }).then(
-                $('#saveButton').hide(),
-                $('#notifications-h').html("<p>Profile updated!</p>")
-
-
-            ).then(setUser.setUser(currentUser.uid))
+                }).then(
+                    $('#saveButton').hide(),
+                    $('#notifications-h').html("<p>Profile updated!</p>")
 
 
-        })
-        .catch(function (error) {
-            console.log(" An error happened" + error)
-            $('#saveButton').hide()
-            $('#notifications-h').html("<p>Something went wrong!</p>")
-
-        });
+                ).then(setUser.setUser(currentUser.uid))
 
 
+            })
+            .catch(function(error) {
+                console.log(" An error happened" + error)
+                $('#saveButton').hide()
+                $('#notifications-h').html("<p>Something went wrong!</p>")
+
+            });
+    } else {
+        db.ref('users/' + currentUser.uid).update({
+            displayName: displayName,
+            email: email,
+            description: description
+
+        }).then(
+            $('#saveButton').hide(),
+            $('#notifications-h').html("<p>Profile updated!</p>")
 
 
+        ).then(setUser.setUser(currentUser.uid))
+    }
 
 }
-
