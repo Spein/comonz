@@ -32,6 +32,13 @@ async function getContent() {
     $('#description-container').text(authorDescription);
     $('#comment').html('   ');
     var editables = document.getElementsByClassName('editable');
+    window.onfocus = function() {
+        localStorage.setItem("extensionOpened", true)
+    }
+    window.onblur = function() {
+        console.log("blur")
+        localStorage.setItem("extensionOpened", false)
+    }
 
     if (user.walletStatus) {
         $('#wallet-on').show();

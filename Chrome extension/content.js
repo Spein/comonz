@@ -5,21 +5,22 @@ function makeHttpObject() {
 
     throw new Error("Could not create HTTP request object.");
 }
+let progress = false
 var request = makeHttpObject();
 request.open("GET", window.location, true);
 request.send(null);
 
 request.onreadystatechange = function() {
+
     var elementOfInterest = document.getElementsByTagName('comonz') ? document.getElementsByTagName('comonz') : null
 
     if (request.readyState == 4 && elementOfInterest.length > 0) {
-        if (request.responseText.includes(elementOfInterest[0].id)) {
+        key = elementOfInterest[0].id;
+
+        if (request.responseText.includes(key)) {
             console.log("ok")
 
-            var id = elementOfInterest[0].id
-            console.log(elementOfInterest[0].id)
             var urlArr = []
-            var newPathname = "";
             var rawURL = window.location.host.replace(/[^\w\s]/gi, '').substring(3) + window.location.pathname.replace(/[^\w\s]/gi, '')
             var splitedURL = rawURL.split()
             for (var i = 0; i <= splitedURL[0].length; i++) {
@@ -30,27 +31,48 @@ request.onreadystatechange = function() {
 
             }
             var preuRL = urlArr.join()
-            var uRL = preuRL.replace(/[,]/gi, '')
+
+            uRL = preuRL.replace(/[,]/gi, '')
 
             if (document.getElementsByTagName('img')[0]) {
-                var img = document.getElementsByTagName('img')[0].src
+                img = document.getElementsByTagName('img')[0].src
             } else {
-                var img = './andrea.jpg'
+                img = './andrea.jpg'
+
             }
             if (document.title) {
-                var title = document.title
+                title = document.title
             } else {
                 document.getElementsByTagName('h1')[0];
-                var title = document.getElementsByTagName('h1')[0]
+                title = document.getElementsByTagName('h1')[0]
 
             };
+            window.onblur = function() {
+                console.log(window)
+                chrome.runtime.sendMessage({ payload: [key, uRL, title, img, null, Date.now()] });
 
-            var key = elementOfInterest[0].id;
-            chrome.runtime.sendMessage({ payload: [key, uRL, title, img] });
 
+
+            }
+            window.onfocus = function() {
+                console.log(window)
+
+                progress = true
+                chrome.runtime.sendMessage({ payload: [key, uRL, title, img, Date.now(), null] });
+
+
+
+            }
+            if (!progress) chrome.runtime.sendMessage({ payload: [key, uRL, title, img, Date.now(), null] });
         }
 
     } else {
         console.log("pascontenu")
+        key = null
+        uRL = null
+        title = null
+        img = null
+        chrome.runtime.sendMessage({ payload: [key, uRL, title, img] });
     }
+
 };
