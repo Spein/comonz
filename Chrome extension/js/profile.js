@@ -2,6 +2,7 @@ import * as userInfo from '/js/userInfo.js';
 import * as wallet from '/js/wallet.js';
 import * as transaction from '/js/transactions.js';
 import * as setUser from '/js/setUser.js';
+import * as blackhole from '/js/blackhole.js';
 
 import * as lists from '/js/lists.js';
 
@@ -9,14 +10,13 @@ import * as lists from '/js/lists.js';
 
 
 
-document.getElementById("profile").addEventListener('click', userInfo.checkProfile, false);
 document.getElementById("saveButton").addEventListener('click', userInfo.writeUserData, false);
 
 
 
 
 //Wallet settings
-
+document.getElementById("profile").addEventListener('click', checkProfile, false);
 document.getElementById("wallet").addEventListener('click', wallet.checkWallet, false);
 
 
@@ -74,10 +74,10 @@ function logout() {
 function styledTabs() {
     setUser.retrieveUser()
         .then((user) => {
-            console.log(user)
-            if (!user.walletStatus) {
+            //console.log(user)
+            if (!user.wallet) {
                 $("#wallet").addClass("blinking")
-                if (!user.authorKey) {
+                if (!user.authorDetails) {
                     $("#transaction").css("color", "#b6b6b6")
 
                 } else {
@@ -85,7 +85,7 @@ function styledTabs() {
                     $("#wallet").removeClass("blinking")
 
                 }
-            } else if (!user.authorKey) {
+            } else if (!user.authorDetails) {
                 $("#transaction").addClass("blinking")
             }
         })
@@ -190,6 +190,44 @@ function getURL() {
 }
 
 
-userInfo.load()
-wallet.checkWStatus()
+$(document).ready(function() {
+    load()
+})
+export function load() {
+    let user = JSON.parse(localStorage.getItem('user'))
+        //console.log(user)
+    fillFields(user)
+    checkSupport()
+}
+export function fillFields(user) {
+    // console.log(user)
+    $("#displayName").text(user.displayName);
+    $("#avatarPic").attr("src", user.photoURL);
+    $("#email").text(user.email);
+    $("#description").text(user.description);
+}
+
+export function checkProfile() {
+    //console.log('cp')
+    $("#blackhole").html("")
+    checkSupport()
+    $("#wallet-header").hide();
+    $("#transaction-header").hide()
+    $("#profile-header").show()
+    blackhole.blackhole('#blackhole', 1, 220, 220, 125);
+
+}
+export function checkSupport() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        var user = firebase.auth().currentUser.uid
+        var url = tabs[0].url.replace(/[^\w\s]/gi, '_')
+            //console.log(url)
+        firebase.database().ref('/wishes/' + url).once('value').then(function(snapshot) {
+            if (snapshot.val() && snapshot.val()[user]) {
+                $("#wishes").html("<i style='color:#d95555' class='fas fa-seedling'></i><p>You have already indicated your interest in this content and we have probably already contacted its Creator</p>")
+
+            }
+        })
+    })
+}
 styledTabs()

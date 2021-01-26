@@ -3,18 +3,16 @@ import * as setUser from '/js/setUser.js';
 import * as setAuthor from '/js/setAuthor.js';
 
 setTimeout(getContent(), 500);
-var key;
 var tz = moment.tz.guess(true);
 
 
 async function getContent() {
     const keyzz = await setAuthor.getComonzKey()
     const rulzzz = await setAuthor.getUrl()
-    console.log(rulzzz)
     const author = await setAuthor.getAuthorDetails(keyzz, rulzzz)
-    const user = await setUser.retrieveUser()
+    const user = JSON.parse(localStorage.getItem('user'))
     const userId = user.uid
-    const userCount = user.transactions[rulzzz].count
+    const userCount = user.transactions ? user.transactions[rulzzz].count : null
     const userCom = author.comments[userId] ? author.comments[userId] : null
     const userComdate = userCom ? moment.tz(userCom.date.substring(1, 25), tz).fromNow() : null
     const comoners = Object.keys(author.transactions[rulzzz].cTransactions) ? Object.keys(author.transactions[rulzzz].cTransactions).length : 0
@@ -32,15 +30,8 @@ async function getContent() {
     $('#description-container').text(authorDescription);
     $('#comment').html('   ');
     var editables = document.getElementsByClassName('editable');
-    window.onfocus = function() {
-        localStorage.setItem("extensionOpened", true)
-    }
-    window.onblur = function() {
-        console.log("blur")
-        localStorage.setItem("extensionOpened", false)
-    }
 
-    if (user.walletStatus) {
+    if (user.wallet) {
         $('#wallet-on').show();
         $('#wallet-off').hide();
 
@@ -90,7 +81,7 @@ async function getContent() {
                 })(i);
             }
             if (dateofFunding) {
-                const diffTime = Date.parse(user.walletendDate.substring(1, 25)) > Date.parse(dateofFunding.substring(1, 25))
+                const diffTime = Date.parse(user.wallet.endDate.substring(1, 25)) > Date.parse(dateofFunding.substring(1, 25))
                 const fundDate = moment.tz(dateofFunding.substring(1, 25), tz).fromNow();
                 $('#statut-transaction').hide();
                 $('#content-fund').show();
@@ -206,7 +197,6 @@ async function getContent() {
         console.log('remove completed');
         $('#content-fund').hide();
         $('#content-refund').show();
-        chrome.storage.local.set({ progress: 60 });
 
     }
     document.getElementById('cancel-fund').addEventListener('click', cancelFund, false);
@@ -218,3 +208,11 @@ async function getContent() {
 
     document.getElementById('profile-back').addEventListener('click', backProfile, false);
 }
+
+function goWallet() {
+    $('#container').html('')
+    $("#container").load("profile.html")
+
+}
+
+document.getElementById('goWallet').addEventListener('click', goWallet, false);

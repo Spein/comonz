@@ -3,35 +3,34 @@ import * as setUser from '/js/setUser.js';
 blackhole.blackhole('#blackhole', 1, 175, 200, 140)
 
 
-function signUp(email, displayName, password, photoURL) {
+function signUp(email, displayName, password) {
     var email = $("#email").val();
     var password = $("#password").val();
     var displayName = $("#displayName").val();
     var description = $("#description").val();
-    var user = null;
     firebase.auth().createUserWithEmailAndPassword(email, password)
 
     .then(function(user) {
             setUser.createBlob()
-                .then(blob => setUser.storeImage(user, blob))
-                .then((url) => {
-                    const RegisteredUser = {
-                        email: email,
-                        description: description,
-                        displayName: displayName,
-                        photoURL: url,
-                        wallet: null,
-                        transactions: null,
-                        authorDetails: null
+                .then((blob) => {
+                    -setUser.storeImage(user, blob).then((url) => {
+                        const RegisteredUser = {
+                            uid: user.user.uid,
+                            email: email,
+                            description: description,
+                            displayName: displayName,
+                            photoURL: url,
+                            wallet: null,
+                            transactions: null,
+                            authorDetails: null
 
-                    }
-                    firebase.database().ref('users/' + user.user.uid).set(RegisteredUser)
-                        .then((user) => {
-                            setUser.setUser(user.user.uid)
+                        }
+                        firebase.database().ref('users/' + user.user.uid).set(RegisteredUser)
+                        localStorage.setItem('user', JSON.stringify(RegisteredUser))
+                    });
+                })
 
-                        })
 
-                });
 
         })
         .catch((error) => {
@@ -45,17 +44,14 @@ function signIn() {
     var email = $("#emails").val();
     var password = $("#passwords").val();
     firebase.auth().signInWithEmailAndPassword(email, password)
-        .then(function(user) {
-            user = firebase.auth().currentUser.uid;
-            setUser.setUser(user)
+        .then((user) => {})
 
-        })
-        .catch(function(error) {
-            // Handle Errors here.
-            var errorCode = error.code;
-            $("#warning").text(error.message);
-            // ...
-        });
+    .catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        $("#warning").text(error.message);
+        // ...
+    });
 }
 
 

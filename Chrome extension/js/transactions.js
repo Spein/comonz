@@ -1,110 +1,108 @@
 import * as blackhole from '/js/blackhole.js';
-import * as lists from '/js/lists.js';
-import * as setUser from '/js/setUser.js';
+
 
 export function firstCheck() {
     $("#blackhole").html("")
     $("#profile-header").hide()
     $("#wallet-header").hide()
     $("#transaction-header").show()
-    setUser.retrieveUser().then(user => {
-        var walletStatus = user.walletStatus;
-        if (walletStatus) {
-            $("#need-wallet").hide()
-            checkAuthor()
+    let user = JSON.parse(localStorage.getItem('user'))
 
-        } else  {
-            $("#need-wallet").show()
-            $("#commoners").hide()
-            $("#wallet-amount").html(0)
+    let walletStatus = user.wallet ? user.wallet.status : null
+    if (walletStatus) {
+        $("#need-wallet").hide()
+        checkAuthor()
+
+    } else {
+        $("#need-wallet").show()
+        $("#commoners").hide()
+        $("#wallet-amount").html(0)
 
 
-        }
-    })
+    }
+
 
 }
 
-export function checkAuthor() {
-    var div = document.getElementById("transactions-received")
+export async function checkAuthor() {
+    let div = document.getElementById("transactions-received")
     div.innerHTML = ""
-    var userId = firebase.auth().currentUser.uid;
-    return firebase.database().ref('/users/' + userId).once('value').then(function (snapshot) {
-        var authorDetails = (snapshot.val() && snapshot.val().authorDetails);
+    let user = JSON.parse(localStorage.getItem('user'))
+    let authorDetails = user.authorDetails;
+    console.log(user)
 
-        if (authorDetails) {
-            var bankAcc = (snapshot.val() && snapshot.val().authorDetails.bankAccount)
+    if (authorDetails) {
+        let bankAcc = authorDetails.bankAccount
+        let commoners = 0;
+        let authorKey = authorDetails.key
 
-            var commoners = 0;
-            firebase.database().ref('/users/' + userId + "/authorDetails/").once('value').then(function (snapshot) {
-                var authorKey = snapshot.val().key
+        let authoPool = await firebase.database().ref('/transactions/' + authorKey).once('value').then(function(snap) { return snap.val() })
 
-                firebase.database().ref('/transactions/' + authorKey).once('value').then(function (snap) {
+        if (authoPool) {
 
-                    if (snap.val()) {
+            let authorSocket = Object.entries(authoPool)
+            div.innerHTML += '<div class="transaction"><div class="first-trcontainer"><p class="column-title" style="align-self:center;"><i class="fab fa-autoprefixer"></i>Titre</p></div><div class="second-trcontainer"><p class="column-title"><i class="far fa-user-circle"></i>Profile</p></div></div>'
 
-                        var authorSocket = Object.entries(snap.val())
-                        div.innerHTML += '<div class="transaction"><div class="first-trcontainer"><p class="column-title" style="align-self:center;"><i class="fab fa-autoprefixer"></i>Titre</p></div><div class="second-trcontainer"><p class="column-title"><i class="far fa-user-circle"></i>Profile</p></div></div>'
+            authorSocket.forEach((element, index) => {
+                if (element[0] == "authorId") {
+                    $("#no-rpayments").show()
+                    $("#transaction-amount").html(0)
+                    $("#footer-received").hide()
+                    return;
+                }
 
-                        authorSocket.forEach((element, index) => {
-                            if (element[0] == "authorId") {
-                                $("#no-rpayments").show()
-                                $("#transaction-amount").html(0)
-                                $("#footer-received").hide()
-                                return;
-                            }
+                $("#no-rpayments").hide()
+                let urls = element[0]
+                let title = element[1].title
+                let thisContent = authoPool[urls].cTransactions
+                let userSocket = Object.keys(thisContent)
+                let userDate = Object.values(thisContent)
 
-                            $("#no-rpayments").hide()
-                            var urls = element[0]
-                            var title = element[1].title
-                            firebase.database().ref('/transactions/' + authorKey + "/" + urls + '/cTransactions').once('value').then(function (snap) {
-                                var userSocket = Object.keys(snap.val())
-                                var userDate = Object.values(snap.val())
+                commoners = commoners + userSocket.length;
+                blackhole.blackhole('#blackhole', commoners + 1, 220, 220, 125)
+                $("#transaction-amount").html(commoners)
+                userSocket.forEach((element, index) => {
+                    let rawdate = snap.val()
+                    let date = moment(rawdate[element].date.substring(1, 11)).fromNow();
 
-                                commoners = commoners + userSocket.length;
-                                blackhole.blackhole('#blackhole', commoners + 1, 220, 220, 125)
-                                $("#transaction-amount").html(commoners)
-                                userSocket.forEach((element, index) => {
-                                    var rawdate = snap.val()
-                                    var date = moment(rawdate[element].date.substring(1, 11)).fromNow();
+                    firebase.database().ref('/users/' + element).once('value').then(function(snopshot) {
+                        let photoClient = snopshot.val().photoURL
+                        let nameClient = snopshot.val().displayName
+                        let shortTitle = title.substring(0, 35) + "..."
+                        div.innerHTML += '<div class="transaction"><div class="first-trcontainer"><p class="tr-title">' + shortTitle + '</p><p class="tr-date">' + date + '</p></div><div class="second-trcontainer"> <figure class="avatar avatar-sm"><img id="avatarPic" src="' + photoClient + '" alt="Avatar"></figure><p>' + nameClient + '</p></div></div>'
 
-                                    firebase.database().ref('/users/' + element).once('value').then(function (snopshot) {
-                                        var photoClient = snopshot.val().photoURL
-                                        var nameClient = snopshot.val().displayName
-                                        var shortTitle = title.substring(0, 35) + "..."
-                                        div.innerHTML += '<div class="transaction"><div class="first-trcontainer"><p class="tr-title">' + shortTitle + '</p><p class="tr-date">' + date + '</p></div><div class="second-trcontainer"> <figure class="avatar avatar-sm"><img id="avatarPic" src="' + photoClient + '" alt="Avatar"></figure><p>' + nameClient + '</p></div></div>'
+                    })
 
-                                    })
-
-                                })
-
-
-                            })
-
-                        })
-                        $("#footer-received").show()
-
-                    }
                 })
+
+
+
+
             })
+            $("#footer-received").show()
 
-
-            $("#no-author").hide()
-            $("#author-on").show()
-            $("#commons-key").text("<comonz id='" + authorDetails.key + "'></comomz>")
-            $("#bank-account").text(bankAcc)
-
-        } else if (authorDetails == undefined) {
-            $("#no-author").show()
-            blackhole.blackhole('#blackhole', 1, 220, 220, 125)
-            $("#transaction-amount").html(0)
         }
-        // ...
-    });
+
+
+
+
+        $("#no-author").hide()
+        $("#author-on").show()
+        $("#commons-key").text("<comonz id='" + authorDetails.key + "'></comomz>")
+        $("#bank-account").text(bankAcc)
+
+    } else if (authorDetails == undefined) {
+        $("#no-author").show()
+        blackhole.blackhole('#blackhole', 1, 220, 220, 125)
+        $("#transaction-amount").html(0)
+    }
+    // ...
+
 
 
 
 }
-$("#cgu").change(function () {
+$("#cgu").change(function() {
     if (this.checked) {
         $("#no-cgu").hide()
         $("#cgu-accepted").show()
@@ -114,23 +112,23 @@ $("#cgu").change(function () {
     }
 });
 export function createAuthor() {
-    setUser.retrieveUser().then(user => {
-
-    var authorKey = Math.random().toString(36).slice(-10);
-    var userId = user.uid
-    var iban = $("#iban-input").val();
-
-    firebase.database().ref('users/' + userId + '/authorDetails').set({
+    let user = JSON.parse(localStorage.getItem('user'))
+    console.log(user)
+    let authorKey = Math.random().toString(36).slice(-10);
+    let userId = user.uid
+    let iban = $("#iban-input").val();
+    let initAuth = {
         siteURL: false,
         key: authorKey,
-        bankAccount: iban,
-
-    }).then(setUser.setUser());
-
-    firebase.database().ref('transactions/' + authorKey).set({
+        bankAccount: iban
+    }
+    user.authorDetails = initAuth
+    localStorage.setItem('user', JSON.stringify(user))
+    firebase.database().ref('users/' + userId + '/authorDetails').set(initAuth).then(firebase.database().ref('transactions/' + authorKey).set({
         authorId: userId,
-    });
-}).then(checkAuthor())
+    })).then(checkAuthor())
+
+
 
 }
 
@@ -151,9 +149,9 @@ export function alertValidIBAN(iban) {
 }
 export function alertValidIBAN2(iban) {
     var iban = document.getElementById("iban-input2")
-    var changediban = iban.value
+    let changediban = iban.value
     if (isValidIBANNumber(changediban)) {
-        var userId = firebase.auth().currentUser.uid
+        let userId = firebase.auth().currentUser.uid
 
         $("#verify-change").hide()
         firebase.database().ref('users/' + userId + '/authorDetails').update({
@@ -171,10 +169,10 @@ export function alertValidIBAN2(iban) {
 
 }
 document.getElementById("check-iban2").addEventListener('click', alertValidIBAN2, false);
-document.getElementById("change-bacc").addEventListener('click', function () { $("#verify-change").show() }, false);
+document.getElementById("change-bacc").addEventListener('click', function() { $("#verify-change").show() }, false);
 
 export function isValidIBANNumber(input) {
-    var CODE_LENGTHS = {
+    let CODE_LENGTHS = {
         AD: 24,
         AE: 23,
         AT: 20,
@@ -247,7 +245,7 @@ export function isValidIBANNumber(input) {
         return false;
     }
     // rearrange country code and check digits, and convert chars to ints
-    digits = (code[3] + code[1] + code[2]).replace(/[A-Z]/g, function (letter) {
+    digits = (code[3] + code[1] + code[2]).replace(/[A-Z]/g, function(letter) {
         return letter.charCodeAt(0) - 55;
     });
     // final check
@@ -255,9 +253,9 @@ export function isValidIBANNumber(input) {
 }
 
 function mod97(string) {
-    var checksum = string.slice(0, 2),
+    let checksum = string.slice(0, 2),
         fragment;
-    for (var offset = 2; offset < string.length; offset += 7) {
+    for (let offset = 2; offset < string.length; offset += 7) {
         fragment = String(checksum) + string.substring(offset, offset + 7);
         checksum = parseInt(fragment, 10) % 97;
     }

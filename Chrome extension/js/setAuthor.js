@@ -26,6 +26,7 @@ export function getAuthorDetails(commonzkey, url) {
             .once('value')
             .then(data => {
                 author.transactions = data.val()
+                console.log(author.transactions[url])
                 author.comments = author.transactions[url].comments ? author.transactions[url].comments : null
                 Object.keys(author.comments).forEach((userId, index) => {
                     firebase

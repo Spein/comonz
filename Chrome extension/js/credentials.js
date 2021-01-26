@@ -12,53 +12,50 @@ var config = {
 firebase.initializeApp(config);
 
 export async function displayView(user) {
-    if (user) {
-        let currentUser = await setUser.retrieveUser()
-        console.log(currentUser, localStorage)
-        const authorKey = localStorage.getItem('authorkey')
-        if (authorKey == "false" || !authorKey) {
 
-            $("#container").load("profile.html", function(data) {
-                var scripts = $(data).find("script");
-                if (scripts.length) {
-                    $(scripts).each(function() {
-                        if ($(this).attr("src")) {
-                            $.getScript($(this).attr("src"));
-                        } else {
-                            eval($(this).html());
-                        }
-                    });
-                }
-            });
-
-
-        } else {
-            console.log('content loaded');
-            $('#container').load('onContent.html');
-        }
-
+    //console.log(currentUser)
+    const authorKey = localStorage.getItem('authorkey')
+    if (authorKey == "null" || !authorKey) {
+        console.log('profile loaded')
+        $("#container").load("profile.html")
 
 
     } else {
-        $('#container').load('sign-in.html');
-        localStorage.clear();
+        localStorage.setItem("extensionOpened", true)
+
+        console.log('content loaded', localStorage.getItem('extensionOpened'));
+        $('#container').load('onContent.html');
     }
+
+
+
 
 }
 
 function initApp() {
-    firebase.auth().onAuthStateChanged(function(user) {
-        let currentuser = user ? user.uid : null
-        if (currentuser !== null) {
-            setUser.setUser(currentuser).then(displayView(currentuser))
-
+    firebase.auth().onAuthStateChanged(async function(user) {
+        if (user) {
+            let currentUser = await firebase.database().ref('/users/' + user.uid).once('value').then(function(snapshot) { return snapshot.val() })
+                //console.log(user)
+            delayLoad(currentUser, user.uid).then(displayView(user))
         } else {
-            displayView(currentuser)
-
+            $('#container').load('sign-in.html');
+            localStorage.clear();
         }
 
 
+
     });
+}
+
+function delayLoad(currentUser, userId) {
+    return new Promise(function(resolve, reject) {
+        currentUser.uid = userId
+        console.log(currentUser)
+        localStorage.setItem('user', JSON.stringify(currentUser))
+
+        resolve('resolved')
+    })
 }
 
 window.onload = function() {

@@ -10,72 +10,81 @@ export function checkWallet() {
     $('#transaction-header').hide();
     $('#wallet-header').show();
     $('#transactions-footer').show();
+    let user = JSON.parse(localStorage.getItem('user'))
+    var walletStatus = user.wallet ? user.wallet.status : null
+        //console.log(user);
+    var transactions = user.transactions;
+    //console.log(walletStatus, transactions);
+    if (walletStatus === 'active') {
+        var attCounter = user.wallet.Attcounter;
+        console.log(attCounter)
+        $('#create-wallet').hide();
+        $('#wallet-inactive').hide();
+        $('#wallet-amount').show();
+        $('#commonZ').show();
+        var moDate = moment(user.wallet.startDate.substring(1, 20)).fromNow();
+        $('#wallet-amount').html(user.wallet.amount);
+        blackhole.blackhole('#blackhole', $('#wallet-amount').html(), 220, 220, 125);
+        document.querySelector('#wallet-startDate').innerHTML = moment(
+            user.wallet.startDate.substring(1, 11)
+        ).format('DD/MM/YYYY');
+        document.querySelector('#wallet-endDate').innerHTML = moment(user.wallet.endDate.substring(1, 11)).format(
+            'DD/MM/YYYY'
+        );
 
-    setUser.retrieveUser().then((user) => {
-        var walletStatus = user.walletStatus;
-        console.log(user);
-        var transactions = user.transactions;
-        console.log(walletStatus, transactions);
-        if (walletStatus === 'active') {
-            var attCounter = user.attCounter;
+        $('#btns-wallet').hide();
+        $('#save-wallet').hide();
+        var minutes = Math.floor(attCounter / 60);
 
-            $('#create-wallet').hide();
-            $('#wallet-inactive').hide();
-            $('#wallet-amount').show();
-            $('#commonZ').show();
-            var moDate = moment(user.walletStartDate.substring(1, 20)).fromNow();
-            $('#wallet-amount').html(user.walletAmount);
-            blackhole.blackhole('#blackhole', $('#wallet-amount').html(), 220, 220, 125);
-            document.querySelector('#wallet-startDate').innerHTML = moment(
-                user.walletStartDate.substring(1, 11)
-            ).format('DD/MM/YYYY');
-            document.querySelector('#wallet-endDate').innerHTML = moment(user.walletStartDate.substring(1, 11)).format(
-                'DD/MM/YYYY'
-            );
-            $('#btns-wallet').hide();
-            $('#save-wallet').hide();
-            var minutes = Math.floor(attCounter / 60);
-            if (attCounter < 61 && !attCounter == 60) {
-                var seconds = attCounter;
-            } else if ((attCounter = 60)) {
-                var seconds = 0;
-                minutes = 1;
-            } else {
-                var seconds = attCounter - 60 * minutes;
-            }
-            console.log(attCounter);
-            $('#statut-commons').html(
-                '<p>Your wallet is full of coMonZ for ' +
-                moDate +
-                "</p><p>You've set your commitment at :<br><span id='attCounter'></span></p>"
-            );
-            $('#attCounter').html(minutes + ' minutes ' + seconds + ' seconds');
+        if (attCounter < 61 && !attCounter == 60) {
+            var seconds = attCounter;
+            console.log(attCounter)
 
-            $('#statut-commons').show();
-            $('#date-container').show();
+        } else if (attCounter == 60) {
+            var seconds = 0;
+            minutes = 1;
+            console.log(attCounter)
 
-            $('#wallet-on').show();
-        } else if (walletStatus === 'inactive') {
-            $('#create-wallet').hide();
-            $('#wallet-active').show();
-            $('#btns-wallet').show();
-            $('#statut-commons').html(
-                "<p><i>Your active period is over.<br> Add your coMonZ here and determine your attention time once more:<i> </p> <p> Your attention time is: <br> <span id = 'attCounter'> 1 minute and 0 seconds</span></p>"
-            );
-        } else if (!walletStatus) {
-            blackhole.blackhole('#blackhole', 1, 220, 220, 125);
-            $('#wallet-charged').hide();
-            createWallet();
-        }
-        if (transactions) {
-            lists.getUserpaidContents();
-            $('#no-transactions').hide();
-            $('#transactions-sent').show();
         } else {
-            $('#no-transactions').show();
-            $('#transactions-sent').hide();
+            console.log(attCounter)
+
+            var seconds = attCounter - 60 * minutes;
         }
-    });
+
+        console.log(attCounter, minutes, seconds);
+        $('#statut-commons').html(
+            "<p>You've purchased those CoMonz <span style='color:#d95555'> " +
+            moDate +
+            "</span></p><p>You've set your commitment at :<br><span id='attCounter'></span></p>"
+        );
+        $('#attCounter').html(minutes + ' minutes ' + seconds + ' seconds');
+
+        $('#statut-commons').show();
+        $('#date-container').show();
+
+        $('#wallet-on').show();
+    } else if (walletStatus === 'inactive') {
+        $('#create-wallet').hide();
+        $('#wallet-active').show();
+        $('#btns-wallet').show();
+        $('#statut-commons').html(
+            "<p><i>Your active period is over.<br> Add your coMonZ here and determine your attention time once more:<i> </p> <p> Your attention time is: <br> <span id = 'attCounter'> 1 minute and 0 seconds</span></p>"
+        );
+    } else if (!walletStatus) {
+        blackhole.blackhole('#blackhole', 1, 220, 220, 125);
+        $('#wallet-charged').hide();
+        createWallet();
+    }
+    if (transactions) {
+        lists.getUserpaidContents();
+        $('#no-transactions').hide();
+        $('#transactions-sent').show();
+    } else {
+        $('#no-transactions').show();
+        $('#transactions-sent').hide();
+    }
+
+
 }
 
 function checkSave() {
@@ -104,7 +113,7 @@ export function createWallet() {
 export function minComonz() {
     var parsedCount = parseInt($('#wallet-amount').html());
     if (parsedCount > 0) {
-        console.log(parsedCount);
+        //console.log(parsedCount);
         parsedCount = parsedCount - 10;
         $('#wallet-amount').html(parsedCount + '<br>');
         $('#euro-amount').html('Montant versé: ' + parsedCount / 10 + ' €');
@@ -115,7 +124,7 @@ export function minComonz() {
 document.getElementById('minus-commons').addEventListener('click', minComonz, false);
 export function addComonz() {
     var parsedCount = parseInt($('#wallet-amount').html());
-    console.log(parsedCount);
+    //console.log(parsedCount);
 
     parsedCount = parsedCount + 10;
     $('#wallet-amount').html(parsedCount);
@@ -123,7 +132,9 @@ export function addComonz() {
     blackhole.blackhole('#blackhole', parsedCount, 220, 220, 125);
 }
 document.getElementById('add-commons').addEventListener('click', addComonz, false);
-export function saveWallet() {
+export async function saveWallet() {
+    console.log(parseInt($('input[name="participants"]').val()))
+    let user = JSON.parse(localStorage.getItem('user'))
     $('#btns-wallet').hide();
     $('#transactions-sent').hide();
     $('#footer-sent').hide();
@@ -145,11 +156,13 @@ export function saveWallet() {
 
             // Finalize the transaction
             onApprove: function(data, actions) {
-                return actions.order.capture().then(function(details) {
+                return actions.order.capture().then(async function(details) {
+
                     // Show a success message to the buyer
                     $('#paypal-button-container').html('');
 
-                    var user = firebase.auth().currentUser.uid;
+
+                    var userId = firebase.auth().currentUser.uid
                     var amount = $('#wallet-amount').html();
                     var startDate = new Date();
                     var endDate = moment(new Date()).add(1, 'month');
@@ -163,18 +176,26 @@ export function saveWallet() {
 
                     //Paypal
                     blackhole.blackhole('#blackhole', amount, 220, 220, 125);
+                    let wallet = {
+                        amount: amount,
+                        startDate: parsedStartDate,
+                        endDate: parsedEndDate,
+                        status: 'active',
+                        Attcounter: parseInt($('input[name="participants"]').val())
+                    }
+                    var user = await firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) { return snapshot.val() })
+                    console.log(user)
+                    user.wallet = wallet
 
+                    localStorage.setItem('user', JSON.stringify(user))
                     firebase
                         .database()
-                        .ref('users/' + user + '/wallet/')
-                        .set({
-                            amount: amount,
-                            startDate: parsedStartDate,
-                            endDate: parsedEndDate,
-                            status: 'active',
-                            Attcounter: parseInt($('input[name="participants"]').val())
-                        })
-                        .then(setUser.setUser(user).then(console.log(' wallet storage successful'), checkWallet()));
+                        .ref('users/' + userId + '/wallet/')
+                        .set(wallet)
+
+
+                    //console.log(' wallet storage successful'), 
+                    checkWallet();
 
                     $('#paypal-button-container').hide();
                 });
@@ -185,45 +206,45 @@ export function saveWallet() {
 document.getElementById('save-wallet').addEventListener('click', saveWallet, false);
 
 export function checkWStatus() {
-    setUser.retrieveUser().then((user) => {
-        console.log(user);
+    //console.log(user);
+    let user = JSON.parse(localStorage.getItem('user'))
 
-        var endDate = wallet.endDate;
-        var month = moment(user.walletStartDate.substring(1, 11)).format('MMMM');
-        var year = moment(user.walletStartDate.substring(1, 11)).format('YYYY');
-        var walletAmount = user.walletAmount;
-        var diff = moment().diff(user.walletendDate.substring(1, 20), 'days');
-        var transactions = user.transactions;
-        var clientIds = [];
-        var arrContent = Object.entries(transactions);
-        var walletRef = firebase.database().ref('/users/' + user.uid + '/wallet');
+    var endDate = user.wallet.endDate;
+    var month = moment(user.wallet.startDate.substring(1, 11)).format('MMMM');
+    var year = moment(user.wallet.startDate.substring(1, 11)).format('YYYY');
+    var walletAmount = user.wallet.amount;
+    var diff = moment().diff(user.wallet.endDate.substring(1, 20), 'days');
+    var transactions = user.transactions;
+    var clientIds = [];
+    var arrContent = Object.entries(transactions);
+    var walletRef = firebase.database().ref('/users/' + user.uid + '/wallet');
 
-        console.log(diff);
+    //console.log(diff);
 
-        if (diff > 0 && transactions) {
-            arrContent.forEach((valeur, i) => {
-                clientIds.push(valeur[1].authorKey);
-            });
+    if (diff > 0 && transactions) {
+        arrContent.forEach((valeur, i) => {
+            clientIds.push(valeur[1].authorKey);
+        });
 
-            var filteredclientIds = clientIds.filter((x, i, a) => a.indexOf(x) == i);
-            filteredclientIds.forEach((authorKey, i) => {
-                var counts = lists.getOccurence(clientIds, authorKey);
-                var share = counts / Object.keys(transactions).length;
-                firebase
-                    .database()
-                    .ref('/checkouts/' + authorKey + '/' + year + '/' + month)
-                    .update({
-                        [user.uid]: walletAmount / 10 * share
+        var filteredclientIds = clientIds.filter((x, i, a) => a.indexOf(x) == i);
+        filteredclientIds.forEach((authorKey, i) => {
+            var counts = lists.getOccurence(clientIds, authorKey);
+            var share = counts / Object.keys(transactions).length;
+            firebase
+                .database()
+                .ref('/checkouts/' + authorKey + '/' + year + '/' + month)
+                .update({
+                    [user.uid]: walletAmount / 10 * share
+                })
+                .then(
+                    walletRef.update({
+                        status: 'inactive',
+                        amount: 0
                     })
-                    .then(
-                        walletRef.update({
-                            status: 'inactive',
-                            amount: 0
-                        })
-                    );
-            });
-        }
-    });
+                );
+        });
+    }
+
 }
 
 const $element = $('input[type="range"]');

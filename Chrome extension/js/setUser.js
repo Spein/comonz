@@ -1,27 +1,8 @@
 export function setUser(user) {
-    return new Promise(function(resolve, reject) {
-        return firebase.database().ref('/users/' + user).once('value').then(function(snapshot) {
-
-            var userData = {
-                uid: user,
-                displayName: (snapshot.val() && snapshot.val().displayName) || null,
-                email: (snapshot.val() && snapshot.val().email) || null,
-                photoURL: (snapshot.val() && snapshot.val().photoURL) || null,
-                description: (snapshot.val() && snapshot.val().description) || null,
-                transactions: (snapshot.val() && snapshot.val().transactions) || null,
-                walletStatus: (snapshot.val().wallet && snapshot.val().wallet.status) || null,
-                walletAmount: (snapshot.val().wallet && snapshot.val().wallet.amount) || null,
-                walletStartDate: (snapshot.val().wallet && snapshot.val().wallet.startDate) || null,
-                walletendDate: (snapshot.val().wallet && snapshot.val().wallet.endDate) || null,
-                attCounter: (snapshot.val().wallet && snapshot.val().wallet.Attcounter) || null,
-                authorKey: (snapshot.val().authorDetails && snapshot.val().authorDetails.key) || null,
-                authorbankAccount:
-                    (snapshot.val().authorDetails && snapshot.val().authorDetails.bankAccount) || null
-            };
-            console.log(userData)
-            resolve(localStorage.setItem('user', JSON.stringify(userData)));
-
-        });
+    return new Promise(async function(resolve, reject) {
+        let userData
+        userData = await firebase.database().ref('/users/' + user).once('value').then(function(snapshot) { return snapshot.val() })
+        resolve(localStorage.setItem('user', JSON.stringify(userData)));
     });
 }
 
@@ -44,6 +25,7 @@ export function createBlob() {
             var random = Math.floor(Math.random() * 3) + 1;
             fetch('../logo/planet-' + random + '.png').then((response) => response.blob()).then(function(blob) {
                 resolve(blob);
+
             });
         }
     });
