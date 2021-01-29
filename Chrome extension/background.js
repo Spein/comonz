@@ -37,8 +37,7 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
                 // console.log(transactions, transaction)
             let actualCount = transaction ? transaction.count : onGoingArticle.count
             console.log(artToSend, actualCount)
-            if (artToSend && artToSend.stopTime === null && !localStorage.getItem("inProgress")) {
-                console.log(localStorage.getItem("inProgress"))
+            if (artToSend && artToSend.startTime && artToSend.stopTime === null) {
                 if (!transactions) {
                     user.transactions = {}
 
@@ -53,43 +52,51 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
                 //console.log(actualCount)
 
                 if (actualCount >= 0) {
-                    if (!localStorage.getItem("inProgress")) {
-
-                        localStorage.setItem('inProgress', 1)
-
-                        let interval = setInterval(function() {
-                            let badgeCount = actualCount.toString()
-                                // var path = './logo/image (' + badgeCount + ').png';
-                                //chrome.browserAction.setIcon({ path: path });
-                            chrome.browserAction.setBadgeText({ text: badgeCount });
-                            localStorage.setItem('progress', actualCount)
-
-                            actualCount--
-                            if (actualCount <= 0) {
-                                chrome.browserAction.setBadgeText({ text: "<3" });
-                                updateCount(-1, 'paid', user.uid, url, authorKey)
-                                user.transactions[url].count = -1
-                                user.transactions[url].status = "paid"
-                                localStorage.setItem('user', JSON.stringify(user))
-                                localStorage.setItem('progress', 'paid')
-
-                                saveTransaction(authKey, url, user.uid, img, title)
-                                clearInterval(interval)
-                            }
-                        }, 1000)
-                        chrome.runtime.onMessage.addListener(
-                            function(request, sender, sendResponse) {
-
-                                console.log('onMessage')
-                                localStorage.setItem('authorkey', null);
-                                localStorage.setItem('url', null);
-                                localStorage.setItem('progress', null);
-                                clearInterval(interval);
 
 
+                    let interval = setInterval(function() {
+                        let badgeCount = actualCount.toString()
+                            // var path = './logo/image (' + badgeCount + ').png';
+                            //chrome.browserAction.setIcon({ path: path });
+                        chrome.browserAction.setBadgeText({ text: badgeCount });
+                        localStorage.setItem('progress', actualCount)
 
-                            })
-                    }
+                        actualCount--
+                        if (actualCount <= 0) {
+                            chrome.browserAction.setBadgeText({ text: "<3" });
+                            updateCount(-1, 'paid', user.uid, url, authorKey)
+                            user.transactions[url].count = -1
+                            user.transactions[url].status = "paid"
+                            localStorage.setItem('user', JSON.stringify(user))
+                            localStorage.setItem('progress', 'paid')
+
+                            saveTransaction(authKey, url, user.uid, img, title)
+                            clearInterval(interval)
+                        }
+                    }, 1000)
+                    chrome.runtime.onMessage.addListener(
+                        function(request, sender, sendResponse, event) {
+                            console.log('onMessage', request.payload)
+                                //localStorage.setItem('authorkey', null);
+                                //localStorage.setItem('url', null);
+                            localStorage.setItem('progress', null);
+                            localStorage.setItem('lastUrl', url);
+                            localStorage.setItem('lastAuthKey', authKey);
+                            localStorage.setItem('lastTitle', title);
+                            localStorage.setItem('lastImg', img);
+                            updateCount(actualCount, 'onGoing', user.uid, url, authorKey)
+
+                            localStorage.setItem('lastProgress', actualCount);
+                            //console.log(chrome.tabs.tabMutednfo)
+                            user.transactions[url].count = actualCount
+                            user.transactions[url].status = "onGoing"
+                            localStorage.setItem('user', JSON.stringify(user))
+                            clearInterval(interval);
+
+
+
+                        })
+
 
 
 
@@ -130,40 +137,44 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
 }
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
-
+        chrome.browserAction.setIcon({ path: "./logo/logo-base.png" });
+        chrome.browserAction.setBadgeText({ text: "" });
         const authorKey = request.payload[0]
         const url = request.payload[1]
         const title = request.payload[2]
         const img = request.payload[3]
+        const onApp = request.payload[5]
         let artToSend
         setTimeout(() => {
             //console.log(request.payload, localStorage.getItem("extensionOpened"))
-
-            localStorage.setItem('authorkey', authorKey);
-            localStorage.setItem('url', url);
-            if (request.payload[4]) {
+            if (!onApp) {
+                localStorage.setItem('authorkey', authorKey);
+                localStorage.setItem('url', url);
                 console.log(request.payload)
 
-                let artTempStart = url
-                artTempStart = {
-                    startTime: request.payload[4],
-                    stopTime: null
+                if (request.payload[4]) {
+
+                    let artTempStart = url
+                    artTempStart = {
+                        startTime: request.payload[4],
+                        stopTime: null
+                    }
+                    artToSend = artTempStart
+                    bakingContent(authorKey, url, title, img, artToSend)
+
+
+                } else if (request.payload[5]) {
+                    // console.log("dep")
+
+                    let artTempStop = JSON.parse(localStorage.getItem('"' + url + '"'))
+                    artTempStop.stopTime = request.payload[5]
+                    artToSend = artTempStop
+                    localStorage.removeItem('"' + url + '"')
+                    bakingContent(authorKey, url, title, img, artToSend)
+
                 }
-                artToSend = artTempStart
-                bakingContent(authorKey, url, title, img, artToSend)
-
-
-            } else if (request.payload[5]) {
-                // console.log("dep")
-                console.log(request.payload)
-
-                let artTempStop = JSON.parse(localStorage.getItem('"' + url + '"'))
-                artTempStop.stopTime = request.payload[5]
-                artToSend = artTempStop
-                localStorage.removeItem('"' + url + '"')
-                bakingContent(authorKey, url, title, img, artToSend)
-
             }
+
         }, 1000);
 
 
@@ -216,7 +227,7 @@ function updateCount(progress, status, userId, url, authorKey) {
             count: progress,
             status: status,
             authorKey: authorKey
-        }).then(resolve(console.log("updated")))
+        }).then(resolve(console.log("updated", progress, url)))
     })
 }
 
@@ -239,3 +250,31 @@ function saveTransaction(authorKey, url, userId, featuredImage, title) {
 
     })
 }
+
+chrome.runtime.onConnect.addListener(function(port) {
+    let url = localStorage.getItem('lastUrl');
+    let authorKey = localStorage.getItem('lastAuthKey');
+    let title = localStorage.getItem('lastTitle');
+    let img = localStorage.getItem('lastImg');
+    let artToSend = url
+    artToSend = {
+        startTime: Date.now(),
+        stopTime: null
+    }
+    bakingContent(authorKey, url, title, img, artToSend)
+
+    port.onDisconnect.addListener(() => {
+        artToSend.stopTime = Date.now()
+        console.log(port.name)
+        bakingContent(authorKey, url, title, img, artToSend)
+
+
+    })
+})
+chrome.runtime.onSuspend.addListener(function() {
+        console.log('suspend')
+    })
+    /*
+    chrome.Port.onDisconnect.addListener(function(port) {
+        console.log(port)
+    }) */

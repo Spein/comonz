@@ -12,12 +12,12 @@ async function getContent() {
     const author = await setAuthor.getAuthorDetails(keyzz, rulzzz)
     const user = JSON.parse(localStorage.getItem('user'))
     const userId = user.uid
-    const userCount = user.transactions ? user.transactions[rulzzz].count : null
+    const progress = JSON.parse(localStorage.getItem('progress'))
     const userCom = author.comments[userId] ? author.comments[userId] : null
     const userComdate = userCom ? moment.tz(userCom.date.substring(1, 25), tz).fromNow() : null
     const comoners = Object.keys(author.transactions[rulzzz].cTransactions) ? Object.keys(author.transactions[rulzzz].cTransactions).length : 0
     const comments = author.comments
-    console.log(author, user, userComdate, userCount)
+    console.log(author, user, userComdate, progress)
 
     var authorDisplayname = author.details.displayName;
     var authorphotoURL = author.details.photoURL;
@@ -31,29 +31,31 @@ async function getContent() {
     $('#comment').html('   ');
     var editables = document.getElementsByClassName('editable');
 
+
     if (user.wallet) {
         $('#wallet-on').show();
         $('#wallet-off').hide();
+        let progress = localStorage.getItem('progress')
 
-        if (userCount > 0) {
+        if (progress > 0) {
             setInterval(function() {
-                let progress = localStorage.getItem('progress')
-                console.log(progress)
                 $('#statut-transaction').html(
-                    '<p>CoMonZ dropped in :<br>' + progress + ' seconds</p>'
+                    '<p>CoMonZ dropped in :<br>' + progress - 2 + ' seconds</p>'
                 );
+                progress--
             }, 1000);
         }
-        if ((userCount >= -1 && !userCom)) {
+
+        if ((progress >= -1 && !userCom)) {
             $('#vcomment').hide();
             for (var i = 0; i < editables.length; i++) {
                 (function(index) {
                     editables[index].addEventListener('input', function() {
-                        if ($('#comment').html().length > 4 && userCount > 0) {
+                        if ($('#comment').html().length > 4 && progress > 0) {
                             $('#vcomment').show();
                             $('#vcomment').prop('disabled', true)
                             $('#vcomment').text('No room for Trollz')
-                        } else if ($('#comment').html().length > 4 && userCount === -1) {
+                        } else if ($('#comment').html().length > 4 && progress === -1) {
                             $('#vcomment').show();
                             $('#vcomment').prop('disabled', false)
                             $('#vcomment').text('Express your feelings')
@@ -63,15 +65,15 @@ async function getContent() {
                 })(i);
             }
         }
-        if (userCount === -1) {
+        if (progress === -1) {
             for (var i = 0; i < editables.length; i++) {
                 (function(index) {
                     editables[index].addEventListener('input', function() {
-                        if ($('#comment').html().length > 4 && userCount > 0) {
+                        if ($('#comment').html().length > 4 && progress > 0) {
                             $('#vcomment').show();
                             $('#vcomment').prop('disabled', true)
                             $('#vcomment').text('No room for Trollz')
-                        } else if ($('#comment').html().length > 4 && userCount === -1) {
+                        } else if ($('#comment').html().length > 4 && progress === -1) {
                             $('#vcomment').show();
                             $('#vcomment').prop('disabled', false)
                             $('#vcomment').text('Express your feelings')
@@ -207,6 +209,8 @@ async function getContent() {
     }
 
     document.getElementById('profile-back').addEventListener('click', backProfile, false);
+    /*     chrome.runtime.sendMessage({ payload: [keyzz, rulzzz, null, null, null, "onApp"] }); */
+
 }
 
 function goWallet() {
@@ -216,3 +220,18 @@ function goWallet() {
 }
 
 document.getElementById('goWallet').addEventListener('click', goWallet, false);
+
+
+window.onload = connectPort()
+    //window.onunload = disconnectPort()
+
+
+function connectPort() {
+    var port = chrome.runtime.connect({ name: "knockknock" });
+    //port.postMessage({ joke: "Knock knock" });
+}
+
+function disconnectPort() {
+    var port = chrome.runtime.disconnect({ name: "knockknock" });
+    //port.postMessage({ joke: "Knock knock" });
+}

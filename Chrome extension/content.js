@@ -5,9 +5,8 @@ function makeHttpObject() {
 
     throw new Error("Could not create HTTP request object.");
 }
-localStorage.setItem('inProgress', false)
 var request = makeHttpObject();
-
+//alert(chrome)
 request.open("GET", window.location, true);
 request.send(null);
 
@@ -49,31 +48,30 @@ request.onreadystatechange = function() {
 
             };
             window.onblur = function() {
-                //console.log(window)
-                console.log(key, uRL, title, img)
+                console.log(key)
                 chrome.runtime.sendMessage({ payload: [key, uRL, title, img, null, Date.now()] });
 
 
-
-
-
             }
+            window.onclick = e => {
+                    console.log(e.target); // to get the element
+                    console.log(e.target.tagName); // to get the element tag name alone
+                }
+                //console.log(key)
+
             window.onfocus = function() {
+                console.log(key)
 
                 //console.log(window)
 
-                localStorage.setItem("inProgress", true)
                 chrome.runtime.sendMessage({ payload: [key, uRL, title, img, Date.now(), null] });
 
 
 
             }
-            let progress = localStorage.getItem('inProgress')
+            chrome.runtime.sendMessage({ payload: [key, uRL, title, img, Date.now(), null] });
 
-            if (progress === 'false') {
-                console.log(progress)
-                chrome.runtime.sendMessage({ payload: [key, uRL, title, img, Date.now(), null] });
-            }
+
         }
 
     } else {

@@ -22,7 +22,6 @@ export async function displayView(user) {
 
     } else {
         localStorage.setItem("extensionOpened", true)
-
         console.log('content loaded', localStorage.getItem('extensionOpened'));
         $('#container').load('onContent.html');
     }

@@ -7,6 +7,156 @@ var firebaseConfig = {
     messagingSenderId: "1059781682708",
     appId: "1:1059781682708:web:d4a7d1f1aec65742c16901"
 };
+
+
+
+
+async function fetchData(endPoint, name) {
+    const res = await fetch(endPoint);
+    let data = await res.json();
+    let stData = JSON.stringify(data)
+    localStorage.setItem(name, stData)
+}
+
+fetchData(
+        './user.json', 'usersTest')
+    .then(fetchData('./transactions.json', 'transactionsTest'))
+    .then(
+        fetchData('./author.json', 'authorsTest'),
+
+    )
+
+function cracra() {
+    return new Promise((resolve, reject) => {
+        let transactions = JSON.parse(localStorage.getItem('transactionsTest'))
+        let users = JSON.parse(localStorage.getItem('usersTest'))
+        let authors = JSON.parse(localStorage.getItem('authorsTest'))
+
+        let usersDetails = {}
+        let totalUsers = {}
+        let finalObject = {}
+        let authorDetails = {}
+
+        Object.entries(transactions).forEach(data => {
+            const [key, keyDetails] = data;
+
+            finalObject[key] = {}
+                //console.log(finalObject)
+            Object.entries(keyDetails).forEach(data2 => {
+                const [key2, transactionData] = data2;
+                //console.log(key2)
+                if (key2 == "authorId") {
+                    console.log(key, authors[transactionData])
+                    authorDetails[key] = {}
+                    authorDetails[key].uid = transactionData
+                    authorDetails[key].displayName = authors[transactionData].displayName
+                    authorDetails[key].photoURL = authors[transactionData].photoURL
+                    authorDetails[key].email = authors[transactionData].email
+                    authorDetails[key].bankAccount = authors[transactionData].authorDetails.bankAccount
+
+
+
+                    console.log(authorDetails)
+
+                } else {
+                    Object.entries(transactionData).forEach(data3 => {
+                        const [key3, contentData] = data3;
+                        if (key3 === "cTransactions") {
+                            //console.log(key2, Object.keys(contentData))
+                            let paidUsers = Object.keys(contentData)
+                            paidUsers.forEach(user => {
+                                let walletEndDate = users[user].wallet.endDate
+                                let walletStatus = users[user].wallet.status
+                                if (walletStatus === "active" && new Date(walletEndDate.substring(1, 20)).getTime() < new Date().getTime()) {
+                                    if (!totalUsers[user]) {
+                                        totalUsers[user] = 1
+                                    } else {
+                                        totalUsers[user]++
+                                    }
+                                    if (!finalObject[key][user]) {
+                                        finalObject[key][user] = 1
+                                    } else {
+                                        finalObject[key][user]++
+                                    }
+                                    usersDetails[user] = user
+                                    usersDetails[user] = {}
+                                    usersDetails[user].walletAmount = users[user].wallet.amount
+                                    usersDetails[user].displayName = users[user].displayName
+                                    usersDetails[user].email = users[user].email
+                                    usersDetails[user].photoURL = users[user].photoURL
+
+
+
+                                }
+                            })
+                        }
+                    })
+                }
+
+            })
+        })
+        let toResolve = {}
+        toResolve.userPcontent = finalObject
+        toResolve.totalUsers = totalUsers
+        toResolve.usersDetails = usersDetails
+        toResolve.authorDetails = authorDetails
+
+        resolve(toResolve)
+
+    });
+
+
+}
+
+
+function preCalculate() {
+    let month = new Date().getMonth()
+    let year = new Date().getFullYear()
+    cracra().then((allIneed) => {
+        console.log(allIneed)
+        Object.entries(allIneed.userPcontent).forEach(data => {
+            const [key1, contentData1] = data;
+            let authKey = key1
+                //console.log(authKey)
+            Object.entries(contentData1).forEach(data2 => {
+                const [key2, contentData2] = data2;
+                let numperAuth = contentData2
+                allIneed.userPcontent[authKey][key2] = {}
+                allIneed.userPcontent[authKey][key2].walletAmount = allIneed.usersDetails[key2].walletAmount
+                allIneed.userPcontent[authKey][key2].displayName = allIneed.usersDetails[key2].displayName
+                allIneed.userPcontent[authKey][key2].photoURL = allIneed.usersDetails[key2].photoURL
+                allIneed.userPcontent[authKey][key2].email = allIneed.usersDetails[key2].email
+                allIneed.userPcontent[authKey][key2].numperAuth = numperAuth
+                allIneed.userPcontent[authKey][key2].totalNum = allIneed.totalUsers[key2]
+                allIneed.userPcontent[authKey][key2].dueAmount = (allIneed.userPcontent[authKey][key2].walletAmount * allIneed.userPcontent[authKey][key2].numperAuth) / allIneed.userPcontent[authKey][key2].totalNum
+                if (!allIneed.userPcontent[authKey].total) {
+                    allIneed.userPcontent[authKey].total = allIneed.userPcontent[authKey][key2].dueAmount
+                } else {
+                    allIneed.userPcontent[authKey].total += allIneed.userPcontent[authKey][key2].dueAmount
+                }
+                //Rendre le wallet inactif + enregistrer Amount et numperAuth dans users/userId/wallet/history/year/date/authkey/
+            })
+        })
+        return allIneed
+
+    }).then((data) => { console.log(data) })
+}
+
+
+preCalculate()
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 var div = document.getElementById("table-container")
@@ -103,8 +253,8 @@ checkRef.once("value").then(function(snoip) {
         const parsemonth = Object.keys(month)
         for (const submonth of parsemonth) {
             var subMonth = month[submonth]
-            var id = "#" + submonth + parseyear[0] + authorKey
-            document.querySelector(id).innerHTML = subMonth.total / 10
+                /*     var id = "#" + submonth + parseyear[0] + authorKey
+                    document.querySelector(id).innerHTML = subMonth.total / 10 */
 
 
         }
@@ -150,20 +300,20 @@ checkRef.once("value").then(function(snoip) {
 
 
     }
-    console.log(authorPool)
+    //console.log(authorPool)
     var authorIdPool = []
     transRef.once("value").then(function(snoip) {
         for (const authorKey of authorPool) {
-            console.log(snoip.val()[authorKey].authorId)
+            //console.log(snoip.val()[authorKey].authorId)
             authorIdPool.push(snoip.val()[authorKey].authorId)
 
         }
 
-        console.log(authorIdPool)
+        //console.log(authorIdPool)
         for (const authorId of authorIdPool) {
             firebase.database().ref('users/' + authorId).once("value").then(function(snoip) {
                 var name = "#AuthorName" + snoip.val().authorDetails.key
-                console.log(document.querySelector(name))
+                    //console.log(document.querySelector(name))
 
                 document.querySelector(name).innerHTML = snoip.val().displayName
                 var bank = "#AuthorBank" + snoip.val().authorDetails.key
