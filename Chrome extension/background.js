@@ -8,133 +8,6 @@ var config = {
 };
 firebase.initializeApp(config);
 let authKey
-async function bakingContent(authorKey, url, title, img, artToSend) {
-    chrome.browserAction.setIcon({ path: "./logo/logo-base.png" });
-    chrome.browserAction.setBadgeText({ text: "" });
-
-
-    if (authorKey) {
-        localStorage.setItem('authorkey', authorKey)
-
-        const user = JSON.parse(localStorage.getItem("user"))
-        console.log(user)
-
-        var wallet = user.wallet.status;
-        authKey = authorKey
-        const userKey = user.authorKey
-        if (wallet === "active" && userKey != authKey) {
-            localStorage.setItem('"' + url + '"', JSON.stringify(artToSend))
-
-            const transactions = user.transactions ? user.transactions : null
-            const transaction = transactions ? transactions[url] : null
-
-            const attCounter = user.wallet.Attcounter
-            const onGoingArticle = {
-                    count: attCounter,
-                    authorKey: authKey,
-                    status: 'onGoing'
-                }
-                // console.log(transactions, transaction)
-            let actualCount = transaction ? transaction.count : onGoingArticle.count
-            console.log(artToSend, actualCount)
-            if (artToSend && artToSend.startTime && artToSend.stopTime === null) {
-                if (!transactions) {
-                    user.transactions = {}
-
-                }
-                if (!transaction) {
-                    let art = url
-                    user.transactions[url] = onGoingArticle
-                        //console.log(user)
-                    localStorage.setItem('user', JSON.stringify(user))
-
-                }
-                //console.log(actualCount)
-
-                if (actualCount >= 0) {
-
-
-                    let interval = setInterval(function() {
-                        let badgeCount = actualCount.toString()
-                            // var path = './logo/image (' + badgeCount + ').png';
-                            //chrome.browserAction.setIcon({ path: path });
-                        chrome.browserAction.setBadgeText({ text: badgeCount });
-                        localStorage.setItem('progress', actualCount)
-
-                        actualCount--
-                        if (actualCount <= 0) {
-                            chrome.browserAction.setBadgeText({ text: "<3" });
-                            updateCount(-1, 'paid', user.uid, url, authorKey)
-                            user.transactions[url].count = -1
-                            user.transactions[url].status = "paid"
-                            localStorage.setItem('user', JSON.stringify(user))
-                            localStorage.setItem('progress', 'paid')
-
-                            saveTransaction(authKey, url, user.uid, img, title)
-                            clearInterval(interval)
-                        }
-                    }, 1000)
-                    chrome.runtime.onMessage.addListener(
-                        function(request, sender, sendResponse, event) {
-                            console.log('onMessage', request.payload)
-                                //localStorage.setItem('authorkey', null);
-                                //localStorage.setItem('url', null);
-                            localStorage.setItem('progress', null);
-                            localStorage.setItem('lastUrl', url);
-                            localStorage.setItem('lastAuthKey', authKey);
-                            localStorage.setItem('lastTitle', title);
-                            localStorage.setItem('lastImg', img);
-                            updateCount(actualCount, 'onGoing', user.uid, url, authorKey)
-
-                            localStorage.setItem('lastProgress', actualCount);
-                            //console.log(chrome.tabs.tabMutednfo)
-                            user.transactions[url].count = actualCount
-                            user.transactions[url].status = "onGoing"
-                            localStorage.setItem('user', JSON.stringify(user))
-                            clearInterval(interval);
-
-
-
-                        })
-
-
-
-
-                } else {
-                    chrome.browserAction.setBadgeText({ text: "<3" });
-                    localStorage.removeItem('"' + url + '"')
-
-                }
-            } else if (artToSend.stopTime !== null && artToSend.startTime && (transaction.status != 'paid' || !transaction)) {
-                console.log("devrai finir")
-                localStorage.removeItem('"' + url + '"')
-
-                localStorage.removeItem('inProgress')
-                localStorage.setItem('authorkey', null);
-                localStorage.setItem('url', null);
-                localStorage.setItem('progress', null);
-                let calcTimeprime = (artToSend.stopTime - artToSend.startTime) / 1000
-                let calcTime = Math.floor(calcTimeprime)
-                let calcCount = actualCount - calcTime
-                console.log(artToSend.stopTime, artToSend.startTime, calcTime, calcCount)
-                updateCount(calcCount, 'onGoing', user.uid, url, authorKey)
-                chrome.browserAction.setIcon({ path: "./logo/logo-base.png" });
-                chrome.browserAction.setBadgeText({ text: "" });
-                localStorage.setItem('progress', -1)
-
-                user.transactions[url].count = calcCount
-                user.transactions[url].status = "onGoing"
-                localStorage.setItem('user', JSON.stringify(user))
-            }
-
-
-            // console.log("key:" + authorKey + "url:" + url + "title:" + title + "user:" + user + "wallet:" + wallet + 'actualcount' + actualCount)
-
-        }
-
-
-    }
-}
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         chrome.browserAction.setIcon({ path: "./logo/logo-base.png" });
@@ -143,13 +16,13 @@ chrome.runtime.onMessage.addListener(
         const url = request.payload[1]
         const title = request.payload[2]
         const img = request.payload[3]
-        const onApp = request.payload[5]
         let artToSend
-        setTimeout(() => {
-            //console.log(request.payload, localStorage.getItem("extensionOpened"))
-            if (!onApp) {
-                localStorage.setItem('authorkey', authorKey);
-                localStorage.setItem('url', url);
+        if (authorKey) {
+            localStorage.setItem('authorkey', authorKey);
+            localStorage.setItem('url', url);
+            setTimeout(() => {
+                //console.log(request.payload, localStorage.getItem("extensionOpened"))
+
                 console.log(request.payload)
 
                 if (request.payload[4]) {
@@ -163,7 +36,7 @@ chrome.runtime.onMessage.addListener(
                     bakingContent(authorKey, url, title, img, artToSend)
 
 
-                } else if (request.payload[5]) {
+                } else if (request.payload[5] && JSON.parse(localStorage.getItem('"' + url + '"'))) {
                     // console.log("dep")
 
                     let artTempStop = JSON.parse(localStorage.getItem('"' + url + '"'))
@@ -173,23 +46,148 @@ chrome.runtime.onMessage.addListener(
                     bakingContent(authorKey, url, title, img, artToSend)
 
                 }
-            }
 
-        }, 1000);
 
+            }, 1000);
+        } else {
+            localStorage.removeItem("inProgress");
+
+            chrome.browserAction.setIcon({ path: "./logo/logo-base.png" });
+            chrome.browserAction.setBadgeText({ text: "" });
+            localStorage.setItem('authorkey', "nope");
+            localStorage.setItem('url', "nope");
+            localStorage.setItem('progress', "nope");
+        }
 
     })
 
+async function bakingContent(authorKey, url, title, img, artToSend) {
+
+
+    //localStorage.setItem('authorkey', authorKey)
+    const user = JSON.parse(localStorage.getItem("user"))
+        //console.log(user)
+    var wallet = user.wallet.status;
+    authKey = authorKey
+    const userKey = user.authorKey
+    if (wallet === "active" && userKey != authKey) {
+        localStorage.setItem('"' + url + '"', JSON.stringify(artToSend))
+
+        const transactions = user.transactions ? user.transactions : null
+        const transaction = transactions ? transactions[url] : null
+
+        const attCounter = user.wallet.Attcounter
+        const onGoingArticle = {
+                count: attCounter,
+                authorKey: authKey,
+                status: 'onGoing'
+            }
+            // console.log(transactions, transaction)
+        let actualCount = transaction ? transaction.count : onGoingArticle.count
+            //console.log(artToSend, actualCount)
+        if (artToSend && artToSend.startTime && artToSend.stopTime === null) {
+            if (!transactions) {
+                user.transactions = {}
+
+            }
+            if (!transaction) {
+                let art = url
+                user.transactions[url] = onGoingArticle
+                    //console.log(user)
+                localStorage.setItem('user', JSON.stringify(user))
+
+            }
+            //console.log(actualCount)
+
+            if (actualCount >= 0) {
+
+
+                let interval = setInterval(function() {
+                    let badgeCount = actualCount.toString()
+                        // var path = './logo/image (' + badgeCount + ').png';
+                        //chrome.browserAction.setIcon({ path: path });
+                    chrome.browserAction.setBadgeText({ text: badgeCount });
+                    localStorage.setItem('progress', actualCount)
+
+                    actualCount--
+                    if (actualCount <= 0 && user.transactions[url].status != "paid") {
+                        chrome.browserAction.setBadgeText({ text: "<3" });
+                        updateCount(-1, 'paid', user.uid, url, authorKey)
+                        user.transactions[url].count = -1
+                        user.transactions[url].status = "paid"
+                        localStorage.setItem('user', JSON.stringify(user))
+                        localStorage.setItem('progress', 'paid')
+
+                        saveTransaction(authKey, url, user.uid, img, title)
+                        clearInterval(interval)
+                    }
+                }, 1000)
+                chrome.runtime.onMessage.addListener(
+                    function(request, sender, sendResponse, event) {
+                        //console.log('onMessage', request.payload)
+                        /*   localStorage.setItem('authorkey', "nope");
+                          localStorage.setItem('url', "nope");
+                          localStorage.setItem('progress', "nope"); */
+                        localStorage.setItem('lastProgress', actualCount);
+                        localStorage.setItem('lastUrl', url);
+                        localStorage.setItem('lastAuthKey', authKey);
+                        localStorage.setItem('lastTitle', title);
+                        localStorage.setItem('lastImg', img);
+                        updateCount(actualCount, 'onGoing', user.uid, url, authorKey)
+
+                        localStorage.setItem('lastProgress', actualCount);
+                        //console.log(chrome.tabs.tabMutednfo)
+                        user.transactions[url].count = actualCount
+                        user.transactions[url].status = "onGoing"
+                        localStorage.setItem('user', JSON.stringify(user))
+                            //event.preventDefault();
+                        clearInterval(interval);
+
+
+
+                    })
+
+
+
+
+            } else {
+                chrome.browserAction.setBadgeText({ text: "<3" });
+                localStorage.removeItem('"' + url + '"')
+
+            }
+        } else if (artToSend.stopTime !== null && artToSend.startTime && (transaction.status != 'paid' || !transaction)) {
+            localStorage.removeItem('"' + url + '"')
+            localStorage.removeItem('inProgress')
+                /*    localStorage.setItem('authorkey', "nope");
+                   localStorage.setItem('url', "nope"); */
+            localStorage.setItem('progress', "paid");
+            let calcTimeprime = (artToSend.stopTime - artToSend.startTime) / 1000
+            let calcTime = Math.floor(calcTimeprime)
+            let calcCount = actualCount - calcTime
+                //console.log(artToSend.stopTime, artToSend.startTime, calcTime, calcCount)
+            updateCount(calcCount, 'onGoing', user.uid, url, authorKey)
+            chrome.browserAction.setIcon({ path: "./logo/logo-base.png" });
+            chrome.browserAction.setBadgeText({ text: "" });
+            localStorage.setItem('progress', -1)
+
+            user.transactions[url].count = calcCount
+            user.transactions[url].status = "onGoing"
+            localStorage.setItem('user', JSON.stringify(user))
+        }
+    }
+
+}
+
+
 chrome.tabs.onHighlighted.addListener(function(tabId, changeInfo, tab) {
-    // console.log(localStorage.getItem("extensionOpened"))
     console.log("onHighlightedout")
     localStorage.removeItem("inProgress");
 
     chrome.browserAction.setIcon({ path: "./logo/logo-base.png" });
     chrome.browserAction.setBadgeText({ text: "" });
-    localStorage.setItem('authorkey', null);
-    localStorage.setItem('url', null);
-    localStorage.setItem('progress', null);
+    /*  localStorage.setItem('authorkey', "nope");
+     localStorage.setItem('url', "nope");
+     localStorage.setItem('progress', "nope"); */
     chrome.tabs.executeScript(null, {
         "file": "content.js"
     });
@@ -198,20 +196,6 @@ chrome.tabs.onHighlighted.addListener(function(tabId, changeInfo, tab) {
 });
 
 
-/* chrome.windows.onFocusChanged.addListener(function(window) {
-    console.log(localStorage.getItem("extensionOpened"))
-
-    chrome.browserAction.setIcon({ path: "./logo/logo-base.png" });
-    chrome.browserAction.setBadgeText({ text: "" });
-    localStorage.setItem('authorkey', null);
-    localStorage.setItem('url', null);
-    localStorage.setItem('progress', null);
-    chrome.tabs.executeScript(null, {
-        "file": "content.js"
-    });
-
-
-}) */
 chrome.windows.onRemoved.addListener((window) => {
     //console.log('removed')
     localStorage.clear();
@@ -271,10 +255,3 @@ chrome.runtime.onConnect.addListener(function(port) {
 
     })
 })
-chrome.runtime.onSuspend.addListener(function() {
-        console.log('suspend')
-    })
-    /*
-    chrome.Port.onDisconnect.addListener(function(port) {
-        console.log(port)
-    }) */

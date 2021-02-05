@@ -2,7 +2,7 @@ import * as blackhole from '/js/blackhole.js';
 import * as setUser from '/js/setUser.js';
 import * as setAuthor from '/js/setAuthor.js';
 
-setTimeout(getContent(), 500);
+setTimeout(getContent(), 1000);
 var tz = moment.tz.guess(true);
 
 
@@ -12,7 +12,7 @@ async function getContent() {
     const author = await setAuthor.getAuthorDetails(keyzz, rulzzz)
     const user = JSON.parse(localStorage.getItem('user'))
     const userId = user.uid
-    const progress = JSON.parse(localStorage.getItem('progress'))
+    const progress = JSON.parse(localStorage.getItem('lastProgress'))
     const userCom = author.comments[userId] ? author.comments[userId] : null
     const userComdate = userCom ? moment.tz(userCom.date.substring(1, 25), tz).fromNow() : null
     const comoners = Object.keys(author.transactions[rulzzz].cTransactions) ? Object.keys(author.transactions[rulzzz].cTransactions).length : 0
@@ -35,18 +35,18 @@ async function getContent() {
     if (user.wallet) {
         $('#wallet-on').show();
         $('#wallet-off').hide();
-        let progress = localStorage.getItem('progress')
-
+        let progress = JSON.parse(localStorage.getItem('progress'))
+        console.log(progress)
         if (progress > 0) {
             setInterval(function() {
                 $('#statut-transaction').html(
-                    '<p>CoMonZ dropped in :<br>' + progress - 2 + ' seconds</p>'
+                    '<p>CoMonZ dropped in :<br>' + (parseInt(progress) - 1) + ' seconds</p>'
                 );
                 progress--
             }, 1000);
         }
 
-        if ((progress >= -1 && !userCom)) {
+        if ((progress >= -1 || progress == "nope") && !userCom) {
             $('#vcomment').hide();
             for (var i = 0; i < editables.length; i++) {
                 (function(index) {
@@ -65,15 +65,16 @@ async function getContent() {
                 })(i);
             }
         }
-        if (progress === -1) {
+        if (progress == -1 || progress == "nope") {
             for (var i = 0; i < editables.length; i++) {
                 (function(index) {
                     editables[index].addEventListener('input', function() {
+                        console.log('edit')
                         if ($('#comment').html().length > 4 && progress > 0) {
                             $('#vcomment').show();
                             $('#vcomment').prop('disabled', true)
                             $('#vcomment').text('No room for Trollz')
-                        } else if ($('#comment').html().length > 4 && progress === -1) {
+                        } else if ($('#comment').html().length > 4 && (progress == -1 || progress == "nope")) {
                             $('#vcomment').show();
                             $('#vcomment').prop('disabled', false)
                             $('#vcomment').text('Express your feelings')

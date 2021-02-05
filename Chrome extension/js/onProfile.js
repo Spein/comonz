@@ -9,7 +9,7 @@ import * as lists from '/js/lists.js';
 
 
 
-
+//alert("profile.launch")
 document.getElementById("saveButton").addEventListener('click', userInfo.writeUserData, false);
 
 

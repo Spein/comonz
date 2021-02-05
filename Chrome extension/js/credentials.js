@@ -15,15 +15,25 @@ export async function displayView(user) {
 
     //console.log(currentUser)
     const authorKey = localStorage.getItem('authorkey')
-    if (authorKey == "null" || !authorKey) {
+    const url = localStorage.getItem('url')
+    console.log(authorKey, url)
+    if (authorKey == "nope" || url == "nope") {
         console.log('profile loaded')
-        $("#container").load("profile.html")
-
+        $("#container").load("onProfile.html", function(data) {
+            var scripts = $(data).find("script");
+            console.log(scripts.prevObject[2].outerHTML)
+            if ($(this).attr("src")) {
+                console.log('li')
+                $.getScript($(this).attr("src"));
+            } else {
+                eval($(this).html());
+                console.log('la')
+            }
+        });
 
     } else {
-        localStorage.setItem("extensionOpened", true)
-        console.log('content loaded', localStorage.getItem('extensionOpened'));
-        $('#container').load('onContent.html');
+
+        $("#container").load("onContent.html")
     }
 
 
