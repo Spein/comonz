@@ -14,7 +14,7 @@ request.onreadystatechange = function() {
 
     var elementOfInterest = document.getElementsByTagName('comonz') ? document.getElementsByTagName('comonz') : null
 
-    if (request.readyState == 4 && elementOfInterest.length > 0) {
+    if (request.readyState == 4 && elementOfInterest.length > 0 && !window.location.href.includes("chrome://")) {
         key = elementOfInterest[0].id;
 
         if (request.responseText.includes(key)) {
@@ -53,11 +53,8 @@ request.onreadystatechange = function() {
 
 
             }
-            window.onclick = e => {
-                    console.log(e.target); // to get the element
-                    console.log(e.target.tagName); // to get the element tag name alone
-                }
-                //console.log(key)
+
+            //console.log(key)
 
             window.onfocus = function() {
                 console.log(key)

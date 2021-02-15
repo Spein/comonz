@@ -195,7 +195,7 @@ $(document).ready(function() {
 })
 export function load() {
     let user = JSON.parse(localStorage.getItem('user'))
-        //console.log(user)
+    console.log(user)
     fillFields(user)
     checkSupport()
 }

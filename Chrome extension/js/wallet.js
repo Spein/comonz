@@ -1,6 +1,5 @@
 import * as blackhole from '/js/blackhole.js';
 import * as lists from '/js/lists.js';
-import * as setUser from '/js/setUser.js';
 
 moment();
 export function checkWallet() {

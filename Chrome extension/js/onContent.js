@@ -2,6 +2,7 @@ import * as blackhole from '/js/blackhole.js';
 import * as setUser from '/js/setUser.js';
 import * as setAuthor from '/js/setAuthor.js';
 
+
 setTimeout(getContent(), 1000);
 var tz = moment.tz.guess(true);
 
@@ -11,8 +12,10 @@ async function getContent() {
     const rulzzz = await setAuthor.getUrl()
     const author = await setAuthor.getAuthorDetails(keyzz, rulzzz)
     const user = JSON.parse(localStorage.getItem('user'))
+
     const userId = user.uid
-    const progress = JSON.parse(localStorage.getItem('lastProgress'))
+    let progress = JSON.parse(localStorage.getItem('lastProgress'))
+    localStorage.removeItem('lastProgress')
     const userCom = author.comments[userId] ? author.comments[userId] : null
     const userComdate = userCom ? moment.tz(userCom.date.substring(1, 25), tz).fromNow() : null
     const comoners = Object.keys(author.transactions[rulzzz].cTransactions) ? Object.keys(author.transactions[rulzzz].cTransactions).length : 0
@@ -33,20 +36,25 @@ async function getContent() {
 
 
     if (user.wallet) {
+        localStorage.setItem("sentImg", author.content.img)
+        localStorage.setItem("sentUrl", rulzzz)
+        localStorage.setItem("sentTitle", author.content.title)
+        localStorage.setItem("sentKey", keyzz)
+
         $('#wallet-on').show();
         $('#wallet-off').hide();
-        let progress = JSON.parse(localStorage.getItem('progress'))
-        console.log(progress)
         if (progress > 0) {
             setInterval(function() {
                 $('#statut-transaction').html(
                     '<p>CoMonZ dropped in :<br>' + (parseInt(progress) - 1) + ' seconds</p>'
                 );
                 progress--
+                localStorage.setItem("sentProgress", progress)
+
             }, 1000);
         }
 
-        if ((progress >= -1 || progress == "nope") && !userCom) {
+        if ((progress >= -1 || !progress) && !userCom) {
             $('#vcomment').hide();
             for (var i = 0; i < editables.length; i++) {
                 (function(index) {
@@ -65,7 +73,7 @@ async function getContent() {
                 })(i);
             }
         }
-        if (progress == -1 || progress == "nope") {
+        if (progress == -1 || !progress) {
             for (var i = 0; i < editables.length; i++) {
                 (function(index) {
                     editables[index].addEventListener('input', function() {
@@ -74,7 +82,7 @@ async function getContent() {
                             $('#vcomment').show();
                             $('#vcomment').prop('disabled', true)
                             $('#vcomment').text('No room for Trollz')
-                        } else if ($('#comment').html().length > 4 && (progress == -1 || progress == "nope")) {
+                        } else if ($('#comment').html().length > 4 && (progress == -1 || !progress)) {
                             $('#vcomment').show();
                             $('#vcomment').prop('disabled', false)
                             $('#vcomment').text('Express your feelings')

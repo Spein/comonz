@@ -14,22 +14,12 @@ firebase.initializeApp(config);
 export async function displayView(user) {
 
     //console.log(currentUser)
-    const authorKey = localStorage.getItem('authorkey')
-    const url = localStorage.getItem('url')
+    const authorKey = localStorage.getItem('authorkey') ? localStorage.getItem('authorkey') : null
+    const url = localStorage.getItem('url') ? localStorage.getItem('url') : null
     console.log(authorKey, url)
-    if (authorKey == "nope" || url == "nope") {
+    if (!authorKey || !url) {
         console.log('profile loaded')
-        $("#container").load("onProfile.html", function(data) {
-            var scripts = $(data).find("script");
-            console.log(scripts.prevObject[2].outerHTML)
-            if ($(this).attr("src")) {
-                console.log('li')
-                $.getScript($(this).attr("src"));
-            } else {
-                eval($(this).html());
-                console.log('la')
-            }
-        });
+        $("#container").load("onProfile.html")
 
     } else {
 
@@ -66,9 +56,8 @@ function delayLoad(currentUser, userId) {
         resolve('resolved')
     })
 }
+initApp();
 
-window.onload = function() {
-    initApp();
-};
+window.onload = function() {};
 /* document.getElementById("test").addEventListener("click", youtube, false)
     document.getElementById("test2").addEventListener("click", authenticatedXhr, false) */
