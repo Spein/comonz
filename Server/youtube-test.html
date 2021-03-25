@@ -1,0 +1,86 @@
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<style type="text/css">
+    .containeur {
+        display: flex;
+        flex-direction: column;
+    }
+</style>
+<div class="selector-row">
+    <select class="selectors" id="natio">
+        <option value="belge">Belge</option>
+        <option value="UE">UE</option>
+        <option value="HUE">Hors Union Européenne</option>
+    </select>
+    <select class="selectors" id="diplo">
+        <option value="belge">Belge</option>
+        <option value="HUE">Hors Union Européenne</option>
+    </select>
+    <select class="selectors" id="progr">
+        <option value="BA">Bachelier</option>
+        <option value="MA">Master</option>
+        <option value="MS">Master de spécialisation</option>
+        <option value="2A">Agrégation et CAPAES</option>
+        <option value="DOC">Doctorat et Formation doctorale</option>
+        <option value="9CE">Certificat</option>
+
+    </select>
+</div>
+<div id="content-container">
+
+</div>
+
+
+
+<script>
+    $(document).ready(function() {
+
+        //============================== COUNTER-UP =========================
+
+        $(".bouton ").click(function() {
+            console.log("you ")
+            $('.table-column[data-section]').hide();
+            var sectiontoshow = $(this).attr("data-section ");
+            $("[data-section*='" + sectiontoshow + "' ] ").show();
+
+        });
+    })
+    var filter = {
+        natio: 'BE',
+        diplo: 'HUE',
+        grade: 'BA',
+        content: "<div>lorem</div>"
+    };
+    var users = [{
+        natio: 'BE',
+        diplo: 'HUE BA',
+        grade: 'BA',
+        content: "lorem"
+
+    }, {
+        natio: 'BE',
+        diplo: 'HUE',
+        grade: 'BA',
+        content: "lorem"
+    }, {
+        natio: 'BE',
+        diplo: 'HUE',
+        grade: 'BA',
+        content: "lorem"
+
+    }];
+
+    users = users.filter(function(item) {
+        for (var key in filter) {
+            console.log(item[key].includes(filter[key]))
+            if (!item[key].includes(filter[key])) {
+                return false;
+            }
+        }
+        return true;
+    });
+    users.forEach(user => {
+        document.querySelector('#content-container').innerHTML += user.content
+        console.log(user)
+
+    })
+</script>

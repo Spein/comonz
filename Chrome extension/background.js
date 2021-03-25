@@ -9,7 +9,7 @@ var config = {
 firebase.initializeApp(config);
 let authKey
 chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
+    async function(request, sender, sendResponse) {
         localStorage.removeItem('sentImg')
         localStorage.removeItem('sentTitle')
         localStorage.removeItem('sentUrl')
@@ -20,13 +20,19 @@ chrome.runtime.onMessage.addListener(
 
         chrome.browserAction.setIcon({ path: "./logo/logo-base.png" });
         chrome.browserAction.setBadgeText({ text: "" });
+        const user = JSON.parse(localStorage.getItem("user"))
 
-        const authorKey = request.payload[0]
         const url = request.payload[1]
         const title = request.payload[2]
         const img = request.payload[3]
+        let partnerUrls = await firebase.database().ref('/partners/' + url).once('value').then(function(data) { return data.val() })
+        console.log(partnerUrls)
         let artToSend
-        if (authorKey) {
+        if (request.payload[0] || partnerUrls) {
+
+            const authorKey = request.payload[0] ? request.payload[0] : partnerUrls.key
+            saveTransaction(authorKey, url, user.uid, img, title)
+
             localStorage.setItem('authorkey', authorKey);
             localStorage.setItem('url', url);
 
@@ -84,7 +90,7 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
 
         const transactions = user.transactions ? user.transactions : null
         const transaction = transactions ? transactions[url] : null
-
+        console.log(transaction)
         const attCounter = user.wallet.Attcounter
         const onGoingArticle = {
                 count: attCounter,
@@ -106,7 +112,7 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
                 localStorage.setItem('user', JSON.stringify(user))
 
             }
-            //console.log(actualCount)
+            console.log(transaction, onGoingArticle, actualCount)
 
             if (actualCount >= 0) {
 
@@ -166,8 +172,6 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
 
 chrome.tabs.onHighlighted.addListener(function(tabId, changeInfo, tab) {
     console.log("onHighlightedout")
-
-
     localStorage.removeItem('lastProgress')
     localStorage.removeItem('authorkey');
     localStorage.removeItem('url');
@@ -181,11 +185,11 @@ chrome.tabs.onHighlighted.addListener(function(tabId, changeInfo, tab) {
 
 });
 
-
+/* 
 chrome.windows.onRemoved.addListener((window) => {
     localStorage.clear();
 
-})
+}) */
 
 
 function updateCount(progress, status, userId, url, authorKey) {

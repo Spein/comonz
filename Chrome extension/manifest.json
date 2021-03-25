@@ -22,18 +22,23 @@
         "http://*/*",
         "https://*/*",
         "webNavigation",
-        "chrome://new-tab-page/",
         "http://localhost/*"
 
 
     ],
+    "web_accessible_resources": [
+        "js/firebase/firebase-app.js"
+    ],
     "content_scripts": [{
         "matches": ["http://*/*", "https://*/*"],
-        "js": ["content.js", "js/jquery.js", "js/rangeslider.min.js", "js/paypal.js", "js/fontAwesome.js", "js/underscore-min.js", "js/signin.js", "js/onProfile.js", "js/setUser.js", "js/onContent.js", "js/moment.js"],
+        "js": ["content.js", "js/jquery.js", "js/jsrsasign-all-min.js", "js/rangeslider.min.js", "js/paypal.js", "js/fontAwesome.js", "js/underscore-min.js", "js/signin.js",
+            "js/onProfile.js", "js/setUser.js", "js/onContent.js", "js/moment.js", "js/firebase/firebase-app.js",
+            "js/firebase/firebase-database.js", "js/firebase/firebase-storage.js", "js/moment.js"
+        ],
         "run_at": "document_start"
     }],
 
-    "content_security_policy": "script-src 'self' 'unsafe-eval' https://kit.fontawesome.com/ https://www.youtube.com/* https://www.sandbox.paypal.com/ https://www.paypal.com/* https://apis.google.com/ https://www.gstatic.com/ https://*.firebaseio.com https://*.paypal.com/ https://www.googleapis.com/* 'sha256-7nnKyr+RUZ9a44Hg3lYwjgkUx5VyFQwv2ZUhVw6N7J4=' ; object-src 'self'",
+    "content_security_policy": "script-src 'self' https://kit.fontawesome.com/ https://www.youtube.com/* https://www.sandbox.paypal.com/ https://www.paypal.com/*  script-src-elem 'sha256-6wRdeNJzEHNIsDAMAdKbdVLWIqu8b6+Bs+xVNZqplQw=' https://apis.google.com/* https://apis.google.com/ https://www.gstatic.com/ https://*.firebaseio.com https://*.paypal.com/ https://www.googleapis.com/* ' ; object-src 'self'",
     "oauth2": {
         "client_id": "1059781682708-dkrha4ebhj2tp1k99qtmm4g45i52us22.apps.googleusercontent.com",
         "scopes": [

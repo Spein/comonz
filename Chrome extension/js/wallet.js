@@ -135,9 +135,36 @@ export async function saveWallet() {
     console.log(parseInt($('input[name="participants"]').val()))
     let user = JSON.parse(localStorage.getItem('user'))
     $('#btns-wallet').hide();
-    $('#transactions-sent').hide();
-    $('#footer-sent').hide();
+    //$('#transactions-sent').hide();
+    //$('#footer-sent').hide();
     $('#paypal-button-container').html('');
+    var startDate = new Date();
+    var endDate = moment(new Date()).add(1, 'month');
+
+    var parsedStartDate = JSON.stringify(startDate);
+    var parsedEndDate = JSON.stringify(endDate);
+    let wallet = {
+        amount: $('#wallet-amount').html() / 10,
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
+        status: 'active',
+        Attcounter: parseInt($('input[name="participants"]').val())
+    }
+
+    user.wallet = wallet
+
+    /*    window.location.replace('http://spein0ps.com/sandbox/cmz-site/checkout')
+       chrome.tabs.query({ currentWindow: true, active: true }, function(tabs) {
+               console.log(tabs)
+               chrome.tabs.update(tabs[0].id, { url: 'http://spein0ps.com/sandbox/cmz-site/checkout' });
+               setTimeout(() => {
+                   chrome.tabs.sendMessage(tabs[0].id, { user }, function(response) {
+                       console.log('response.farewell');
+                   })
+               }, 1000)
+
+
+           }) */
     paypal
         .Buttons({
             // Set up the transaction

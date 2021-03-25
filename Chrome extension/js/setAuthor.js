@@ -32,18 +32,21 @@ export function getAuthorDetails(commonzkey, url) {
                 author.content.img = author.transactions[url].img
 
                 author.comments = author.transactions[url].comments ? author.transactions[url].comments : null
-                Object.keys(author.comments).forEach((userId, index) => {
-                    firebase
-                        .database()
-                        .ref('users/' + userId)
-                        .once('value')
-                        .then(function(userData) {
-                            let user = userData.val()
-                            author.comments[userId].photoURL = user.photoURL
-                            author.comments[userId].displayName = user.displayName
+                if (author.comments) {
+                    Object.keys(author.comments).forEach((userId, index) => {
+                        firebase
+                            .database()
+                            .ref('users/' + userId)
+                            .once('value')
+                            .then(function(userData) {
+                                let user = userData.val()
+                                author.comments[userId].photoURL = user.photoURL
+                                author.comments[userId].displayName = user.displayName
 
-                        })
-                })
+                            })
+                    })
+                }
+
                 firebase
                     .database()
                     .ref('/users/' + data.val().authorId)

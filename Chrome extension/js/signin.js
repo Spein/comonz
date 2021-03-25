@@ -10,12 +10,12 @@ function signUp(email, displayName, password) {
     var description = $("#description").val();
     firebase.auth().createUserWithEmailAndPassword(email, password)
 
-    .then(function(user) {
+    .then(function(data) {
             setUser.createBlob()
                 .then((blob) => {
-                    -setUser.storeImage(user, blob).then((url) => {
+                    -setUser.storeImage(data.user, blob).then((url) => {
                         const RegisteredUser = {
-                            uid: user.user.uid,
+                            uid: data.user.uid,
                             email: email,
                             description: description,
                             displayName: displayName,
@@ -25,7 +25,7 @@ function signUp(email, displayName, password) {
                             authorDetails: null
 
                         }
-                        firebase.database().ref('users/' + user.user.uid).set(RegisteredUser)
+                        firebase.database().ref('users/' + data.user.uid).set(RegisteredUser)
                         localStorage.setItem('user', JSON.stringify(RegisteredUser))
                     });
                 })
@@ -44,7 +44,6 @@ function signIn() {
     var email = $("#emails").val();
     var password = $("#passwords").val();
     firebase.auth().signInWithEmailAndPassword(email, password)
-        .then((user) => {})
 
     .catch(function(error) {
         // Handle Errors here.

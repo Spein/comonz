@@ -1,5 +1,3 @@
-import * as setUser from '/js/setUser.js';
-
 var config = {
     apiKey: 'AIzaSyAdxBw7BVvGgtp0PliC5y_xXPfv35nDEuw',
     authDomain: 'pressformore-c0045.firebaseapp.com',
@@ -10,13 +8,14 @@ var config = {
 };
 
 firebase.initializeApp(config);
+import * as setUser from '/js/setUser.js';
 
-export async function displayView(user) {
+export async function displayView() {
 
     //console.log(currentUser)
     const authorKey = localStorage.getItem('authorkey') ? localStorage.getItem('authorkey') : null
     const url = localStorage.getItem('url') ? localStorage.getItem('url') : null
-    console.log(authorKey, url)
+        //console.log(authorKey, url)
     if (!authorKey || !url) {
         console.log('profile loaded')
         $("#container").load("onProfile.html")
@@ -26,18 +25,36 @@ export async function displayView(user) {
         $("#container").load("onContent.html")
     }
 
-
-
-
 }
+
+
 
 function initApp() {
     firebase.auth().onAuthStateChanged(async function(user) {
         if (user) {
-            let currentUser = await firebase.database().ref('/users/' + user.uid).once('value').then(function(snapshot) { return snapshot.val() })
-                //console.log(user)
-            delayLoad(currentUser, user.uid).then(displayView(user))
+
+            //console.log(user)
+            if (!localStorage.getItem('user')) {
+                console.log("firebase loading with")
+                setUser.setUser(user.uid)
+                    .then(
+                        console.log("storage loaded"),
+                        displayView())
+                    /*      firebase.database().ref('/users/' + firebase.auth().currentUser.uid).once('value').then(function(snapshot) {
+                             let currentUser = snapshot.val()
+                             localStorage.setItem('user', JSON.stringify(currentUser))
+                             window.addEventListener('storage', () => {
+                            
+                             });
+                         }) */
+
+            } else {
+                displayView()
+            }
+
         } else {
+            console.log("signed out")
+
             $('#container').load('sign-in.html');
             localStorage.clear();
         }
@@ -47,17 +64,30 @@ function initApp() {
     });
 }
 
-function delayLoad(currentUser, userId) {
-    return new Promise(function(resolve, reject) {
-        currentUser.uid = userId
-        console.log(currentUser)
-        localStorage.setItem('user', JSON.stringify(currentUser))
+/* function delayLoad(currentUser) {
+    console.log(currentUser)
+    if (localStorage.getItem('user')) {
+        displayView()
 
-        resolve('resolved')
-    })
-}
+    } else {
+        firebase.database().ref('/users/' + currentUser).once('value').then(function(snapshot) {
+
+            if (snapshot.val()) {
+
+                localStorage.setItem('user', JSON.stringify(snapshot.val()))
+                displayView()
+
+            } else {
+                setTimeout(() => {
+                    firebase.database().ref('/users/' + currentUser).once('value').then(function(snapshot) {
+
+                        localStorage.setItem('user', JSON.stringify(snapshot.val()))
+                        displayView()
+                    })
+                }, 1000)
+            }
+        })
+    }
+
+} */
 initApp();
-
-window.onload = function() {};
-/* document.getElementById("test").addEventListener("click", youtube, false)
-    document.getElementById("test2").addEventListener("click", authenticatedXhr, false) */

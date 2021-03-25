@@ -1,28 +1,7 @@
 import * as blackhole from '/js/blackhole.js';
 
 
-export function firstCheck() {
-    $("#blackhole").html("")
-    $("#profile-header").hide()
-    $("#wallet-header").hide()
-    $("#transaction-header").show()
-    let user = JSON.parse(localStorage.getItem('user'))
 
-    let walletStatus = user.wallet ? user.wallet.status : null
-    if (walletStatus) {
-        $("#need-wallet").hide()
-        checkAuthor()
-
-    } else {
-        $("#need-wallet").show()
-        $("#commoners").hide()
-        $("#wallet-amount").html(0)
-
-
-    }
-
-
-}
 
 export async function checkAuthor() {
     let div = document.getElementById("transactions-received")
@@ -171,8 +150,189 @@ export function alertValidIBAN2(iban) {
 document.getElementById("check-iban2").addEventListener('click', alertValidIBAN2, false);
 document.getElementById("change-bacc").addEventListener('click', function() { $("#verify-change").show() }, false);
 
+
+
+
+
+
+const CLIENT_ID = encodeURIComponent("abv95m8uf91b58co99j59e6awbdte9");
+const REDIRECT_URI = encodeURIComponent("https://mkllogkjoeagnkekfllenflkemkfddef.chromiumapp.org/");
+const RESPONSE_TYPE = encodeURIComponent("token id_token");
+const SCOPE = encodeURIComponent("openid");
+const CLAIMS = encodeURIComponent(
+    JSON.stringify({
+        id_token: { email: null, email_verified: null }
+    })
+);
+const STATE = encodeURIComponent('meet' + Math.random().toString(36).substring(2, 15));
+
+let user_signed_in = false;
+let ACCESS_TOKEN = null;
+let interval_id = null;
+
+function create_twitch_endpoint() {
+    let nonce = encodeURIComponent(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15));
+
+    let openid_url =
+        `https://id.twitch.tv/oauth2/authorize
+?client_id=${CLIENT_ID}
+&redirect_uri=${REDIRECT_URI}
+&response_type=${RESPONSE_TYPE}
+&scope=${SCOPE}
+&claims=${CLAIMS}
+&state=${STATE}
+&nonce=${nonce}
+`;
+
+    return openid_url;
+}
+
+
+function logtoTwitch() {
+    chrome.identity.launchWebAuthFlow({
+        url: create_twitch_endpoint(),
+        interactive: true
+    }, function(redirect_url) {
+        console.log(redirect_url)
+        if (chrome.runtime.lastError || redirect_url.includes('error=access_denied')) {
+            sendResponse({ message: 'fail' });
+        } else {
+            let id_token = redirect_url.substring(redirect_url.indexOf('id_token=') + 9);
+            id_token = id_token.substring(0, id_token.indexOf('&'));
+            ACCESS_TOKEN = redirect_url.substring(redirect_url.indexOf('access_token=') + 13);
+            ACCESS_TOKEN = ACCESS_TOKEN.substring(0, ACCESS_TOKEN.indexOf('&'));
+            const user_info = KJUR.jws.JWS.readSafeJSONString(b64utoutf8(id_token.split(".")[1]));
+
+            if (user_info.iss === 'https://id.twitch.tv/oauth2' && user_info.aud === CLIENT_ID) {
+                user_signed_in = true;
+
+                interval_id = setInterval(() => {
+                    fetch('https://id.twitch.tv/oauth2/validate', {
+                            headers: {
+                                'Authorization': 'OAuth ' + ACCESS_TOKEN
+                            }
+                        })
+                        .then(res => {
+                            console.log(res.status)
+                            if (res.status === 401) {
+                                user_signed_in = false;
+                                clearInterval(interval_id);
+                            }
+                        })
+                        .catch(err => console.log(err))
+                }, 3600000);
+
+                /*  chrome.browserAction.setPopup({ popup: "./popup-signed-in.html" }, () => {
+                     sendResponse({ message: "success" });
+                 }); */
+            }
+        }
+    });
+}
+document.getElementById("login-Twitch").addEventListener('click', logtoTwitch, false);
+
+
+
+/* var GoogleAuth; // Google Auth object.
+function logtoYoutube() {
+    gapi.client.init({
+        'apiKey': 'mkllogkjoeagnkekfllenflkemkfddef',
+        'clientId': '1059781682708-dkrha4ebhj2tp1k99qtmm4g45i52us22.apps.googleusercontent.com',
+        'scope': 'https://www.googleapis.com/auth/youtube.upload',
+        'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest']
+    }).then(function() {
+        GoogleAuth = gapi.auth2.getAuthInstance();
+
+        // Listen for sign-in state changes.
+        GoogleAuth.isSignedIn.listen(updateSigninStatus);
+    });
+} */
+
+/* var GoogleAuth;
+var SCOPEYT = 'https://www.googleapis.com/auth/youtube.force-ssl';
+
+function handleClientLoad() {
+    // Load the API's client and auth2 modules.
+    // Call the initClient function after the modules load.
+    gapi.load('client:auth2', initClient);
+}
+
+function initClient() {
+    // In practice, your app can retrieve one or more discovery documents.
+    var discoveryUrl = 'https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest';
+
+    // Initialize the gapi.client object, which app uses to make API requests.
+    // Get API key and client ID from API Console.
+    // 'scope' field specifies space-delimited list of access scopes.
+    gapi.client.init({
+        'apiKey': 'mkllogkjoeagnkekfllenflkemkfddef',
+        'clientId': '1059781682708-dkrha4ebhj2tp1k99qtmm4g45i52us22.apps.googleusercontent.com',
+        'discoveryDocs': [discoveryUrl],
+        'scope': SCOPEYT
+    }).then(function() {
+        GoogleAuth = gapi.auth2.getAuthInstance();
+
+        // Listen for sign-in state changes.
+        GoogleAuth.isSignedIn.listen(updateSigninStatus);
+
+        // Handle initial sign-in state. (Determine if user is already signed in.)
+        var user = GoogleAuth.currentUser.get();
+        setSigninStatus();
+
+        // Call handleAuthClick function when user clicks on
+        //      "Sign In/Authorize" button.
+        $('#sign-in-or-out-button').click(function() {
+            handleAuthClick();
+        });
+        $('#revoke-access-button').click(function() {
+            revokeAccess();
+        });
+    });
+}
+
+function handleAuthClick() {
+    if (GoogleAuth.isSignedIn.get()) {
+        // User is authorized and has clicked "Sign out" button.
+        GoogleAuth.signOut();
+    } else {
+        // User is not signed in. Start Google auth flow.
+        GoogleAuth.signIn();
+    }
+}
+
+function revokeAccess() {
+    GoogleAuth.disconnect();
+}
+
+function setSigninStatus() {
+    var user = GoogleAuth.currentUser.get();
+    var isAuthorized = user.hasGrantedScopes(SCOPEYT);
+    if (isAuthorized) {
+        $('#sign-in-or-out-button').html('Sign out');
+        $('#revoke-access-button').css('display', 'inline-block');
+        $('#auth-status').html('You are currently signed in and have granted ' +
+            'access to this app.');
+    } else {
+        $('#sign-in-or-out-button').html('Sign In/Authorize');
+        $('#revoke-access-button').css('display', 'none');
+        $('#auth-status').html('You have not authorized this app or you are ' +
+            'signed out.');
+    }
+}
+
+function updateSigninStatus() {
+    setSigninStatus();
+}
+initClient() */
+
+//document.getElementById("login-Youtube").addEventListener('click', initClient, false);
+
+document.getElementById("check-iban").addEventListener('click', alertValidIBAN, false);
+document.getElementById("create-author").addEventListener('click', createAuthor, false);
+
+
 export function isValidIBANNumber(input) {
-    let CODE_LENGTHS = {
+    var CODE_LENGTHS = {
         AD: 24,
         AE: 23,
         AT: 20,
@@ -253,9 +413,9 @@ export function isValidIBANNumber(input) {
 }
 
 function mod97(string) {
-    let checksum = string.slice(0, 2),
+    var checksum = string.slice(0, 2),
         fragment;
-    for (let offset = 2; offset < string.length; offset += 7) {
+    for (var offset = 2; offset < string.length; offset += 7) {
         fragment = String(checksum) + string.substring(offset, offset + 7);
         checksum = parseInt(fragment, 10) % 97;
     }

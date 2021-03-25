@@ -195,6 +195,18 @@
                         <h6> <i style="color:#d95555" class="fas fa-feather-alt"></i> You've just became a Creator!</h6>
                         <p style="font-size:12px">Your Creator Key: <span id="commons-key"></span></p>
                         <p> Please insert this tag in your productions </p>
+                        <div id="conectPlatform-row">
+                            <p>You can also directly link your content from these platforms </p>
+                            <div id='connectPlatform-items'>
+                                <span id="login-Twitch"><img src="http://assets.stickpng.com/thumbs/580b57fcd9996e24bc43c540.png" style="width:15vw" alt="" srcset=""></span>
+                                <span id="login-Youtube"><img src="https://www.mikeclintonbass.fr/wp-content/uploads/2020/05/kisspng-united-states-youtube-logo-youtube-play-button-transparent-png-5ab1be086f7ad8.8445158315215979604566.jpg" style="width:15vw" alt="" srcset=""></span>
+                                <button id="sign-in-or-out-button" style="margin-left: 25px">Sign In/Authorize</button>
+                                <button id="revoke-access-button" style="display: none; margin-left: 25px">Revoke access</button>
+
+                                <div id="auth-status" style="display: inline; padding-left: 25px"></div>
+                                <hr>
+                            </div>
+                        </div>
                         <p> We will transfer your coMonZ earnt every month to the following account:<br><span id="bank-account"></span></p>
                         <p style="color:#d95555;font-size: 10px;cursor: pointer;" id="change-bacc">Change your beneficiary account</p>
                         <div id="verify-change" style="display: none;">
@@ -249,5 +261,4 @@
 </div>
 
 </div>
-
-<script type="module" src="./js/onProfile.js"></script>
+<script type="module" src="./js/onProfile.js" defer></script>

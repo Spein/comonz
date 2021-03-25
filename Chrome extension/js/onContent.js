@@ -16,7 +16,7 @@ async function getContent() {
     const userId = user.uid
     let progress = JSON.parse(localStorage.getItem('lastProgress'))
     localStorage.removeItem('lastProgress')
-    const userCom = author.comments[userId] ? author.comments[userId] : null
+    const userCom = author.comments ? author.comments[userId] : null
     const userComdate = userCom ? moment.tz(userCom.date.substring(1, 25), tz).fromNow() : null
     const comoners = Object.keys(author.transactions[rulzzz].cTransactions) ? Object.keys(author.transactions[rulzzz].cTransactions).length : 0
     const comments = author.comments

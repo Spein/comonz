@@ -1,13 +1,14 @@
 import * as userInfo from '/js/userInfo.js';
 import * as wallet from '/js/wallet.js';
-import * as transaction from '/js/transactions.js';
 import * as setUser from '/js/setUser.js';
 import * as blackhole from '/js/blackhole.js';
+import * as transactions from '/js/transactions.js';
 
 import * as lists from '/js/lists.js';
 
 
 
+console.log('on')
 
 //alert("profile.launch")
 document.getElementById("saveButton").addEventListener('click', userInfo.writeUserData, false);
@@ -23,9 +24,6 @@ document.getElementById("wallet").addEventListener('click', wallet.checkWallet, 
 
 //tab transaction
 
-document.getElementById("transaction").addEventListener('click', transaction.firstCheck, false);
-document.getElementById("check-iban").addEventListener('click', transaction.alertValidIBAN, false);
-document.getElementById("create-author").addEventListener('click', transaction.createAuthor, false);
 
 //Paiements fait par l'utilisateur
 
@@ -35,7 +33,7 @@ document.getElementById("filterByAut").addEventListener('click', lists.getSendPa
 
 //Tous les paiements historisés
 
-document.getElementById("rfilterByHist").addEventListener('click', transaction.checkAuthor, false);
+document.getElementById("rfilterByHist").addEventListener('click', transactions.checkAuthor, false);
 
 // Paiements totaux par contenus
 
@@ -71,26 +69,48 @@ function logout() {
 }
 
 //Add style to tabs
-function styledTabs() {
-    setUser.retrieveUser()
-        .then((user) => {
-            //console.log(user)
-            if (!user.wallet) {
-                $("#wallet").addClass("blinking")
-                if (!user.authorDetails) {
-                    $("#transaction").css("color", "#b6b6b6")
+function styledTabs(user) {
+    //console.log(user)
+    if (!user.wallet) {
+        $("#wallet").addClass("blinking")
+        if (!user.authorDetails) {
+            $("#transaction").css("color", "#b6b6b6")
 
-                } else {
-                    $("#transaction").css("color", "#b6b6b6")
-                    $("#wallet").removeClass("blinking")
+        } else {
+            $("#transaction").css("color", "#b6b6b6")
+            $("#wallet").removeClass("blinking")
 
-                }
-            } else if (!user.authorDetails) {
-                $("#transaction").addClass("blinking")
-            }
-        })
+        }
+    } else if (!user.authorDetails) {
+        $("#transaction").addClass("blinking")
+    }
+
 
 }
+export function firstCheck() {
+    $("#blackhole").html("")
+    $("#profile-header").hide()
+    $("#wallet-header").hide()
+    $("#transaction-header").show()
+    let user = JSON.parse(localStorage.getItem('user'))
+
+    let walletStatus = user.wallet ? user.wallet.status : null
+    if (walletStatus) {
+        $("#need-wallet").hide()
+        transactions.checkAuthor()
+
+    } else {
+        $("#need-wallet").show()
+        $("#commoners").hide()
+        $("#wallet-amount").html(0)
+
+
+    }
+
+
+}
+
+document.getElementById("transaction").addEventListener('click', firstCheck, false);
 //bug-listener
 function openBug() {
     $("#bug-form-container").show("inherit")
@@ -134,12 +154,9 @@ for (var i = 0; i < bugText.length; i++) {
         })
     })(i);
 }
-//Profile panels
-const tabs = document.querySelectorAll(".panel-nav");
-const tab = document.querySelectorAll(".tab-item-link");
-const panel = document.querySelectorAll(".panel-body");
 
 function onTabClick(event) {
+    const panel = document.querySelectorAll(".panel-body");
 
     // deactivate existing active tabs and panel
 
@@ -160,9 +177,7 @@ function onTabClick(event) {
 
 }
 
-for (let i = 0; i < tab.length; i++) {
-    tab[i].addEventListener('click', onTabClick, false);
-}
+
 
 //TutoPanels
 function backContent() {
@@ -188,25 +203,46 @@ function getURL() {
         })
     });
 }
+document.addEventListener("load", load());
+document.addEventListener("load", executeLogic());
 
-
-$(document).ready(function() {
+document.addEventListener('load', checkSupport())
+window.addEventListener('storage', () => {
     load()
-})
+});
+
 export function load() {
     let user = JSON.parse(localStorage.getItem('user'))
-    console.log(user)
-    fillFields(user)
-    checkSupport()
-}
-export function fillFields(user) {
-    // console.log(user)
-    $("#displayName").text(user.displayName);
-    $("#avatarPic").attr("src", user.photoURL);
-    $("#email").text(user.email);
-    $("#description").text(user.description);
+
+    console.log(localStorage, JSON.parse(localStorage.getItem('user')))
+    if (!user) {
+        setTimeout(() => {
+            user = JSON.parse(localStorage.getItem('user'))
+            $("#displayName").text(user.displayName);
+            $("#avatarPic").attr("src", user.photoURL);
+            $("#email").text(user.email);
+            $("#description").text(user.description);
+            styledTabs(user)
+
+        }, 1500)
+    } else {
+        $("#displayName").text(user.displayName);
+        $("#avatarPic").attr("src", user.photoURL);
+        $("#email").text(user.email);
+        $("#description").text(user.description);
+
+    }
 }
 
+const tab = document.querySelectorAll(".tab-item-link");
+
+function executeLogic() {
+    //Profile panels
+    console.log(document.querySelectorAll(".tab-item-link"))
+    for (let i = 0; i < document.querySelectorAll(".tab-item-link").length; i++) {
+        document.querySelectorAll(".tab-item-link")[i].addEventListener('click', onTabClick, false);
+    }
+}
 export function checkProfile() {
     //console.log('cp')
     $("#blackhole").html("")
@@ -230,4 +266,3 @@ export function checkSupport() {
         })
     })
 }
-styledTabs()
