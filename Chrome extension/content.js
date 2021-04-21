@@ -1,20 +1,25 @@
 var elementOfInterest = document.getElementsByTagName('comonz') ? document.getElementsByTagName('comonz') : null
 console.log(elementOfInterest)
 key = elementOfInterest.length > 0 ? elementOfInterest[0].id : null;
-console.log("ok")
 
-var urlArr = []
-var rawURL = window.location.host.replace(/[^\w\s]/gi, '').substring(3) + window.location.pathname.replace(/[^\w\s]/gi, '')
-var splitedURL = rawURL.split()
-for (var i = 0; i <= splitedURL[0].length; i++) {
-    if (i % 2 == 0) {
-        urlArr.push(splitedURL[0][i])
+
+var uRL
+if (window.location.host === "www.youtube.com") {
+    uRL = "yt-" + window.location.search.split("&")[0].split('=')[1]
+} else {
+    var urlArr = []
+    var rawURL = window.location.host.replace(/[^\w\s]/gi, '').substring(3) + window.location.pathname.replace(/[^\w\s]/gi, '')
+    var splitedURL = rawURL.split()
+    for (var i = 0; i <= splitedURL[0].length; i++) {
+        if (i % 2 == 0) {
+            urlArr.push(splitedURL[0][i])
+        }
+
     }
+    var preuRL = urlArr.join()
+    uRL = preuRL.replace(/[,]/gi, '')
 
 }
-var preuRL = urlArr.join()
-
-uRL = preuRL.replace(/[,]/gi, '')
 console.log(uRL)
 if (document.getElementsByTagName('img')[0]) {
     img = document.getElementsByTagName('img')[0].src
@@ -38,29 +43,3 @@ window.onfocus = function() {
     chrome.runtime.sendMessage({ payload: [key, uRL, title, img, Date.now(), null] })
 }
 chrome.runtime.sendMessage({ payload: [key, uRL, title, img, Date.now(), null] });
-
-
-
-/* else {
-       console.log("pascontenu")
-       key = null
-       uRL = null
-       title = null
-       img = null
-       chrome.runtime.sendMessage({ payload: [key, uRL, title, img] });
-       chrome.runtime.onMessage.addListener(
-           function(request, sender, sendResponse) {
-               console.log(request)
-               storeUser(request.user)
-               return true
-           },
-
-       );
-   } */
-
-
-
-async function storeUser(user) {
-    let storedUser = await JSON.stringify(user)
-    localStorage.setItem('user', storedUser)
-}

@@ -7,6 +7,24 @@ var config = {
     messagingSenderId: "1059781682708"
 };
 firebase.initializeApp(config);
+chrome.runtime.onMessageExternal.addListener((message) => {
+    console.log(message.message.videosIds)
+    let videoIds = message.message.videosIds
+    videoIds.forEach(videoId => {
+        let videoToadd = {
+            id: videoId.id.videoId
+        }
+        let countRef = firebase.database().ref('/users/' + userId + '/transactions/' + url)
+        countRef.update({
+            count: progress,
+            status: status,
+            authorKey: authorKey
+        })
+        console.log(videoId.id.videoId);
+
+    })
+})
+
 let authKey
 chrome.runtime.onMessage.addListener(
     async function(request, sender, sendResponse) {

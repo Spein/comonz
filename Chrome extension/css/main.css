@@ -825,6 +825,11 @@ input[type="range"]:focus+.rangeslider .rangeslider__handle {
     padding: 3%;
 }
 
+#connectPlatform-items {
+    display: flex;
+    justify-content: space-evenly;
+}
+
 
 /* latin-ext */
 
