@@ -1,28 +1,29 @@
-var config = {
-    apiKey: "AIzaSyAdxBw7BVvGgtp0PliC5y_xXPfv35nDEuw",
-    authDomain: "pressformore-c0045.firebaseapp.com",
-    databaseURL: "https://pressformore-c0045.firebaseio.com",
-    projectId: "pressformore-c0045",
-    storageBucket: "pressformore-c0045.appspot.com",
-    messagingSenderId: "1059781682708"
-};
+import { config } from './js/config.js'
 firebase.initializeApp(config);
 chrome.runtime.onMessageExternal.addListener((message) => {
-    console.log(message.message.videosIds)
-    let videoIds = message.message.videosIds
-    videoIds.forEach(videoId => {
-        let videoToadd = {
-            id: videoId.id.videoId
-        }
-        let countRef = firebase.database().ref('/users/' + userId + '/transactions/' + url)
-        countRef.update({
-            count: progress,
-            status: status,
-            authorKey: authorKey
-        })
-        console.log(videoId.id.videoId);
+    let user = JSON.parse(localStorage.getItem("user"))
+    let userKey = user.authorDetails.key
+    console.log(user, message.message)
+    if (message.message.platform = "youtube") {
+        let videoIds = message.message.videosIds
 
-    })
+        videoIds.forEach(videoId => {
+            let vidId = "yt-" + videoId.id.videoId
+            let img = videoId.snippet.thumbnails.default.url;
+            let title = videoId.snippet.title;
+
+            let partnerRef = firebase.database().ref('/partners/' + vidId)
+            console.log(partnerRef);
+
+            partnerRef.set({
+                key: userKey,
+                img: img
+            });
+            saveTransaction(userKey, vidId, null, img, title, true)
+
+        })
+    }
+
 })
 
 let authKey
@@ -33,23 +34,28 @@ chrome.runtime.onMessage.addListener(
         localStorage.removeItem('sentUrl')
         localStorage.removeItem('sentKey')
         localStorage.removeItem('sentProgress')
-
         localStorage.removeItem('lastProgress')
 
         chrome.browserAction.setIcon({ path: "./logo/logo-base.png" });
         chrome.browserAction.setBadgeText({ text: "" });
-        const user = JSON.parse(localStorage.getItem("user"))
+        let user = JSON.parse(localStorage.getItem("user"))
+        let url = request.payload[1]
 
-        const url = request.payload[1]
-        const title = request.payload[2]
-        const img = request.payload[3]
         let partnerUrls = await firebase.database().ref('/partners/' + url).once('value').then(function(data) { return data.val() })
-        console.log(partnerUrls)
+
+        let title = request.payload[2]
+        let img
+
+        if (request.payload[3] === "youtube-image") {
+            img = partnerUrls.image
+        } else {
+            img = request.payload[3]
+        }
         let artToSend
         if (request.payload[0] || partnerUrls) {
 
-            const authorKey = request.payload[0] ? request.payload[0] : partnerUrls.key
-            saveTransaction(authorKey, url, user.uid, img, title)
+            let authorKey = request.payload[0] ? request.payload[0] : partnerUrls.key
+            saveTransaction(authorKey, url, user.uid, img, title, true)
 
             localStorage.setItem('authorkey', authorKey);
             localStorage.setItem('url', url);
@@ -98,19 +104,19 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
 
     // localStorage.setItem("triggerOn", "on")
     //localStorage.setItem('authorkey', authorKey)
-    const user = JSON.parse(localStorage.getItem("user"))
+    let user = JSON.parse(localStorage.getItem("user"))
         //console.log(user)
     var wallet = user.wallet.status;
     authKey = authorKey
-    const userKey = user.authorKey
+    let userKey = user.authorKey
     if (wallet === "active" && userKey != authKey) {
         localStorage.setItem('"' + url + '"', JSON.stringify(artToSend))
 
-        const transactions = user.transactions ? user.transactions : null
-        const transaction = transactions ? transactions[url] : null
+        let transactions = user.transactions ? user.transactions : null
+        let transaction = transactions ? transactions[url] : null
         console.log(transaction)
-        const attCounter = user.wallet.Attcounter
-        const onGoingArticle = {
+        let attCounter = user.wallet.Attcounter
+        let onGoingArticle = {
                 count: attCounter,
                 authorKey: authKey,
                 status: 'onGoing'
@@ -151,7 +157,7 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
                         localStorage.setItem('user', JSON.stringify(user))
                             //localStorage.setItem('progress', 'paid')
 
-                        saveTransaction(authKey, url, user.uid, img, title)
+                        saveTransaction(authKey, url, user.uid, img, title, false)
                         clearInterval(interval)
                     }
                 }, 1000)
@@ -224,24 +230,29 @@ function updateCount(progress, status, userId, url, authorKey) {
     })
 }
 
-function saveTransaction(authorKey, url, userId, featuredImage, title) {
-    firebase.database().ref('transactions/' + authorKey + "/" + url).once('value').then(function(snapshot) {
-        var contentUrl = (snapshot.val());
+function saveTransaction(authorKey, url, userId, featuredImage, title, firstShot) {
+    if (firstShot) {
+        firebase.database().ref('transactions/' + authorKey + "/" + url).once('value').then(function(snapshot) {
+            var contentUrl = (snapshot.val());
+            if (contentUrl == undefined) {
+                firebase.database().ref('transactions/' + authorKey + "/" + url).set({
+                    title: title,
+                    img: featuredImage,
+                });
+            }
+        })
+    } else {
         var date = new Date();
         var parsedDate = JSON.stringify(date);
         var tranRef = firebase.database().ref('transactions/' + authorKey + "/" + url + "/cTransactions/" + userId)
-        if (contentUrl == undefined) {
-            firebase.database().ref('transactions/' + authorKey + "/" + url).set({
-                title: title,
-                img: featuredImage,
-            });
-        }
         tranRef.update({
             date: parsedDate,
 
         })
+    }
 
-    })
+
+
 }
 
 chrome.runtime.onConnect.addListener(function(port) {
@@ -253,7 +264,7 @@ chrome.runtime.onConnect.addListener(function(port) {
         let title = localStorage.getItem('sentTitle');
         let img = localStorage.getItem('sentImg');
         let progress = localStorage.getItem('sentProgress');
-        const user = JSON.parse(localStorage.getItem("user"))
+        let user = JSON.parse(localStorage.getItem("user"))
             // console.log('disconnected ' + authorKey, url, user.uid, img, title)
         localStorage.removeItem('sentProgress', authorKey, url, user.uid, img, title)
         if (progress <= -1) {
@@ -262,7 +273,7 @@ chrome.runtime.onConnect.addListener(function(port) {
             user.transactions[url].count = -1
             user.transactions[url].status = "paid"
             localStorage.setItem('user', JSON.stringify(user))
-            saveTransaction(authorKey, url, user.uid, img, title)
+            saveTransaction(authorKey, url, user.uid, img, title, false)
 
         } else {
             updateCount(progress, 'onGoing', user.uid, url, authorKey)

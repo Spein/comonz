@@ -2,10 +2,11 @@ var elementOfInterest = document.getElementsByTagName('comonz') ? document.getEl
 console.log(elementOfInterest)
 key = elementOfInterest.length > 0 ? elementOfInterest[0].id : null;
 
-
+var img
 var uRL
 if (window.location.host === "www.youtube.com") {
     uRL = "yt-" + window.location.search.split("&")[0].split('=')[1]
+    img = "youtube-img"
 } else {
     var urlArr = []
     var rawURL = window.location.host.replace(/[^\w\s]/gi, '').substring(3) + window.location.pathname.replace(/[^\w\s]/gi, '')
@@ -18,15 +19,16 @@ if (window.location.host === "www.youtube.com") {
     }
     var preuRL = urlArr.join()
     uRL = preuRL.replace(/[,]/gi, '')
+    if (document.getElementsByTagName('img')[0]) {
+        img = document.getElementsByTagName('img')[0].src
+    } else {
+        img = './andrea.jpg'
+
+    }
 
 }
 console.log(uRL)
-if (document.getElementsByTagName('img')[0]) {
-    img = document.getElementsByTagName('img')[0].src
-} else {
-    img = './andrea.jpg'
 
-}
 if (document.title) {
     title = document.title
 } else {

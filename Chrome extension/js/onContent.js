@@ -12,21 +12,26 @@ async function getContent() {
     const rulzzz = await setAuthor.getUrl()
     const author = await setAuthor.getAuthorDetails(keyzz, rulzzz)
     const user = JSON.parse(localStorage.getItem('user'))
+    let dateofFunding;
+    let comoners;
+    console.log(keyzz, rulzzz, author, user)
 
     const userId = user.uid
     let progress = JSON.parse(localStorage.getItem('lastProgress'))
     localStorage.removeItem('lastProgress')
     const userCom = author.comments ? author.comments[userId] : null
     const userComdate = userCom ? moment.tz(userCom.date.substring(1, 25), tz).fromNow() : null
-    const comoners = Object.keys(author.transactions[rulzzz].cTransactions) ? Object.keys(author.transactions[rulzzz].cTransactions).length : 0
+    if (author.transactions[rulzzz].cTransactions) {
+        comoners = Object.keys(author.transactions[rulzzz].cTransactions) ? Object.keys(author.transactions[rulzzz].cTransactions).length : 0
+        dateofFunding = author.transactions[rulzzz].cTransactions[userId] ? author.transactions[rulzzz].cTransactions[userId].date : null
+
+    }
     const comments = author.comments
-    console.log(author, user, userComdate, progress)
 
     var authorDisplayname = author.details.displayName;
     var authorphotoURL = author.details.photoURL;
     var authorDescription = author.details.description;
 
-    const dateofFunding = author.transactions[rulzzz].cTransactions[userId] ? author.transactions[rulzzz].cTransactions[userId].date : null
 
     $('#avatarPic').attr('src', authorphotoURL);
     $('#user-container').text(authorDisplayname);

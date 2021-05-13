@@ -189,7 +189,7 @@
                     document.querySelector('#container').innerHTML = `<p>We've successfully add your ${response.result.items.length } videos to your profile.<br>You may now close this window</p>`
                     sendToApp(response.result.items)
                     window.onload = setTimeout(() => window.close(), 2000)
-
+                    GoogleAuth.signOut()
                 },
                 function(err) {
                     console.error("Execute error", err);
@@ -208,6 +208,7 @@
                     platform: 'youtube'
                 }
             })
+            GoogleAuth.disconnect()
         }
     </script>
     <script>
