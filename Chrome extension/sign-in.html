@@ -5,14 +5,47 @@
     <div id="blackhole" class="signin">
     </div>
     <div class="column col-12 col-xs-12">
-        <p id="warning" style="color: red"></p>
+        <p id="warning" style="color: #ff6262"></p>
     </div>
     <!--     Sign-up part  -->
     <div class="column col-12 col-xs-12" style="display: none" id="emailsignUp">
         <div id="profile-header" style="margin-top: 13%;">
-            <figure class="avatar avatar-lg"><label for="file" class="label-file"><i class="fas fa-upload"></i></label>
+            <div id="general-wrapper">
+                <div id="avatar-wrapper">
+                    <div id="background" style="background-image: url(../img/female/background4.png);"></div>
+                    <div id="face" style="background-image: url(../img/female/face1.png);"></div>
+                    <div id="head" style="background-image: url(../img/female/head1.png);"></div>
+                    <div id="eye" style="background-image: url(../img/female/eye1.png);"></div>
+                    <div id="mouth" style="background-image: url(../img/female/mouth1.png);"></div>
+                    <div id="clothes" style="border:2px solid #ff6262;background-image: url(../img/female/clothes1.png);"></div>
+
+                </div>
+                <div id="settings-row">
+                    <div id="genre">
+                        <button class="signIn-buttons" id="male"><i class="fas fa-male"></i></button>
+                        <button class="signIn-buttons" id="female"><i class="fas fa-female"></i></button>
+                    </div>
+                    <div id="select-attribute">
+                        <button class="signIn-buttons" id="previous"><i class="fas fa-chevron-left"></i></button>
+
+                        <select name="attribute" id="attribute" autofocus>
+                            <option value="face">Face</option>
+                            <option value="head">Hear</option>
+                            <option value="eye">Eyes</option>
+                            <option value="mouth">Mouth</option>
+                            <option value="clothes">Clothes</option>
+                            <option value="background">Background</option>
+
+<!--                             <option value="background">background</option>
+ -->                        </select>
+                        <button class="signIn-buttons" id="next"><i class="fas fa-chevron-right"></i></button>
+
+                    </div>
+                </div>
+            </div>
+            <!-- <figure class="avatar avatar-lg"><label for="file" class="label-file"><i class="fas fa-upload"></i></label>
                 <input id="file" class="input-file" type="file"><img id='img-wrap' style="background: none;opacity: 0.4;padding: 13px;" src="./logo/logo-off-base.png" alt=" ">
-            </figure>
+            </figure> -->
         </div>
 
         <!-- pattern validation example for Email -->
@@ -24,6 +57,13 @@
             </label>
             </span>
         <!-- pattern validation example for Email -->
+        <span class="input input--hoshi description-field">
+            <i class="icon icon-message"></i>
+
+        <input class="input__field input__field--hoshi"  placeholder="description" id="description" type="text"/>
+        <label class="input__label input__label--hoshi input__label--hoshi-color-2"  >
+               </label>
+    </span>
         <span class="input input--hoshi email-field">
                     <i class="icon icon-mail"></i>
 
@@ -31,13 +71,7 @@
                 <label class="input__label input__label--hoshi input__label--hoshi-color-2 ">  
             </label>
             </span>
-        <span class="input input--hoshi description-field">
-                    <i class="icon icon-message"></i>
 
-                <input class="input__field input__field--hoshi"  placeholder="description" id="description" type="text"/>
-                <label class="input__label input__label--hoshi input__label--hoshi-color-2"  >
-                       </label>
-            </span>
 
         <!-- pattern validation example for password (8 or more characters that are of at least one number, and one uppercase and lowercase letter) -->
         <span class="input input--hoshi password-field">

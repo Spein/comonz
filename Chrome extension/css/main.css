@@ -14,6 +14,7 @@ h4,
 h5,
 h6,
 p,
+select,
 span {
     font-family: 'Quicksand', sans-serif;
     text-align: center
@@ -167,6 +168,67 @@ element.style {
     display: none;
 }
 
+#background,
+#face,
+#head,
+#eye,
+#mouth,
+#clothes {
+    position: relative;
+    width: 37vw;
+    height: 37vw;
+    margin-bottom: -37vw;
+    background-repeat: no-repeat;
+    background-size: contain;
+    border-radius: 45%;
+}
+
+#general-wrapper,
+#avatar-wrapper,
+#settings-row,
+#genre,
+#select-attribute,
+#buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.signIn-buttons {
+    border: none;
+    background: none;
+}
+
+#settings-row {
+    margin-top: 40vw;
+}
+
+#general-wrapper,
+#avatar-wrapper,
+#settings-row {
+    flex-direction: column;
+}
+
+.selected {
+    color: #ff6262
+}
+
+.panel-body.profile.active {
+    margin-top: 40vw;
+}
+
+#genre,
+#select-attribute,
+#buttons {
+    margin: 1%;
+}
+
+select {
+    border: none;
+    margin: 0 30%;
+    text-align-last: center;
+}
+
 .avatar img {
     border: 3px solid #ff6262;
     background: #fadada;
@@ -238,13 +300,6 @@ canvas {
     position: absolute;
     left: 5%;
 }
-
-
-/* .content canvas {
-    left: 15%;
-    top: -4vh;
-}
-  */
 
 .bug {
     position: fixed;
@@ -515,9 +570,25 @@ button#check-iban {
 
 .transactions-footer {
     width: 100%;
-    background: #434343;
+    background: #332c2c70;
     color: white;
     text-align: center;
+    padding: 0 5%;
+}
+
+.wishes-container {
+    padding: 3% 0;
+    font-size: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+#hand-spock {
+    color: #ffffff;
+    font-size: 11vw;
+    margin: 0 4% 0 -5%;
 }
 
 .transactions-footer>*>div {
@@ -547,7 +618,8 @@ button#check-iban {
     cursor: pointer;
 }
 
-.icon:hover {
+.icon:hover,
+#hand-spock:hover {
     color: #d95555;
     cursor: pointer;
 }
@@ -801,8 +873,6 @@ input[type='range'] {
     border-radius: 50%;
 }
 
-.rangeslider__handle:active {}
-
 .rangeslider--horizontal .rangeslider__handle {
     top: -20px;
     touch-action: pan-y;
@@ -819,10 +889,6 @@ input[type="range"]:focus+.rangeslider .rangeslider__handle {
     -moz-box-shadow: 0 0 8px rgba(255, 0, 255, 0.9);
     -webkit-box-shadow: 0 0 8px rgba(255, 0, 255, 0.9);
     box-shadow: 0 0 8px rgba(255, 0, 255, 0.9);
-}
-
-.panel-body.wallet-o.active {
-    padding: 3%;
 }
 
 #connectPlatform-items {

@@ -6,7 +6,18 @@ export function writeUserData() {
     var email = $("#email").text();
     var displayName = $("#displayName").text();
     var description = $("#description").text()
-    if (email != currentUser.email) {
+    db.ref('users/' + currentUser.uid).update({
+            displayName: displayName,
+            email: email,
+            description: description
+
+        }).then(
+            $('#saveButton').hide(),
+            $('#notifications-h').html("<p>Profile updated!</p>")
+
+
+        ).then(setUser.setUser(currentUser.uid))
+        /*  if (email != currentUser.email) {
         currentUser.updateEmail(email).then(function() {}).catch(function(error) {
             // An error happened.
         });
@@ -51,5 +62,5 @@ export function writeUserData() {
 
         ).then(setUser.setUser(currentUser.uid))
     }
-
+ */
 }
