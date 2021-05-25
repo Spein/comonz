@@ -54,7 +54,7 @@ export function checkWallet() {
         $('#statut-commons').html(
             "<p>You've purchased those CoMonz <span style='color:#d95555'> " +
             moDate +
-            "</span></p><p>You've set your commitment at :<br><span id='attCounter'></span></p>"
+            "</span></p><p>You'll offering your support after :<br><span id='attCounter'></span> passed on any affiliated Creator's content</p><p>Your wallet will be <b>equally ditributed</b> through your supported authors <b>at the end of the active period</b> below</p>"
         );
         $('#attCounter').html(minutes + ' minutes ' + seconds + ' seconds');
 
@@ -210,20 +210,34 @@ export async function saveWallet() {
                         Attcounter: parseInt($('input[name="participants"]').val())
                     }
                     var user = await firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) { return snapshot.val() })
-                    console.log(user)
                     user.wallet = wallet
-
-                    localStorage.setItem('user', JSON.stringify(user))
-                    firebase
+                    let hash = Math.abs(hashCode(userId, userId))
+                    let hashedUser = {
+                            userId: userId
+                        }
+                        /*    firebase
                         .database()
                         .ref('users/' + userId + '/wallet/')
                         .set(wallet)
+ */
+                    user.token = hash
+                    console.log(user)
+                    firebase
+                        .database()
+                        .ref('users/' + userId)
+                        .set(user)
 
+                    firebase
+                        .database()
+                        .ref('tokens/' + hash)
+                        .set(hashedUser)
 
                     //console.log(' wallet storage successful'), 
                     checkWallet();
 
                     $('#paypal-button-container').hide();
+                    localStorage.setItem('user', JSON.stringify(user))
+
                 });
             }
         })
@@ -273,6 +287,18 @@ export function checkWStatus() {
 
 }
 
+export function hashCode(mot, hashW) {
+    var hash = hashW;
+    let i;
+    let char;
+    if (mot.length == 0) return hash;
+    for (i = 0; i < mot.length; i++) {
+        char = mot.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+}
 const $element = $('input[type="range"]');
 const $tooltip = $('#range-tooltip');
 const sliderStates = [

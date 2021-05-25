@@ -3,7 +3,6 @@ import * as wallet from '/js/wallet.js';
 import * as blackhole from '/js/blackhole.js';
 import * as transactions from '/js/transactions.js';
 import * as lists from '/js/lists.js';
-console.log('on');
 document.getElementById('saveButton').addEventListener('click', userInfo.writeUserData, false);
 //Wallet settings
 document.getElementById('profile').addEventListener('click', checkProfile, false);
@@ -58,6 +57,9 @@ function styledTabs(user) {
     //console.log(user)
     if (!user.wallet) {
         $('#wallet').addClass('blinking');
+        $('#nft-off').show()
+        $('#nft-hash').text('N/A')
+
         if (!user.authorDetails) {
             $('#transaction').css('color', '#b6b6b6');
         } else {
@@ -66,6 +68,11 @@ function styledTabs(user) {
         }
     } else if (!user.authorDetails) {
         $('#transaction').addClass('blinking');
+        $('#nft-off').hide()
+
+    } else {
+        $('#nft-off').hide()
+        console.log('temerde')
     }
 }
 export function firstCheck() {
@@ -167,7 +174,7 @@ window.addEventListener('storage', () => {
 });
 export function load() {
     let user = JSON.parse(localStorage.getItem('user'));
-    console.log(localStorage, JSON.parse(localStorage.getItem('user')));
+    //console.log(localStorage, JSON.parse(localStorage.getItem('user')));
     if (!user) {
         setTimeout(() => {
             user = JSON.parse(localStorage.getItem('user'));
@@ -180,6 +187,8 @@ export function load() {
             $('#background').css("background-image", "url(" + `../img/${user.photoURL.genre}/${user.photoURL.background}.png` + ")")
             $('#email').text(user.email);
             $('#description').text(user.description);
+            $('#nft-hash').text(user.token)
+
             styledTabs(user);
         }, 1500);
     } else {
@@ -190,18 +199,21 @@ export function load() {
         $('#clothes').css("background-image", "url(" + `../img/${user.photoURL.genre}/${user.photoURL.clothes}.png` + ")")
         $('#face').css("background-image", "url(" + `../img/${user.photoURL.genre}/${user.photoURL.face}.png` + ")")
         $('#background').css("background-image", "url(" + `../img/${user.photoURL.genre}/${user.photoURL.background}.png` + ")")
-
         $('#email').text(user.email);
         $('#description').text(user.description);
+        $('#nft-hash').text(user.token)
+
+        styledTabs(user);
+
     }
-    blackhole.blackhole('#blackhole', 1, 230, 230, 190);
+    blackhole.blackhole('#blackhole', 1, 260, 220, 150);
 
 }
 const tab = document.querySelectorAll('.tab-item-link');
 
 function executeLogic() {
     //Profile panels
-    console.log(document.querySelectorAll('.tab-item-link'));
+    //console.log(document.querySelectorAll('.tab-item-link'));
     for (let i = 0; i < document.querySelectorAll('.tab-item-link').length; i++) {
         document.querySelectorAll('.tab-item-link')[i].addEventListener('click', onTabClick, false);
     }
@@ -213,7 +225,7 @@ export function checkProfile() {
     $('#wallet-header').hide();
     $('#transaction-header').hide();
     $('#profile-header').show();
-    blackhole.blackhole('#blackhole', 1, 210, 210, 155);
+    blackhole.blackhole('#blackhole', 1, 260, 220, 150);
 }
 export function checkSupport() {
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {

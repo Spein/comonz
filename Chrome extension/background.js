@@ -205,6 +205,8 @@ function saveTransaction(authorKey, url, userId, featuredImage, title, firstShot
         });
     }
 }
+
+
 chrome.runtime.onConnect.addListener(function(port) {
     //console.log(port)
     port.onDisconnect.addListener(() => {

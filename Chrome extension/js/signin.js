@@ -20,7 +20,7 @@ let genreAbs = "female"
 
 function setGenre(genre) {
     genreAbs = genre
-    $('.buttons').removeClass('selected')
+    $('.signIn-buttons').removeClass('selected')
     $(`#${genre}`).addClass('selected')
     $(this).addClass('selected')
     randomAvatar(genre)

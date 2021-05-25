@@ -46,7 +46,7 @@
                             <div id="head"></div>
                             <div id="eye"></div>
                             <div id="mouth"></div>
-                            <div id="clothes"></div>
+                            <div id="clothes" style="border: 3px solid #d95555;"></div>
                         </div>
                         <!-- <figure class="avatar avatar-lg" id="avatar-container"><label for="file" class="label-file"><i
                                     class="fas fa-upload"></i></label>
@@ -70,8 +70,9 @@
         <div id="panels">
             <div class="panel-body profile active">
                 <div class="tile tile-centered vertical">
+
                     <div id="user-container" class="panel-title mt-10 editable" contenteditable="true">
-                        <h3 id="displayName" style="margin:0"></h3>
+                        <h3 id="displayName"></h3>
                     </div>
                     <div id="description-container" class="panel-titlemt-10 editable" contenteditable="true">
                         <h6 id="description"></h6>
@@ -79,8 +80,13 @@
                     <div class="panel-titlemt-10 editable" id="email-container" contenteditable="true">
                         <i style="margin: 0 4%;font-size: 17px;" class="icon icon-mail"></i>
                         <p id="email"></p>
+
                     </div>
-                    <p style="font-size:12px; ">All fields are editable</p>
+                    <div id="nft-container" class="panel-title mt-10">
+                        <p><b>NFT:</b><span id="nft-hash"></span></p>
+                        <p id="nft-off">You've to fill your wallet first in order to tokenize your avatar</p>
+                    </div>
+                    <p style="font-size:12px; margin-top:6vw ">All fields are editable</p>
                     <button id="saveButton" class="btn btn-primary btn-block" style="display: none">Update</button>
                     <div class="transactions-footer" id="wishes">
                         <div id="getUrl" class="wishes-container">
@@ -94,7 +100,7 @@
             </div>
             <div class="panel-body wallet-i">
                 <div class="tile tile-centered vertical">
-                    <label style="font-size:12px; margin-bottom:5%" id="statut-commons"></label>
+                    <div style=" margin-bottom:5%" id="statut-commons"></div>
                     <div id="wallet-active" class="column col-10 col-xs-11">
                         <div id="date-container" style="display: none">
                             <p style="margin-right:4%;font-size:12px">Active period: <span id="wallet-startDate"></span> &#8594; <span id="wallet-endDate"></span></p>
