@@ -250,8 +250,8 @@ select {
 
 #blackhole {
     z-index: -1;
-    height: 250px;
-    width: 250px;
+    height: 100vw;
+    width: 100vh;
     position: absolute;
 }
 
@@ -436,8 +436,9 @@ span#commons-key {
     flex-direction: column;
 }
 
-#description-container {
+#description-container>h6 {
     text-transform: uppercase;
+    font-size: 1.8rem;
 }
 
 div#email-container {
@@ -628,22 +629,13 @@ button#check-iban {
 
 #displayName {
     margin: 0;
+    font-size: 3.4rem;
     font-weight: bold;
-}
-
-.panel-titlemt-10.editable>#description,
-.panel-titlemt-10.editable>#email {
-    font-size: 12px;
 }
 
 #male:hover,
 #female:hover {
     font-size: 10vw;
-}
-
-p {
-    font-size: 4vw;
-    margin: 0 8px 0.2rem;
 }
 
 .first-trcontainer {

@@ -1,4 +1,6 @@
 import { config } from '/js/config.js';
+import * as blackhole from '/js/blackholeW.js';
+
 
 firebase.initializeApp(config);
 let token = window.location.pathname.split('/')[2]
@@ -26,6 +28,16 @@ $('#mouth').css("background-image", "url(" + `../images/${userDetails.photoURL.g
 $('#clothes').css("background-image", "url(" + `../images/${userDetails.photoURL.genre}/${userDetails.photoURL.clothes}.png` + ")")
 $('#face').css("background-image", "url(" + `../images/${userDetails.photoURL.genre}/${userDetails.photoURL.face}.png` + ")")
 $('#background').css("background-image", "url(" + `../images/${userDetails.photoURL.genre}/${userDetails.photoURL.background}.png` + ")")
-$('#email').text(userDetails.email);
 $('#description').text(userDetails.description);
 $('#nft-hash').text(userDetails.token)
+
+function styledTabs(user) {
+    //console.log(user)
+    if (!userDetails.authorDetails) {
+        $('#transaction').css('color', '#b6b6b6');
+        $('#transaction').css('cursor', 'no-drop');
+
+    }
+}
+styledTabs(userDetails)
+blackhole.blackhole('#blackhole', 30, 500, 877, 300);

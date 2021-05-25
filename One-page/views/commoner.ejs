@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/css/text-input.css">
     <link rel="stylesheet" href="/css/main.css">
 
+    <link id="favicon" rel="shortcut icon" type="image/icon" href="/images/logos/logo-colour.png">
 
 
     <title>Commoner2</title>
@@ -32,9 +33,9 @@
                                     style="margin:0 5%" class="far fa-user-circle"></i>Profile</a></li>
                         <li class="tab-item">
                             <a class="tab-item-link" id="wallet" data-target="wallet-i"><i style="margin:0 5%"
-                                    class="fas fa-wallet"></i>Wallet</a></li>
+                                    class="fas fa-wallet"></i>Patronages</a></li>
                         <li class="tab-item"><a class="tab-item-link" id="transaction" data-target="wallet-o"><i
-                                    style="margin:0 5%" class="fas fa-feather-alt"></i>Creator</a></li>
+                                    style="margin:0 5%" class="fas fa-feather-alt"></i>Patrons</a></li>
                     </ul>
                 </nav>
                 <div id="panel-header" class="panel-header text-center">
@@ -50,7 +51,7 @@
                                 <div id="head"></div>
                                 <div id="eye"></div>
                                 <div id="mouth"></div>
-                                <div id="clothes" style="border: 3px solid #d95555;"></div>
+                                <div id="clothes" style="border: 7px solid rgb(255 106 106)"></div>
                             </div>
                         </div>
                     </div>
@@ -61,17 +62,13 @@
                 <div class="panel-body profile active">
                     <div class="tile tile-centered vertical">
 
-                        <div id="user-container" class="panel-title mt-10 editable" contenteditable="true">
+                        <div id="user-container" class="panel-title mt-10 editable">
                             <h3 id="displayName"></h3>
                         </div>
-                        <div id="description-container" class="panel-titlemt-10 editable" contenteditable="true">
+                        <div id="description-container" class="panel-titlemt-10 editable">
                             <h6 id="description"></h6>
                         </div>
-                        <div class="panel-titlemt-10 editable" id="email-container" contenteditable="true">
-                            <i style="margin: 0 4%;font-size: 17px;" class="icon icon-mail"></i>
-                            <p id="email"></p>
 
-                        </div>
                         <div id="nft-container" class="panel-title mt-10">
                             <p><b>NFT:</b><span id="nft-hash"></span></p>
                         </div>
