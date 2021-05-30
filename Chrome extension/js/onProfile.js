@@ -201,7 +201,7 @@ export function load() {
         $('#background').css("background-image", "url(" + `../img/${user.photoURL.genre}/${user.photoURL.background}.png` + ")")
         $('#email').text(user.email);
         $('#description').text(user.description);
-        $('#nft-hash').text(user.token)
+        $('#nft-hash').html("<a href='http://localhost:3000/commoner/" + user.token + "' target='_blank'>" + user.token + "</a>")
 
         styledTabs(user);
 

@@ -85,17 +85,17 @@ function signUp(email, displayName, password) {
     var displayName = $("#displayName").val();
     var description = $("#description").val();
     var avatar = {
-        genre: genreAbs,
-        face: $('#face').css('background-image').replace(/^url\(['"](.+)['"]\)/, '$1').split('/')[5].split('.')[0],
-        head: $('#head').css('background-image').replace(/^url\(['"](.+)['"]\)/, '$1').split('/')[5].split('.')[0],
-        eye: $('#eye').css('background-image').replace(/^url\(['"](.+)['"]\)/, '$1').split('/')[5].split('.')[0],
-        mouth: $('#mouth').css('background-image').replace(/^url\(['"](.+)['"]\)/, '$1').split('/')[5].split('.')[0],
-        clothes: $('#clothes').css('background-image').replace(/^url\(['"](.+)['"]\)/, '$1').split('/')[5].split('.')[0],
-        background: $('#background').css('background-image').replace(/^url\(['"](.+)['"]\)/, '$1').split('/')[5].split('.')[0],
+            genre: genreAbs,
+            face: $('#face').css('background-image').replace(/^url\(['"](.+)['"]\)/, '$1').split('/')[5].split('.')[0],
+            head: $('#head').css('background-image').replace(/^url\(['"](.+)['"]\)/, '$1').split('/')[5].split('.')[0],
+            eye: $('#eye').css('background-image').replace(/^url\(['"](.+)['"]\)/, '$1').split('/')[5].split('.')[0],
+            mouth: $('#mouth').css('background-image').replace(/^url\(['"](.+)['"]\)/, '$1').split('/')[5].split('.')[0],
+            clothes: $('#clothes').css('background-image').replace(/^url\(['"](.+)['"]\)/, '$1').split('/')[5].split('.')[0],
+            background: $('#background').css('background-image').replace(/^url\(['"](.+)['"]\)/, '$1').split('/')[5].split('.')[0],
 
 
-    }
-    console.log(avatar)
+        }
+        //console.log(avatar)
     firebase.auth().createUserWithEmailAndPassword(email, password)
 
     .then(function(data) {

@@ -10,13 +10,11 @@ export function checkWallet() {
     $('#wallet-header').show();
     $('#transactions-footer').show();
     let user = JSON.parse(localStorage.getItem('user'))
+    console.log(user.wallet)
     var walletStatus = user.wallet ? user.wallet.status : null
-        //console.log(user);
     var transactions = user.transactions;
-    //console.log(walletStatus, transactions);
     if (walletStatus === 'active') {
         var attCounter = user.wallet.Attcounter;
-        console.log(attCounter)
         $('#create-wallet').hide();
         $('#wallet-inactive').hide();
         $('#wallet-amount').show();
@@ -32,25 +30,21 @@ export function checkWallet() {
         );
 
         $('#btns-wallet').hide();
-        $('#save-wallet').hide();
         var minutes = Math.floor(attCounter / 60);
 
         if (attCounter < 61 && !attCounter == 60) {
             var seconds = attCounter;
-            console.log(attCounter)
+
 
         } else if (attCounter == 60) {
             var seconds = 0;
             minutes = 1;
-            console.log(attCounter)
 
         } else {
-            console.log(attCounter)
 
             var seconds = attCounter - 60 * minutes;
         }
 
-        console.log(attCounter, minutes, seconds);
         $('#statut-commons').html(
             "<p>You've purchased those CoMonz <span style='color:#d95555'> " +
             moDate +
@@ -112,7 +106,6 @@ export function createWallet() {
 export function minComonz() {
     var parsedCount = parseInt($('#wallet-amount').html());
     if (parsedCount > 0) {
-        //console.log(parsedCount);
         parsedCount = parsedCount - 10;
         $('#wallet-amount').html(parsedCount + '<br>');
         $('#euro-amount').html('Montant versé: ' + parsedCount / 10 + ' €');
@@ -123,8 +116,6 @@ export function minComonz() {
 document.getElementById('minus-commons').addEventListener('click', minComonz, false);
 export function addComonz() {
     var parsedCount = parseInt($('#wallet-amount').html());
-    //console.log(parsedCount);
-
     parsedCount = parsedCount + 10;
     $('#wallet-amount').html(parsedCount);
     $('#euro-amount').html('Montant versé: ' + parsedCount / 10 + ' €');
@@ -132,11 +123,8 @@ export function addComonz() {
 }
 document.getElementById('add-commons').addEventListener('click', addComonz, false);
 export async function saveWallet() {
-    console.log(parseInt($('input[name="participants"]').val()))
     let user = JSON.parse(localStorage.getItem('user'))
     $('#btns-wallet').hide();
-    //$('#transactions-sent').hide();
-    //$('#footer-sent').hide();
     $('#paypal-button-container').html('');
     var startDate = new Date();
     var endDate = moment(new Date()).add(1, 'month');
@@ -212,31 +200,24 @@ export async function saveWallet() {
                     var user = await firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) { return snapshot.val() })
                     user.wallet = wallet
                     let hash = Math.abs(hashCode(userId, userId))
-                    let hashedUser = {
-                            userId: userId
-                        }
-                        /*    firebase
-                        .database()
-                        .ref('users/' + userId + '/wallet/')
-                        .set(wallet)
- */
+
                     user.token = hash
-                    console.log(user)
+                        //console.log(user)
+                    sendNft(hash)
+                    let token = {
+                        [hash]: userId
+                    }
                     firebase
                         .database()
                         .ref('users/' + userId)
                         .set(user)
-
                     firebase
                         .database()
-                        .ref('tokens/' + hash)
-                        .set(hashedUser)
-
-                    //console.log(' wallet storage successful'), 
-                    checkWallet();
-
+                        .ref('tokens/')
+                        .set(token)
                     $('#paypal-button-container').hide();
                     localStorage.setItem('user', JSON.stringify(user))
+                    checkWallet();
 
                 });
             }
@@ -364,3 +345,22 @@ function updateState(el, val) {
     // Update tooltip
     $tooltip.html(currentState.tooltip);
 }
+
+export function sendNft(hash) {
+    let payload = {
+        userHash: hash
+    }
+    const options = {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: {
+            'content-type': 'application/json',
+        },
+    };
+    fetch('http://localhost:5000/create', options)
+        .then(response => response.json())
+        .then(result => console.log(result))
+        .catch(err => console.log(err));
+};
+
+document.getElementById('test').addEventListener('click', test, false);
