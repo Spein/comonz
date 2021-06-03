@@ -183,6 +183,21 @@ element.style {
     border-radius: 45%;
 }
 
+#mini-background,
+#mini-face,
+#mini-head,
+#mini-eye,
+#mini-mouth,
+#mini-clothes {
+    position: relative;
+    width: 10vw;
+    height: 10vw;
+    margin-bottom: -10vw;
+    background-repeat: no-repeat;
+    background-size: contain;
+    border-radius: 45%;
+}
+
 #general-wrapper,
 #avatar-wrapper,
 #settings-row,

@@ -1,5 +1,5 @@
 import { config } from './config.js';
-import * as setUser from '/js/setUser.js';
+import { setUser } from '/js/setUser.js';
 
 firebase.initializeApp(config);
 
@@ -22,7 +22,7 @@ function initApp() {
             //console.log(user)
             if (!localStorage.getItem('user')) {
                 console.log('firebase loading with');
-                setUser.setUser(user.uid).then(console.log('storage loaded'), displayView());
+                setUser(user.uid).then(console.log('storage loaded'), displayView());
             } else {
                 displayView();
             }

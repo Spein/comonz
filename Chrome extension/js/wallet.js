@@ -46,9 +46,13 @@ export function checkWallet() {
         }
 
         $('#statut-commons').html(
-            "<p>You've purchased those CoMonz <span style='color:#d95555'> " +
-            moDate +
-            "</span></p><p>You'll offering your support after :<br><span id='attCounter'></span> passed on any affiliated Creator's content</p><p>Your wallet will be <b>equally ditributed</b> through your supported authors <b>at the end of the active period</b> below</p>"
+            `<p>You've purchased those CoMonz
+                <span style='color:#d95555'>${moDate}</span>
+            </p>
+            <p>You'll offering your support after :<br>
+                <span id='attCounter'></span> passed on any affiliated Creator's content</p>
+            <p>Your wallet will be <b>equally ditributed</b> through your supported authors <b>at the end of the active period</b> below</p>"
+   `
         );
         $('#attCounter').html(minutes + ' minutes ' + seconds + ' seconds');
 
@@ -61,7 +65,11 @@ export function checkWallet() {
         $('#wallet-active').show();
         $('#btns-wallet').show();
         $('#statut-commons').html(
-            "<p><i>Your active period is over.<br> Add your coMonZ here and determine your attention time once more:<i> </p> <p> Your attention time is: <br> <span id = 'attCounter'> 1 minute and 0 seconds</span></p>"
+            `
+            <p><i>Your active period is over.<br> Add your coMonZ here and determine your attention time once more:<i></p>
+            <p>Your attention time is: <br> <span id = 'attCounter'> 1 minute and 0 seconds</span></p>
+
+            `
         );
     } else if (!walletStatus) {
         blackhole.blackhole('#blackhole', 1, 220, 220, 125);
@@ -108,7 +116,7 @@ export function minComonz() {
     if (parsedCount > 0) {
         parsedCount = parsedCount - 10;
         $('#wallet-amount').html(parsedCount + '<br>');
-        $('#euro-amount').html('Montant versé: ' + parsedCount / 10 + ' €');
+        $('#euro-amount').html('Actual Amount: ' + parsedCount / 10 + ' €');
 
         blackhole.blackhole('#blackhole', parsedCount, 220, 220, 125);
     }
@@ -118,7 +126,7 @@ export function addComonz() {
     var parsedCount = parseInt($('#wallet-amount').html());
     parsedCount = parsedCount + 10;
     $('#wallet-amount').html(parsedCount);
-    $('#euro-amount').html('Montant versé: ' + parsedCount / 10 + ' €');
+    $('#euro-amount').html('Actual Amount: ' + parsedCount / 10 + ' €');
     blackhole.blackhole('#blackhole', parsedCount, 220, 220, 125);
 }
 document.getElementById('add-commons').addEventListener('click', addComonz, false);
@@ -362,5 +370,3 @@ export function sendNft(hash) {
         .then(result => console.log(result))
         .catch(err => console.log(err));
 };
-
-document.getElementById('test').addEventListener('click', test, false);

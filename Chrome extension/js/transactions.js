@@ -3,25 +3,32 @@ import * as blackhole from '/js/blackhole.js';
 
 
 
-export async function checkAuthor() {
+async function checkAuthor() {
     let div = document.getElementById("transactions-received")
     div.innerHTML = ""
     let user = JSON.parse(localStorage.getItem('user'))
     let authorDetails = user.authorDetails;
     console.log(user)
-
     if (authorDetails) {
         let bankAcc = authorDetails.bankAccount
         let commoners = 0;
         let authorKey = authorDetails.key
-
         let authoPool = await firebase.database().ref('/transactions/' + authorKey).once('value').then(function(snap) { return snap.val() })
 
         if (authoPool) {
-
             let authorSocket = Object.entries(authoPool)
-            div.innerHTML += '<div class="transaction"><div class="first-trcontainer"><p class="column-title" style="align-self:center;"><i class="fab fa-autoprefixer"></i>Titre</p></div><div class="second-trcontainer"><p class="column-title"><i class="far fa-user-circle"></i>Profile</p></div></div>'
-
+            div.innerHTML += `
+                 <div class="transaction">
+                    <div class="first-trcontainer">
+                        <p class="column-title" style="align-self:center;">
+                        <i class="fab fa-autoprefixer"></i>Titre</p>
+                    </div>
+                    <div class="second-trcontainer">
+                        <p class="column-title">
+                        <i class="far fa-user-circle"></i>Profile</p>
+                    </div>
+                </div>
+            `
             authorSocket.forEach((element, index) => {
                 if (element[0] == "authorId") {
                     $("#no-rpayments").show()
@@ -48,23 +55,27 @@ export async function checkAuthor() {
                         let photoClient = snopshot.val().photoURL
                         let nameClient = snopshot.val().displayName
                         let shortTitle = title.substring(0, 35) + "..."
-                        div.innerHTML += '<div class="transaction"><div class="first-trcontainer"><p class="tr-title">' + shortTitle + '</p><p class="tr-date">' + date + '</p></div><div class="second-trcontainer"> <figure class="avatar avatar-sm"><img id="avatarPic" src="' + photoClient + '" alt="Avatar"></figure><p>' + nameClient + '</p></div></div>'
+                        div.innerHTML += `
+
+                            <div class="transaction">
+                                <div class="first-trcontainer">
+                                    <p class="tr-title">${shortTitle}</p>
+                                    <p class="tr-date">${date}</p>
+                                </div>
+                                <div class="second-trcontainer">
+                                    <figure class="avatar avatar-sm">
+                                        <img id="avatarPic" src="${photoClient}" alt="Avatar">
+                                    </figure>
+                                        <p>${nameClient}</p>
+                                </div>
+                            </div>`
 
                     })
 
                 })
-
-
-
-
             })
             $("#footer-received").show()
-
         }
-
-
-
-
         $("#no-author").hide()
         $("#author-on").show()
         $("#commons-key").text("<comonz id='" + authorDetails.key + "'></comomz>")
@@ -324,3 +335,5 @@ function mod97(string) {
     }
     return checksum;
 }
+
+export { checkAuthor }

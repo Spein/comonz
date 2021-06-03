@@ -4,7 +4,18 @@ export function getUserpaidContents() {
     var div = document.getElementById('transactions-sent');
     div.innerHTML = '';
     div.innerHTML +=
-        '<div class="transaction"><div class="first-trcontainer"><p class="column-title" style="align-self:center;"><i class="fab fa-autoprefixer"></i>Title</p></div><div class="second-trcontainer"><p class="column-title"><i class="fas fa-feather-alt"></i> Creator</p></div></div>';
+        `
+        <div class="transaction">
+            <div class="first-trcontainer">
+                <p class="column-title" style="align-self:center;">
+                    <i class="fab fa-autoprefixer"></i>Title</p>
+            </div>
+            <div class="second-trcontainer">
+                <p class="column-title">
+                <i class="fas fa-feather-alt"></i> Creator</p>
+            </div>
+        </div>
+    `
     let user = JSON.parse(localStorage.getItem('user'));
     let transactions = user.transactions;
     var urls = Object.keys(transactions);
@@ -40,15 +51,20 @@ export function getUserpaidContents() {
                 var moDate = moment.tz(subDate, tz).fromNow();
                 var shortTitle = title.substring(0, 35) + '...';
                 div.innerHTML +=
-                    '<div class="transaction payed"><div class="first-trcontainer"><p class="tr-title">' +
-                    shortTitle +
-                    '</p><p class="tr-date">' +
-                    moDate +
-                    '</p></div><div class="second-trcontainer"> <figure class="avatar avatar-sm"><img id="avatarPic" src="' +
-                    authorphotoURL +
-                    '" alt="Avatar"></figure><p>' +
-                    authorDisplayname +
-                    '</p></div></div>';
+                    `<div class="transaction payed">
+                        <div class="first-trcontainer">
+                            <p class="tr-title">${shortTitle}</p>
+                            <p class="tr-date">${moDate}</p>
+                        </div>
+                        <div class="second-trcontainer">
+                            <figure class="avatar avatar-sm">
+                                <img id="avatarPic" src="${authorphotoURL}" alt="Avatar">
+                            </figure>
+                            <p>${authorDisplayname}</p>
+                        </div>
+                    </div>
+                    `
+
             }
         });
         $('#footer-sent').show();
@@ -61,7 +77,17 @@ export async function getSendPaymentsbyAuthors() {
     var div = document.getElementById('transactions-sent');
     div.innerHTML = '';
     div.innerHTML +=
-        '<div class="transaction"><div class="first-trcontainer"><p class="column-title" style="align-self:center;"><i class="fas fa-feather-alt"></i> Creator</p></div><div class="second-trcontainer"><p class="column-title"><i class="fab fa-slack-hash"></i>Contents</p></div></div>';
+        `
+            <div class="transaction">
+                <div class="first-trcontainer">
+                    <p class="column-title" style="align-self:center;">
+                        <i class="fas fa-feather-alt"></i> Creator</p>
+                </div>
+                <div class="second-trcontainer">
+                    <p class="column-title"><i class="fab fa-slack-hash"></i>Contents</p>
+                </div>
+            </div>
+        `
     var clientIds = [];
     let user = await JSON.parse(localStorage.getItem('user'));
     var userId = user.uid;
@@ -82,13 +108,20 @@ export async function getSendPaymentsbyAuthors() {
         var nameClient = users.displayName;
         var counts = getOccurence(clientIds, valeur);
         div.innerHTML +=
-            '<div class="transaction"><div class="first-trcontainer"><figure class="avatar avatar-sm"><img id="avatarPic" src="' +
-            photoClient +
-            '" alt="Avatar"></figure><p>' +
-            nameClient +
-            '</p></div><div class="second-trcontainer"><p class="tr-title">' +
-            counts +
-            '</p> </div></div>';
+            `
+            <div class="transaction">
+                <div class="first-trcontainer">
+                    <figure class="avatar avatar-sm">
+                        <img id="avatarPic" src="${photoClient}" alt="Avatar">
+                    </figure>
+                    <p>${nameClient}</p>
+                </div>
+                <div class="second-trcontainer">
+                    <p class="tr-title">${counts}</p>
+                </div>
+            </div>
+            `
+
     });
 }
 // Paiements totaux par contenus
@@ -96,7 +129,19 @@ export async function getReceivedPaymentsbyContents() {
     var div = document.getElementById('transactions-received');
     div.innerHTML = '';
     div.innerHTML +=
-        '<div class="transaction"><div class="first-trcontainer"><p class="column-title" style="align-self:center;"><i class="far fa-user-circle"></i>User</p></div><div class="second-trcontainer"><p class="column-title"><i class="fab fa-slack-hash"></i>CoMonz</p></div></div>';
+        `
+        <div class="transaction">
+            <div class="first-trcontainer">
+                <p class="column-title" style="align-self:center;">
+                <i class="far fa-user-circle"></i>User</p>
+            </div>
+            <div class="second-trcontainer">
+                <p class="column-title">
+                <i class="fab fa-slack-hash"></i>CoMonz</p>
+            </div>
+        </div>
+
+        `
     let user = await JSON.parse(localStorage.getItem('user'));
     var userId = user.uid;
     var authorKey = userId.authorDetails.key;
@@ -121,13 +166,18 @@ export async function getReceivedPaymentsbyContents() {
                 var shortTitle = title.substring(0, 35) + '...';
                 var commoners = Object.keys(snap.val()).length;
                 $('#transaction-amount').html(authorSocket.length + 1);
-                console.log();
                 div.innerHTML +=
-                    '<div class="transaction"><div class="first-trcontainer"><p class="tr-title">' +
-                    shortTitle +
-                    '</p></div><div class="second-trcontainer"><p>' +
-                    commoners +
-                    '</p></div></div>';
+                    `
+                <div class="transaction">
+                    <div class="first-trcontainer">
+                        <p class="tr-title">${shortTitle}</p>
+                    </div>
+                    <div class="second-trcontainer">
+                        <p>${commoners}</p>
+                    </div>
+                </div>
+                `
+
             });
     });
 }
@@ -136,7 +186,19 @@ export async function getReceivedPaymentsbyUsers() {
     var div = document.getElementById('transactions-received');
     div.innerHTML = '';
     div.innerHTML +=
-        '<div class="transaction"><div class="first-trcontainer"><p class="column-title" style="align-self:center;"><i class="fab fa-autoprefixer"></i>User</p></div><div class="second-trcontainer"><p class="column-title"><i class="fab fa-slack-hash"></i>CoMonz</p></div></div>';
+        `
+    <div class="transaction">
+        <div class="first-trcontainer">
+            <p class="column-title" style="align-self:center;">
+                <i class="fab fa-autoprefixer"></i>User</p>
+        </div>
+        <div class="second-trcontainer">
+            <p class="column-title">
+                <i class="fab fa-slack-hash"></i>CoMonz</p>
+        </div>
+    </div>
+
+    `
     var clientIds = [];
     let user = await JSON.parse(localStorage.getItem('user'));
     var userId = user.uid;
@@ -172,13 +234,19 @@ export async function getReceivedPaymentsbyUsers() {
         var div = document.getElementById('transactions-received');
         var counts = getOccurence(clientIds, valeur);
         div.innerHTML +=
-            '<div class="transaction"><div class="first-trcontainer"><figure class="avatar avatar-sm"><img id="avatarPic" src="' +
-            photoClient +
-            '" alt="Avatar"></figure><p>' +
-            nameClient +
-            '</p></div><div class="second-trcontainer"><p class="tr-title">' +
-            counts +
-            '</p> </div></div>';
+            `
+        <div class="transaction">
+            <div class="first-trcontainer">
+                <figure class="avatar avatar-sm">
+                    <img id="avatarPic" src="${photoClient}" alt="Avatar">
+                </figure>
+                <p>${nameClient}</p>
+            </div>
+            <div class="second-trcontainer">
+                <p class="tr-title">${counts}</p>
+            </div>
+        </div>`
+
     });
 }
 export function getOccurence(array, value) {

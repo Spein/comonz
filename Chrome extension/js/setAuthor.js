@@ -15,6 +15,7 @@ export function getAuthorDetails(commonzkey, url) {
         let author = {};
         firebase.database().ref('/transactions/' + commonzkey).once('value').then((data) => {
             author.transactions = data.val();
+            console.log(commonzkey, author)
             console.log(author.transactions[url]);
             author.content = {};
             author.content.title = author.transactions[url].title;

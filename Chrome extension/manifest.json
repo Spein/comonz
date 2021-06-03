@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "CoMonZ",
     "description": "Commons are priceless, value-added by your love",
-    "version": "2.8",
+    "version": "2.9",
     "icons": {
         "128": "./logo/logo-base.png"
     },
@@ -31,9 +31,22 @@
     ],
     "content_scripts": [{
         "matches": ["http://*/*", "https://*/*"],
-        "js": ["content.js", "js/jquery.js", "js/jsrsasign-all-min.js", "js/rangeslider.min.js", "js/paypal.js", "js/fontAwesome.js", "js/underscore-min.js", "js/signin.js",
-            "js/onProfile.js", "js/setUser.js", "js/onContent.js", "js/moment.js", "js/firebase/firebase-app.js",
-            "js/firebase/firebase-database.js", "js/firebase/firebase-storage.js", "js/moment.js"
+        "js": [
+            "content.js",
+            "js/jquery.js",
+            "js/jsrsasign-all-min.js",
+            "js/rangeslider.min.js",
+            "js/paypal.js",
+            "js/fontAwesome.js",
+            "js/underscore-min.js",
+            "js/signin.js",
+            "js/onProfile.js",
+            "js/setUser.js",
+            "js/onContent.js",
+            "js/firebase/firebase-app.js",
+            "js/firebase/firebase-database.js",
+            "js/firebase/firebase-storage.js",
+            "js/moment.js"
         ],
         "run_at": "document_start"
     }],
