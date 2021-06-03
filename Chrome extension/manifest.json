@@ -40,8 +40,6 @@
             "js/fontAwesome.js",
             "js/underscore-min.js",
             "js/signin.js",
-            "js/onProfile.js",
-            "js/setUser.js",
             "js/onContent.js",
             "js/firebase/firebase-app.js",
             "js/firebase/firebase-database.js",

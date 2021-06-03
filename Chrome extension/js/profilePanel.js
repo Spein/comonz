@@ -24,7 +24,7 @@ for (var i = 0; i < bugText.length; i++) {
 
 
 
-document.addEventListener('load', loadUser());
+//document.addEventListener('load', loadUser());
 
 window.addEventListener('storage', () => {
     loadUser();
