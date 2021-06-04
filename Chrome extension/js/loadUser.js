@@ -4,8 +4,8 @@ import { styledTabs } from '/js/styledTabs.js';
 import { checkSupport } from '/js/checkSupport.js';
 
 
-function loadUser() {
-    let user = JSON.parse(localStorage.getItem('user'));
+async function loadUser() {
+    let user = await JSON.parse(localStorage.getItem('user'));
     //console.log(localStorage, JSON.parse(localStorage.getItem('user')));
     $('#displayName').text(user.displayName);
     $('#head').css("background-image", "url(" + `../img/${user.photoURL.genre}/${user.photoURL.head}.png` + ")")

@@ -3,10 +3,7 @@ import { updateCount } from '/js/updateCount.js';
 
 
 async function bakingContent(authorKey, url, title, img, artToSend) {
-    // localStorage.setItem("triggerOn", "on")
-    //localStorage.setItem('authorkey', authorKey)
     let user = JSON.parse(localStorage.getItem('user'));
-    //console.log(user)
     var wallet = user.wallet.status;
     let authKey = authorKey;
     let userKey = user.authorKey;
@@ -22,9 +19,7 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
             authorKey: authKey,
             status: 'onGoing'
         };
-        // console.log(transactions, transaction)
         let actualCount = transaction ? transaction.count : onGoingArticle.count;
-        //console.log(artToSend, actualCount)
         if (artToSend && artToSend.startTime && artToSend.stopTime === null) {
             if (!transactions) {
                 user.transactions = {};
@@ -36,7 +31,7 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
                 localStorage.setItem('user', JSON.stringify(user));
             }
             console.log(transaction, onGoingArticle, actualCount);
-            if (actualCount >= -1) {
+            if (actualCount >= -1 && actualCount > -2) {
                 let interval = setInterval(function() {
                     triggerOn = true;
                     if (actualCount) {
@@ -44,13 +39,13 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
                         chrome.browserAction.setBadgeText({ text: badgeCount });
 
                     }
-                    // var path = './logo/image (' + badgeCount + ').png';
-                    //chrome.browserAction.setIcon({ path: path });
-                    //localStorage.setItem('progress', actualCount)
                     actualCount--;
-                    if (actualCount < 0) {
+                    if (actualCount == -1) {
                         clearInterval(interval);
                         chrome.browserAction.setBadgeText({ text: '<3' });
+                        saveTransaction(authKey, url, user.uid, img, title, false);
+                        updateCount(-1, user.uid, url, authorKey);
+
 
                     }
                 }, 1000);
@@ -77,7 +72,6 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
                 user.transactions[url].count = -1;
                 user.transactions[url].status = 'paid';
                 localStorage.setItem('user', JSON.stringify(user));
-                //localStorage.setItem('progress', 'paid')
                 saveTransaction(authKey, url, user.uid, img, title, false);
             } else {
                 triggerOn = false;

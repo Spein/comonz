@@ -1,4 +1,5 @@
 import { loadUser } from '/js/loadUser.js';
+import { setUser } from '/js/setUser.js';
 
 
 //Editable fields
@@ -21,11 +22,25 @@ for (var i = 0; i < bugText.length; i++) {
 
 
 //TutoPanels
+loadPanel()
 
+function loadPanel() {
+    let storagedUser = JSON.parse(localStorage.getItem('user'))
+
+    console.log("panel loaded")
+    if (storagedUser) {
+        console.log(storagedUser)
+        loadUser();
+    } else {
+        console.log(storagedUser)
+
+        window.addEventListener('storage', () => {
+            console.log("storage loaded", JSON.parse(localStorage.getItem('user')))
+            loadUser();
+        });
+    }
+
+}
 
 
 //document.addEventListener('load', loadUser());
-
-window.addEventListener('storage', () => {
-    loadUser();
-});

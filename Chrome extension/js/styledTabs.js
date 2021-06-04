@@ -17,7 +17,6 @@ function styledTabs(user) {
 
     } else {
         $('#nft-off').hide()
-        console.log('temerde')
     }
 }
 

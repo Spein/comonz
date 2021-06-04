@@ -10,26 +10,20 @@ export async function displayView() {
     //console.log(authorKey, url)
     if (!authorKey || !url) {
         console.log('profile loaded');
-        $('#container').load('onProfile.html');
+        $('#container').load('./html/onProfile.html');
     } else {
-        $('#container').load('onContent.html');
+        $('#container').load('./html/onContent.html');
     }
 }
 
 function initApp() {
     firebase.auth().onAuthStateChanged(async function(user) {
         if (user) {
-            //console.log(user)
-            if (!localStorage.getItem('user')) {
-                console.log('firebase loading with');
-                setUser(user.uid).then(console.log('storage loaded'), displayView());
-            } else {
-                displayView();
-            }
+            setUser(user.uid).then(console.log(JSON.parse(localStorage.getItem('user'))), displayView())
+
         } else {
             console.log('signed out');
-
-            $('#container').load('sign-in.html');
+            $('#container').load('./html/sign-in.html');
             localStorage.clear();
         }
     });

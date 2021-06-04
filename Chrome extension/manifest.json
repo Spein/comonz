@@ -34,7 +34,6 @@
         "js": [
             "content.js",
             "js/jquery.js",
-            "js/jsrsasign-all-min.js",
             "js/rangeslider.min.js",
             "js/paypal.js",
             "js/fontAwesome.js",

@@ -183,6 +183,13 @@ element.style {
     border-radius: 45%;
 }
 
+.boc {
+    width: 50vw;
+    height: 50vw;
+    top: 0;
+    left: 0;
+}
+
 #mini-background,
 #mini-face,
 #mini-head,

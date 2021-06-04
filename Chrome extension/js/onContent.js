@@ -89,6 +89,7 @@ async function getContent() {
                     });
                 })(i);
             }
+            console.log(dateofFunding)
             if (dateofFunding) {
                 const diffTime =
                     Date.parse(user.wallet.endDate.substring(1, 25)) > Date.parse(dateofFunding.substring(1, 25));

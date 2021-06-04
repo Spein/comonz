@@ -2,7 +2,7 @@ import { config } from './js/config.js';
 import { bakingContent } from './js/bakingContent.js';
 import { saveTransaction } from './js/saveTransaction.js';
 import { updateCount } from './js/updateCount.js';
-
+console.log(config)
 firebase.initializeApp(config);
 chrome.runtime.onMessageExternal.addListener((message) => {
     let user = JSON.parse(localStorage.getItem('user'));
