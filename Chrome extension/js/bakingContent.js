@@ -40,12 +40,16 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
                     if (actualCount) {
                         let badgeCount = actualCount.toString();
                         chrome.browserAction.setBadgeText({ text: badgeCount });
+                        chrome.browserAction.setBadgeBackgroundColor({ color: '#323234' });
+
 
                     }
                     actualCount--;
-                    if (actualCount == -1) {
+                    if (actualCount <= -1) {
                         clearInterval(interval);
-                        chrome.browserAction.setBadgeText({ text: '<3' });
+                        chrome.browserAction.setBadgeText({ text: '❤' });
+                        chrome.browserAction.setBadgeBackgroundColor({ color: '#fff' });
+
                         saveTransaction(authorKey, url, user.uid, img, title, false);
                         updateCount(-1, user.uid, url, authorKey);
 
@@ -70,7 +74,9 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
                     }
                 });
             } else if (actualCount <= -1 && user.transactions[authorKey][url].status != 'paid') {
-                chrome.browserAction.setBadgeText({ text: '<3' });
+                chrome.browserAction.setBadgeText({ text: '❤' });
+                chrome.browserAction.setBadgeBackgroundColor({ color: '#fff' });
+
                 updateCount(-1, user.uid, url, authorKey);
                 user.transactions[authorKey][url].count = -1;
                 user.transactions[authorKey][url].status = 'paid';
@@ -79,7 +85,9 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
             } else {
                 triggerOn = false;
                 console.log('pas ici')
-                chrome.browserAction.setBadgeText({ text: '<3' });
+                chrome.browserAction.setBadgeText({ text: '💔' });
+                chrome.browserAction.setBadgeBackgroundColor({ color: '#fff' });
+
                 localStorage.removeItem('"' + url + '"');
 
             }

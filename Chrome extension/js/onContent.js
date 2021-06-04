@@ -55,6 +55,23 @@ async function getContent() {
                 $('#statut-transaction').html('<p>CoMonZ dropped in :<br>' + (parseInt(progress) - 1) + ' seconds</p>');
                 progress--;
                 localStorage.setItem('sentProgress', parseInt(progress));
+                if (progress <= -1) {
+                    clearInterval()
+                    if (dateofFunding) {
+                        const diffTime =
+                            Date.parse(user.wallet.endDate.substring(1, 25)) > Date.parse(dateofFunding.substring(1, 25));
+                        const fundDate = moment.tz(dateofFunding.substring(1, 25), tz).fromNow();
+                        $('#statut-transaction').hide();
+                        $('#content-fund').show();
+                        $('#funding-date').html(fundDate);
+                        console.log(diffTime);
+                        if (diffTime) {
+                            $('#cancel-fund').show();
+                        } else {
+                            $('#cancel-fund').hide();
+                        }
+                    }
+                }
             }, 1000);
             for (var i = 0; i < editables.length; i++) {
                 (function(index) {
@@ -197,7 +214,7 @@ async function getContent() {
         transRef.remove();
         comRef.remove();
         userRef.update({
-            count: 60,
+            count: user.wallet.Attcounter,
             status: 'canceled'
         });
         console.log('remove completed');
