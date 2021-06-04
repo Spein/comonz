@@ -2,7 +2,6 @@ import { config } from './js/config.js';
 import { bakingContent } from './js/bakingContent.js';
 import { saveTransaction } from './js/saveTransaction.js';
 import { updateCount } from './js/updateCount.js';
-console.log(config)
 firebase.initializeApp(config);
 chrome.runtime.onMessageExternal.addListener((message) => {
     let user = JSON.parse(localStorage.getItem('user'));
@@ -48,26 +47,31 @@ chrome.runtime.onMessage.addListener(async function(request, sender, sendRespons
     let artToSend;
     if (request.payload[0] || partnerUrls) {
         let authorKey = request.payload[0] ? request.payload[0] : partnerUrls.key;
-        saveTransaction(authorKey, url, user.uid, img, title, true);
         localStorage.setItem('authorkey', authorKey);
         localStorage.setItem('url', url);
-        //console.log(request.payload)
-        if (request.payload[4]) {
-            let artTempStart = url;
-            artTempStart = {
-                startTime: request.payload[4],
-                stopTime: null
-            };
-            artToSend = artTempStart;
-            bakingContent(authorKey, url, title, img, artToSend);
-        } else if (request.payload[5] && JSON.parse(localStorage.getItem('"' + url + '"'))) {
-            // console.log("dep")
-            let artTempStop = JSON.parse(localStorage.getItem('"' + url + '"'));
-            artTempStop.stopTime = request.payload[5];
-            artToSend = artTempStop;
-            localStorage.removeItem('"' + url + '"');
-            bakingContent(authorKey, url, title, img, artToSend);
+        saveTransaction(authorKey, url, user.uid, img, title, true);
+        let userAuthkey = user.authorDetails ? user.authorDetails.key : null
+        if ((authorKey != userAuthkey) || !user.authorDetails) {
+
+            //console.log(request.payload)
+            if (request.payload[4]) {
+                let artTempStart = url;
+                artTempStart = {
+                    startTime: request.payload[4],
+                    stopTime: null
+                };
+                artToSend = artTempStart;
+                bakingContent(authorKey, url, title, img, artToSend);
+            } else if (request.payload[5] && JSON.parse(localStorage.getItem('"' + url + '"'))) {
+                // console.log("dep")
+                let artTempStop = JSON.parse(localStorage.getItem('"' + url + '"'));
+                artTempStop.stopTime = request.payload[5];
+                artToSend = artTempStop;
+                localStorage.removeItem('"' + url + '"');
+                bakingContent(authorKey, url, title, img, artToSend);
+            }
         }
+
     } else {
         chrome.browserAction.setIcon({ path: './logo/logo-base.png' });
         chrome.browserAction.setBadgeText({ text: '' });
@@ -144,7 +148,7 @@ chrome.runtime.onConnect.addListener(function(port) {
         let authorKey = localStorage.getItem('sentKey');
         let title = localStorage.getItem('sentTitle');
         let img = localStorage.getItem('sentImg');
-        let progress = localStorage.getItem('sentProgress') ? parseInt(localStorage.getItem('sentProgress')) : user.transactions[url].count
+        let progress = localStorage.getItem('sentProgress') ? parseInt(localStorage.getItem('sentProgress')) : user.transactions[authKey][url].count
         let user = JSON.parse(localStorage.getItem('user'));
         // console.log('disconnected ' + authorKey, url, user.uid, img, title)
         localStorage.removeItem('sentProgress');
@@ -152,14 +156,14 @@ chrome.runtime.onConnect.addListener(function(port) {
             if (progress <= -1) {
                 chrome.browserAction.setBadgeText({ text: '<3' });
                 updateCount(-1, user.uid, url, authorKey);
-                user.transactions[url].count = -1;
-                user.transactions[url].status = 'paid';
+                user.transactions[authKey][url].count = -1;
+                user.transactions[authKey][url].status = 'paid';
                 localStorage.setItem('user', JSON.stringify(user));
                 saveTransaction(authorKey, url, user.uid, img, title, false);
             } else {
                 updateCount(progress, user.uid, url, authorKey);
-                user.transactions[url].count = progress;
-                user.transactions[url].status = 'onGoing';
+                user.transactions[authKey][url].count = progress;
+                user.transactions[authKey][url].status = 'onGoing';
                 localStorage.setItem('user', JSON.stringify(user));
             }
         }

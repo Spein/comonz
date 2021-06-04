@@ -1,7 +1,7 @@
 function updateCount(progress, userId, url, authorKey) {
     return new Promise(function(resolve, reject) {
         //console.log(progress, status, userId, url)
-        let countRef = firebase.database().ref('/users/' + userId + '/transactions/' + url);
+        let countRef = firebase.database().ref('/users/' + userId + '/transactions/' + authorKey + '/' + url);
         let status
         if (progress > -1) {
             status = "Ongoing"
@@ -12,7 +12,6 @@ function updateCount(progress, userId, url, authorKey) {
             .update({
                 count: progress,
                 status: status,
-                authorKey: authorKey
             })
             .then(
                 resolve()

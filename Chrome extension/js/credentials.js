@@ -19,7 +19,10 @@ export async function displayView() {
 function initApp() {
     firebase.auth().onAuthStateChanged(async function(user) {
         if (user) {
-            setUser(user.uid).then(console.log(JSON.parse(localStorage.getItem('user'))), displayView())
+            setUser(user.uid).then((user) => {
+                console.log(user),
+                    displayView()
+            })
 
         } else {
             console.log('signed out');

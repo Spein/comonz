@@ -114,9 +114,12 @@ export function createAuthor() {
     }
     user.authorDetails = initAuth
     localStorage.setItem('user', JSON.stringify(user))
-    firebase.database().ref('users/' + userId + '/authorDetails').set(initAuth).then(firebase.database().ref('transactions/' + authorKey).set({
-        authorId: userId,
-    })).then(checkAuthor())
+    firebase.database().ref('users/' + userId + '/authorDetails')
+        .set(initAuth)
+        .then(firebase.database().ref('transactions/' + authorKey)
+            .set({
+                authorId: userId,
+            })).then(checkAuthor())
 
 
 

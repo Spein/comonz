@@ -30,6 +30,7 @@ export function getAuthorDetails(commonzkey, url) {
                     });
                 });
             }
+            console.log(data.val())
             firebase.database().ref('/users/' + data.val().authorId).once('value').then((data) => {
                 author.details = data.val();
                 resolve(author);

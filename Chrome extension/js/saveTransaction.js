@@ -1,9 +1,10 @@
 function saveTransaction(authorKey, url, userId, featuredImage, title, firstShot) {
     if (firstShot) {
-        console.log("firstshot saved")
         firebase.database().ref('transactions/' + authorKey + '/' + url).once('value').then(function(snapshot) {
             var contentUrl = snapshot.val();
             if (contentUrl == undefined) {
+                console.log("firstshot saved")
+
                 firebase.database().ref('transactions/' + authorKey + '/' + url).set({
                     title: title,
                     img: featuredImage

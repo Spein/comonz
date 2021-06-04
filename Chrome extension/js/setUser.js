@@ -6,7 +6,7 @@ function setUser(user) {
         }
         localStorage.setItem('user', JSON.stringify(userData))
         console.log(localStorage)
-        resolve();
+        resolve(userData);
     });
 }
 

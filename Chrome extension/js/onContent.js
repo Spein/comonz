@@ -1,5 +1,4 @@
 import * as blackhole from '/js/blackhole.js';
-import * as setUser from '/js/setUser.js';
 import { retrieveUser } from '/js/retrieveUser.js';
 import * as setAuthor from '/js/setAuthor.js';
 
@@ -15,11 +14,10 @@ async function getContent() {
     const user = JSON.parse(localStorage.getItem('user'));
     let dateofFunding;
     let comoners;
-    console.log(keyzz, rulzzz, author, user.transactions[rulzzz].count);
+    //console.log(keyzz, rulzzz, author, user.transactions[rulzzz].count);
     const userId = user.uid;
 
-    progress = JSON.parse(localStorage.getItem('lastProgress')) ? parseInt(JSON.parse(localStorage.getItem('lastProgress'))) : user.transactions[rulzzz].count
-    console.log(progress)
+    console.log(author)
     localStorage.removeItem('lastProgress');
     const userCom = author.comments ? author.comments[userId] : null;
     const userComdate = userCom ? moment.tz(userCom.date.substring(1, 25), tz).fromNow() : null;
@@ -33,14 +31,19 @@ async function getContent() {
     }
     const comments = author.comments;
     var authorDisplayname = author.details.displayName;
-    var authorphotoURL = author.details.photoURL;
     var authorDescription = author.details.description;
-    $('#avatarPic').attr('src', authorphotoURL);
+    $('#head').css("background-image", "url(" + `../img/${author.details.photoURL.genre}/${author.details.photoURL.head}.png` + ")")
+    $('#eye').css("background-image", "url(" + `../img/${author.details.photoURL.genre}/${author.details.photoURL.eye}.png` + ")")
+    $('#mouth').css("background-image", "url(" + `../img/${author.details.photoURL.genre}/${author.details.photoURL.mouth}.png` + ")")
+    $('#clothes').css("background-image", "url(" + `../img/${author.details.photoURL.genre}/${author.details.photoURL.clothes}.png` + ")")
+    $('#face').css("background-image", "url(" + `../img/${author.details.photoURL.genre}/${author.details.photoURL.face}.png` + ")")
+    $('#background').css("background-image", "url(" + `../img/${author.details.photoURL.genre}/${author.details.photoURL.background}.png` + ")")
     $('#user-container').text(authorDisplayname);
     $('#description-container').text(authorDescription);
     $('#comment').html('   ');
     var editables = document.getElementsByClassName('editable');
     if (user.wallet) {
+        progress = JSON.parse(localStorage.getItem('lastProgress')) ? parseInt(JSON.parse(localStorage.getItem('lastProgress'))) : user.transactions[keyzz][rulzzz].count
         localStorage.setItem('sentImg', author.content.img);
         localStorage.setItem('sentUrl', rulzzz);
         localStorage.setItem('sentTitle', author.content.title);
@@ -144,12 +147,12 @@ async function getContent() {
                 </div>
                 <div class='second-trcontainer'>
                         <div id="avatar-wrapper">
-                            <div id="mini-background" style="background-image:url(../img/${user.photoURL.genre}/${comments[userId].photoURL.background}.png)"></div>
-                            <div id="mini-face"style="background-image:url(../img/${user.photoURL.genre}/${comments[userId].photoURL.face}.png)"></div>
-                            <div id="mini-head" style="background-image:url(../img/${user.photoURL.genre}/${comments[userId].photoURL.head}.png)"></div>
-                            <div id="mini-eye" style="background-image:url(../img/${user.photoURL.genre}/${comments[userId].photoURL.eye}.png)"></div>
-                            <div id="mini-mouth" style="background-image:url(../img/${user.photoURL.genre}/${comments[userId].photoURL.mouth}.png)"></div>
-                            <div id="mini-clothes" style="border: 3px solid #d95555;style="background-image:url(../img/${user.photoURL.genre}/${comments[userId].photoURL.clothes}.png)""></div>
+                            <div id="mini-background" style="background-image:url(../img/${comments[userId].photoURL.genre}/${comments[userId].photoURL.background}.png)"></div>
+                            <div id="mini-face"style="background-image:url(../img/${comments[userId].photoURL.genre}/${comments[userId].photoURL.face}.png)"></div>
+                            <div id="mini-head" style="background-image:url(../img/${comments[userId].photoURL.genre}/${comments[userId].photoURL.head}.png)"></div>
+                            <div id="mini-eye" style="background-image:url(../img/${comments[userId].photoURL.genre}/${comments[userId].photoURL.eye}.png)"></div>
+                            <div id="mini-mouth" style="background-image:url(../img/${comments[userId].photoURL.genre}/${comments[userId].photoURL.mouth}.png)"></div>
+                            <div id="mini-clothes" style="border: 3px solid #d95555;style="background-image:url(../img/${comments[userId].photoURL.genre}/${comments[userId].photoURL.clothes}.png)""></div>
                             <p style="padding-top:10vw">${comments[userId].displayName}</p>
                         </div>
                 </div>
@@ -190,7 +193,7 @@ async function getContent() {
         const user = await retrieveUser();
         var transRef = firebase.database().ref('transactions/' + keyzz + '/' + rulzzz + '/cTransactions/' + user.uid);
         var comRef = firebase.database().ref('transactions/' + keyzz + '/' + rulzzz + '/comments/' + user.uid);
-        var userRef = firebase.database().ref('users/' + user.uid + '/transactions/' + rulzzz);
+        var userRef = firebase.database().ref('users/' + user.uid + '/transactions/' + keyzz + '/' + rulzzz);
         transRef.remove();
         comRef.remove();
         userRef.update({

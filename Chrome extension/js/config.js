@@ -1,11 +1,11 @@
  let config = {
-     apiKey: "AIzaSyDill4qPQiQijEhxjIQSHPK8gLhZ56ZHDg",
-     authDomain: "comonz-sb.firebaseapp.com",
-     projectId: "comonz-sb",
-     storageBucket: "comonz-sb.appspot.com",
-     databaseURL: "comonz-sb.firebaseio.com",
-     messagingSenderId: "784415263893",
-     appId: "1:784415263893:web:7045e7da862066894edf9c"
+     apiKey: "AIzaSyD2klYcbAMpTYbDvxc5XVPXeT7ppRegJzU",
+     authDomain: "comonz-sandbox.firebaseapp.com",
+     databaseURL: "https://comonz-sandbox-default-rtdb.firebaseio.com",
+     projectId: "comonz-sandbox",
+     storageBucket: "comonz-sandbox.appspot.com",
+     messagingSenderId: "241744572164",
+     appId: "1:241744572164:web:ab4debb703cc6ca42daa51"
  };
 
  let environment = "sandbox"
