@@ -366,7 +366,7 @@ export function sendNft(hash) {
             'content-type': 'application/json',
         },
     };
-    fetch('http://localhost:5000/create', options)
+    fetch('https://comonz-site.herokuapp.com/create', options)
         .then(response => response.json())
         .then(result => console.log(result))
         .catch(err => console.log(err));

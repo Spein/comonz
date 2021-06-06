@@ -16,7 +16,7 @@ async function loadUser() {
     $('#background').css("background-image", "url(" + `../img/${user.photoURL.genre}/${user.photoURL.background}.png` + ")")
     $('#email').text(user.email);
     $('#description').text(user.description);
-    $('#nft-hash').html("<a href='http://localhost:3000/commoner/" + user.token + "' target='_blank'>" + user.token + "</a>")
+    $('#nft-hash').html("<a href='http://www.comonz.us/" + user.token + "' target='_blank'>" + user.token + "</a>")
     executeLogic()
     styledTabs(user);
     checkSupport()
