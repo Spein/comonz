@@ -1,6 +1,30 @@
 import * as blackhole from '/js/blackhole.js';
+var tz = moment.tz.guess(true);
 
+async function getSortedComonerz(authorTransactions) {
+    let returnedValue = [];
+    for (var contentUrl in authorTransactions) {
+        if (contentUrl !== 'authorId') {
+            let contentDetail = authorTransactions[contentUrl]
+            let transactionperUrl = authorTransactions[contentUrl].cTransactions
 
+            for (var userIdTr in transactionperUrl) {
+                let copiedUser = transactionperUrl[userIdTr]
+                let userDetailTr = await firebase.database().ref('/users/' + userIdTr).once('value').then(function(snap) { return snap.val() })
+                copiedUser.title = contentDetail.title
+                copiedUser.contentUrl = contentUrl
+                copiedUser.details = userDetailTr
+                copiedUser.udate = new Date(copiedUser.date.substring(1, 11)).getTime().toString()
+                console.log(copiedUser)
+
+                returnedValue.push(copiedUser)
+            }
+
+            console.log(authorTransactions[contentUrl], transactionperUrl)
+        }
+    }
+    return returnedValue
+}
 
 
 async function checkAuthor() {
@@ -8,72 +32,59 @@ async function checkAuthor() {
     div.innerHTML = ""
     let user = JSON.parse(localStorage.getItem('user'))
     let authorDetails = user.authorDetails;
-    console.log(user)
     if (authorDetails) {
         let bankAcc = authorDetails.bankAccount
         let commoners = 0;
         let authorKey = authorDetails.key
-        let authoPool = await firebase.database().ref('/transactions/' + authorKey).once('value').then(function(snap) { return snap.val() })
+        let authorTransactions = await firebase.database().ref('/transactions/' + authorKey).once('value').then(function(snap) { return snap.val() })
 
-        if (authoPool) {
-            let authorSocket = Object.entries(authoPool)
+        if (authorTransactions) {
             div.innerHTML += `
-                 <div class="transaction">
+            <div class="transaction">
+               <div class="first-trcontainer">
+                   <p class="column-title" style="align-self:center;">
+                   <i class="fab fa-autoprefixer"></i>Titre</p>
+               </div>
+               <div class="second-trcontainer">
+                   <p class="column-title">
+                   <i class="far fa-user-circle"></i>Profile</p>
+               </div>
+           </div>
+       `
+            let sortedUsers = await getSortedComonerz(authorTransactions)
+            commoners = sortedUsers.length;
+            $("#transaction-amount").html(commoners)
+            blackhole.blackhole('#blackhole', commoners + 1, 220, 220, 125)
+
+            let sortedUserbyDate = sortedUsers.sort(function(a, b) {
+                return b.udate.localeCompare(a.udate) || a.udate - b.udate;
+            });
+            sortedUserbyDate.forEach(function(userTr, i) {
+                var subDate = userTr.date.substring(1, 25);
+                var moDate = moment.tz(subDate, tz).fromNow();
+
+                div.innerHTML += `
+
+                <div class="transaction">
+                    <p style="font-style: italic;font-size: 0.6rem;align-self: flex-start;">${moDate}</p>
                     <div class="first-trcontainer">
-                        <p class="column-title" style="align-self:center;">
-                        <i class="fab fa-autoprefixer"></i>Titre</p>
+                        <p class="tr-title">${userTr.title}</p>
+
                     </div>
                     <div class="second-trcontainer">
-                        <p class="column-title">
-                        <i class="far fa-user-circle"></i>Profile</p>
+                        <div id="avatar-wrapper">
+                        <div id="mini-background" style="background-image:url(../img/${userTr.details.photoURL.genre}/${userTr.details.photoURL.background}.png)"></div>
+                        <div id="mini-face"style="background-image:url(../img/${userTr.details.photoURL.genre}/${userTr.details.photoURL.face}.png)"></div>
+                        <div id="mini-head" style="background-image:url(../img/${userTr.details.photoURL.genre}/${userTr.details.photoURL.head}.png)"></div>
+                        <div id="mini-eye" style="background-image:url(../img/${userTr.details.photoURL.genre}/${userTr.details.photoURL.eye}.png)"></div>
+                        <div id="mini-mouth" style="background-image:url(../img/${userTr.details.photoURL.genre}/${userTr.details.photoURL.mouth}.png)"></div>
+                        <div id="mini-clothes" style="border: 3px solid #d95555;style="background-image:url(../img/${userTr.details.photoURL.genre}/${userTr.details.photoURL.clothes}.png)""></div>
+                        <p style="padding-top:10vw">${userTr.details.displayName}</p>
                     </div>
-                </div>
-            `
-            authorSocket.forEach((element, index) => {
-                if (element[0] == "authorId") {
-                    $("#no-rpayments").show()
-                    $("#transaction-amount").html(0)
-                    $("#footer-received").hide()
-                    return;
-                }
-
-                $("#no-rpayments").hide()
-                let urls = element[0]
-                let title = element[1].title
-                let thisContent = authoPool[urls].cTransactions
-                let userSocket = Object.keys(thisContent)
-                let userDate = Object.values(thisContent)
-
-                commoners = commoners + userSocket.length;
-                blackhole.blackhole('#blackhole', commoners + 1, 220, 220, 125)
-                $("#transaction-amount").html(commoners)
-                userSocket.forEach((element, index) => {
-                    let rawdate = snap.val()
-                    let date = moment(rawdate[element].date.substring(1, 11)).fromNow();
-
-                    firebase.database().ref('/users/' + element).once('value').then(function(snopshot) {
-                        let photoClient = snopshot.val().photoURL
-                        let nameClient = snopshot.val().displayName
-                        let shortTitle = title.substring(0, 35) + "..."
-                        div.innerHTML += `
-
-                            <div class="transaction">
-                                <div class="first-trcontainer">
-                                    <p class="tr-title">${shortTitle}</p>
-                                    <p class="tr-date">${date}</p>
-                                </div>
-                                <div class="second-trcontainer">
-                                    <figure class="avatar avatar-sm">
-                                        <img id="avatarPic" src="${photoClient}" alt="Avatar">
-                                    </figure>
-                                        <p>${nameClient}</p>
-                                </div>
-                            </div>`
-
-                    })
-
-                })
+                </div>`
             })
+
+
             $("#footer-received").show()
         }
         $("#no-author").hide()
@@ -338,5 +349,8 @@ function mod97(string) {
     }
     return checksum;
 }
+
+
+
 
 export { checkAuthor }

@@ -22,10 +22,11 @@ export function getUserpaidContents() {
     let userId = user.uid;
     if (transactions) {
         urls.forEach(async function(transaction) {
-            //console.log(transactions[transaction], transaction)
-            var authorKey = transactions[transaction].authorKey;
-            var status = transactions[transaction].status;
-            var count = transactions[transaction].count;
+            let urlTrans = Object.keys(transactions[transaction])
+            console.log(transactions[transaction][urlTrans])
+            var authorKey = transaction;
+            var status = transactions[transaction][urlTrans].status;
+            var count = transactions[transaction][urlTrans].count;
             //console.log(authorKey, status, count)
             if (status === 'paid') {
                 let transactionDetails = await firebase
@@ -41,7 +42,8 @@ export function getUserpaidContents() {
                 });
                 var authorDisplayname = authorInfo.displayName;
                 var authorphotoURL = authorInfo.photoURL;
-                let contentDetail = transactionDetails[transaction];
+                let contentDetail = transactionDetails[urlTrans];
+                console.log(transactionDetails[urlTrans])
                 var img = contentDetail.img;
                 var title = contentDetail.title;
                 console.log(authorDisplayname, authorphotoURL, contentDetail.cTransactions[userId]);
@@ -56,11 +58,15 @@ export function getUserpaidContents() {
                             <p class="tr-title">${shortTitle}</p>
                             <p class="tr-date">${moDate}</p>
                         </div>
-                        <div class="second-trcontainer">
-                            <figure class="avatar avatar-sm">
-                                <img id="avatarPic" src="${authorphotoURL}" alt="Avatar">
-                            </figure>
-                            <p>${authorDisplayname}</p>
+                        <div class='second-trcontainer'>
+                        <div id="avatar-wrapper">
+                            <div id="mini-background" style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.background}.png)"></div>
+                            <div id="mini-face"style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.face}.png)"></div>
+                            <div id="mini-head" style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.head}.png)"></div>
+                            <div id="mini-eye" style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.eye}.png)"></div>
+                            <div id="mini-mouth" style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.mouth}.png)"></div>
+                            <div id="mini-clothes" style="border: 3px solid #d95555;style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.clothes}.png)""></div>
+                            <p style="padding-top:10vw">${authorDisplayname}</p>
                         </div>
                     </div>
                     `
@@ -92,37 +98,41 @@ export async function getSendPaymentsbyAuthors() {
     let user = await JSON.parse(localStorage.getItem('user'));
     var userId = user.uid;
     var arrContent = Object.entries(user.transactions);
-    arrContent.forEach((valeur, i) => {
-        clientIds.push(valeur[1].authorKey);
-    });
-    var filteredclientIds = clientIds.filter((x, i, a) => a.indexOf(x) == i);
-    console.log(filteredclientIds);
-    filteredclientIds.forEach(async function(valeur, i) {
-        let authorId = await firebase.database().ref('/transactions/' + valeur).once('value').then(function(data) {
+    let transactions = user.transactions
+    let authorPool = Object.keys(transactions)
+    console.log(authorPool)
+    authorPool.forEach(async function(authorKey, i) {
+        let authorId = await firebase.database().ref('/transactions/' + authorKey).once('value').then(function(data) {
             return data.val().authorId;
         });
-        let users = await firebase.database().ref('/users/' + authorId).once('value').then(function(data) {
+        let authorDetail = await firebase.database().ref('/users/' + authorId).once('value').then(function(data) {
             return data.val();
         });
-        var photoClient = users.photoURL;
-        var nameClient = users.displayName;
-        var counts = getOccurence(clientIds, valeur);
+        console.log(Object.keys(transactions[authorKey]).length, authorDetail.photoURL)
+
         div.innerHTML +=
             `
-            <div class="transaction">
-                <div class="first-trcontainer">
-                    <figure class="avatar avatar-sm">
-                        <img id="avatarPic" src="${photoClient}" alt="Avatar">
-                    </figure>
-                    <p>${nameClient}</p>
-                </div>
-                <div class="second-trcontainer">
-                    <p class="tr-title">${counts}</p>
+        <div class="transaction payed">
+            <div class="first-trcontainer">
+               <div id="avatar-wrapper">
+                            <div id="mini-background" style="background-image:url(../img/${authorDetail.photoURL.genre}/${authorDetail.photoURL.background}.png)"></div>
+                            <div id="mini-face"style="background-image:url(../img/${authorDetail.photoURL.genre}/${authorDetail.photoURL.face}.png)"></div>
+                            <div id="mini-head" style="background-image:url(../img/${authorDetail.photoURL.genre}/${authorDetail.photoURL.head}.png)"></div>
+                            <div id="mini-eye" style="background-image:url(../img/${authorDetail.photoURL.genre}/${authorDetail.photoURL.eye}.png)"></div>
+                            <div id="mini-mouth" style="background-image:url(../img/${authorDetail.photoURL.genre}/${authorDetail.photoURL.mouth}.png)"></div>
+                            <div id="mini-clothes" style="border: 3px solid #d95555;style="background-image:url(../img/${authorDetail.photoURL.genre}/${authorDetail.photoURL.clothes}.png)""></div>
+                            <p style="padding-top:10vw">${authorDetail.displayName}</p>
                 </div>
             </div>
-            `
-
+            <div class="second-trcontainer">
+                <p class="tr-title">${Object.keys(transactions[authorKey]).length}</p>
+            </div>
+        </div>
+        `
+            /*         clientIds.push(valeur[1].authorKey);
+             */
     });
+
 }
 // Paiements totaux par contenus
 export async function getReceivedPaymentsbyContents() {
@@ -144,18 +154,17 @@ export async function getReceivedPaymentsbyContents() {
         `
     let user = await JSON.parse(localStorage.getItem('user'));
     var userId = user.uid;
-    var authorKey = userId.authorDetails.key;
+    var authorKey = user.authorDetails.key;
     let transactions = await firebase.database().ref('/transactions/' + authorKey).once('value').then(function(data) {
         return data.val();
     });
     var authorSocket = Object.entries(transactions);
     authorSocket.forEach((element, index) => {
-        if (element[0] == 'authorId') {
+        if (element.length > 2) {
             $('#no-rpayments').show();
             $('#transaction-amount').html(0);
             return;
         }
-        $('#no-rpayments').hide();
         var urls = element[0];
         var title = element[1].title;
         firebase
@@ -179,6 +188,8 @@ export async function getReceivedPaymentsbyContents() {
                 `
 
             });
+        $('#no-rpayments').hide();
+
     });
 }
 // Paiements totaux par utilisateurs
@@ -202,7 +213,7 @@ export async function getReceivedPaymentsbyUsers() {
     var clientIds = [];
     let user = await JSON.parse(localStorage.getItem('user'));
     var userId = user.uid;
-    var authorKey = userId.authorDetails.key;
+    var authorKey = user.authorDetails.key;
     let transactions = await firebase.database().ref('/transactions/' + authorKey).once('value').then(function(data) {
         return data.val();
     });
@@ -229,18 +240,23 @@ export async function getReceivedPaymentsbyUsers() {
         let clientUser = await firebase.database().ref('/users/' + valeur).once('value').then(function(data) {
             return data.val();
         });
-        var photoClient = snopshot.val().photoURL;
-        var nameClient = snopshot.val().displayName;
         var div = document.getElementById('transactions-received');
         var counts = getOccurence(clientIds, valeur);
+        console.log(clientUser, valeur)
+
         div.innerHTML +=
             `
         <div class="transaction">
             <div class="first-trcontainer">
-                <figure class="avatar avatar-sm">
-                    <img id="avatarPic" src="${photoClient}" alt="Avatar">
-                </figure>
-                <p>${nameClient}</p>
+                <div id="avatar-wrapper">
+                <div id="mini-background" style="background-image:url(../img/${clientUser.photoURL.genre}/${clientUser.photoURL.background}.png)"></div>
+                <div id="mini-face"style="background-image:url(../img/${clientUser.photoURL.genre}/${clientUser.photoURL.face}.png)"></div>
+                <div id="mini-head" style="background-image:url(../img/${clientUser.photoURL.genre}/${clientUser.photoURL.head}.png)"></div>
+                <div id="mini-eye" style="background-image:url(../img/${clientUser.photoURL.genre}/${clientUser.photoURL.eye}.png)"></div>
+                <div id="mini-mouth" style="background-image:url(../img/${clientUser.photoURL.genre}/${clientUser.photoURL.mouth}.png)"></div>
+                <div id="mini-clothes" style="border: 3px solid #d95555;style="background-image:url(../img/${clientUser.photoURL.genre}/${clientUser.photoURL.clothes}.png)""></div>
+                <p style="padding-top:10vw">${clientUser.displayName}</p>
+            </div>
             </div>
             <div class="second-trcontainer">
                 <p class="tr-title">${counts}</p>

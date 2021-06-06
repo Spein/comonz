@@ -77,6 +77,7 @@ export function checkWallet() {
         createWallet();
     }
     if (transactions) {
+        console.log('transactions ' + transactions)
         lists.getUserpaidContents();
         $('#no-transactions').hide();
         $('#transactions-sent').show();
