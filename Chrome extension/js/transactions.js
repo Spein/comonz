@@ -1,5 +1,6 @@
 import * as blackhole from '/js/blackhole.js';
 var tz = moment.tz.guess(true);
+import { tuto } from './tuto.js';
 
 async function getSortedComonerz(authorTransactions) {
     let returnedValue = [];

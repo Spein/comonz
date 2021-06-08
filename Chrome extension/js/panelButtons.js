@@ -6,6 +6,7 @@ import { checkWallet } from '/js/wallet.js';
 import { checkProfile } from '/js/checkProfile.js';
 
 import { getUrl } from '/js/getUrl.js';
+import { tutoDone } from '/js/tuto.js';
 
 import * as blackhole from '/js/blackhole.js';
 import { checkAuthor } from '/js/transactions.js';

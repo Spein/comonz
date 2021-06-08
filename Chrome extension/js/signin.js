@@ -102,6 +102,7 @@ function signUp(email, displayName, password) {
             const RegisteredUser = {
                 uid: data.user.uid,
                 email: email,
+                tuto: true,
                 description: description,
                 displayName: displayName,
                 photoURL: avatar,

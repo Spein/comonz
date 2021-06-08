@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "CoMonZ",
     "description": "Commons are priceless, value-added by your love",
-    "version": "3",
+    "version": "3.1",
     "icons": {
         "128": "./logo/logo-base.png"
     },

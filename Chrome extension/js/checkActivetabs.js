@@ -1,6 +1,9 @@
 import { checkAuthor } from '/js/transactions.js';
+import { tuto } from '/js/tuto.js';
 
 function checkActivetabs() {
+    tuto("creator")
+
     $('#blackhole').html('');
     $('#profile-header').hide();
     $('#wallet-header').hide();

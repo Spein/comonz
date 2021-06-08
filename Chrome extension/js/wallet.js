@@ -1,5 +1,6 @@
 import * as blackhole from '/js/blackhole.js';
 import * as lists from '/js/lists.js';
+import { tuto } from '/js/tuto.js';
 
 moment();
 export function checkWallet() {
@@ -11,6 +12,7 @@ export function checkWallet() {
     $('#transactions-footer').show();
     let user = JSON.parse(localStorage.getItem('user'))
     console.log(user.wallet)
+    tuto("wallet")
     var walletStatus = user.wallet ? user.wallet.status : null
     var transactions = user.transactions;
     if (walletStatus === 'active') {
@@ -222,8 +224,8 @@ export async function saveWallet() {
                         .set(user)
                     firebase
                         .database()
-                        .ref('tokens/')
-                        .set(token)
+                        .ref('tokens/' + hash)
+                        .set({ userId: userId })
                     $('#paypal-button-container').hide();
                     localStorage.setItem('user', JSON.stringify(user))
                     checkWallet();

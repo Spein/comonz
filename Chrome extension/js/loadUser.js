@@ -2,6 +2,7 @@ import * as blackhole from '/js/blackhole.js';
 import { executeLogic } from '/js/executeLogic.js';
 import { styledTabs } from '/js/styledTabs.js';
 import { checkSupport } from '/js/checkSupport.js';
+import { tuto } from '/js/tuto.js';
 
 
 async function loadUser() {
@@ -19,6 +20,8 @@ async function loadUser() {
     $('#nft-hash').html("<a href='http://www.comonz.us/" + user.token + "' target='_blank'>" + user.token + "</a>")
     executeLogic()
     styledTabs(user);
+    console.log(user.tuto)
+    tuto(user, 'profile')
     checkSupport()
     blackhole.blackhole('#blackhole', 1, 260, 220, 150);
 
