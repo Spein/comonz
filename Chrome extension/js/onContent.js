@@ -3,13 +3,17 @@ import { retrieveUser } from '/js/retrieveUser.js';
 import * as setAuthor from '/js/setAuthor.js';
 
 let progress
-setTimeout(getContent(), 1000);
+let url
+getContent()
+
+
 var tz = moment.tz.guess(true);
 async function getContent() {
     const keyzz = await setAuthor.getComonzKey();
     console.log(keyzz)
 
-    const rulzzz = await setAuthor.getUrl();
+    url = await setAuthor.getUrl();
+    const rulzzz = url
     const author = await setAuthor.getAuthorDetails(keyzz, rulzzz);
     const user = JSON.parse(localStorage.getItem('user'));
     let dateofFunding;
@@ -18,7 +22,6 @@ async function getContent() {
     const userId = user.uid;
 
     console.log(author)
-    localStorage.removeItem('lastProgress');
     const userCom = author.comments ? author.comments[userId] : null;
     const userComdate = userCom ? moment.tz(userCom.date.substring(1, 25), tz).fromNow() : null;
     if (author.transactions[rulzzz].cTransactions) {
@@ -44,13 +47,11 @@ async function getContent() {
     var editables = document.getElementsByClassName('editable');
     if (user.wallet) {
         progress = JSON.parse(localStorage.getItem('lastProgress')) ? parseInt(JSON.parse(localStorage.getItem('lastProgress'))) : user.transactions[keyzz][rulzzz].count
-        localStorage.setItem('sentImg', author.content.img);
-        localStorage.setItem('sentUrl', rulzzz);
-        localStorage.setItem('sentTitle', author.content.title);
-        localStorage.setItem('sentKey', keyzz);
+        localStorage.removeItem('lastProgress');
         $('#wallet-on').show();
         $('#wallet-off').hide();
         if (progress > -1) {
+
             setInterval(function() {
                 $('#statut-transaction').html('<p>CoMonZ dropped in :<br>' + (parseInt(progress) - 1) + ' seconds</p>');
                 progress--;
@@ -178,7 +179,7 @@ async function getContent() {
     }
     async function linkComment() {
         const keyzz = await setAuthor.getComonzKey();
-        const rulzzz = await setAuthor.getUrl();
+        const rulzzz = url
         const user = await retrieveUser();
         console.log(keyzz)
         const author = await setAuthor.getAuthorDetails(keyzz, rulzzz);
@@ -206,7 +207,7 @@ async function getContent() {
     document.getElementById('vcomment').addEventListener('click', linkComment, false);
     async function cancelFund() {
         const keyzz = await setAuthor.getComonzKey();
-        const rulzzz = await setAuthor.getUrl();
+        const rulzzz = url
         const user = await retrieveUser();
         var transRef = firebase.database().ref('transactions/' + keyzz + '/' + rulzzz + '/cTransactions/' + user.uid);
         var comRef = firebase.database().ref('transactions/' + keyzz + '/' + rulzzz + '/comments/' + user.uid);
@@ -236,15 +237,3 @@ function goWallet() {
     $('#container').load('profile.html');
 }
 document.getElementById('goWallet').addEventListener('click', goWallet, false);
-window.onload = connectPort();
-
-
-function connectPort() {
-    var port = chrome.runtime.connect({ name: 'knockknock', count: progress });
-    //port.postMessage({ joke: "Knock knock" });
-}
-
-function disconnectPort() {
-    var port = chrome.runtime.disconnect({ name: 'knockknock' });
-    //port.postMessage({ joke: "Knock knock" });
-}

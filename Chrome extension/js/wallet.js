@@ -109,7 +109,7 @@ export function createWallet() {
     $('#wallet-amount').show();
     $('#btns-wallet').show();
     $('#statut-commons').html(
-        "<p> Your attention time is: <br> <span id = 'attCounter'> 1 minute and 0 seconds</span></p>"
+        "<p>Contents are retributed after: <br> <span id = 'attCounter'> 1 minute and 0 seconds</span></p>"
     );
     $('#wallet-on').show();
     $('#commonZ').show();

@@ -3,10 +3,11 @@ import { setUser } from '/js/setUser.js';
 
 firebase.initializeApp(config);
 
+
 export async function displayView() {
     //console.log(currentUser)
-    const authorKey = localStorage.getItem('authorkey') ? localStorage.getItem('authorkey') : null;
-    const url = localStorage.getItem('url') ? localStorage.getItem('url') : null;
+    const authorKey = localStorage.getItem('lastKey') ? localStorage.getItem('lastKey') : localStorage.getItem('authorkey');
+    const url = localStorage.getItem('lastUrl') ? localStorage.getItem('lastUrl') : localStorage.getItem('url');;
     //console.log(authorKey, url)
     if (!authorKey || !url) {
         console.log('profile loaded');

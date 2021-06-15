@@ -1,21 +1,20 @@
-export function getComonzKey() {
-    return new Promise(function(resolve, reject) {
-        let key = localStorage.getItem('authorkey');
-        resolve(key);
-    });
+export async function getComonzKey() {
+    let key = localStorage.getItem('lastKey');
+    localStorage.removeItem('lastKey');
+
+    return key
 }
-export function getUrl() {
-    return new Promise(function(resolve, reject) {
-        let url = localStorage.getItem('url');
-        resolve(url);
-    });
+export async function getUrl() {
+    let url = localStorage.getItem('lastUrl');
+    localStorage.removeItem('lastUrl');
+    return url
 }
 export function getAuthorDetails(commonzkey, url) {
     return new Promise(function(resolve, reject) {
         let author = {};
         firebase.database().ref('/transactions/' + commonzkey).once('value').then((data) => {
             author.transactions = data.val();
-            console.log(commonzkey, author)
+            console.log(commonzkey, author, url)
             console.log(author.transactions[url]);
             author.content = {};
             author.content.title = author.transactions[url].title;

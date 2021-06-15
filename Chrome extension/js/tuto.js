@@ -67,6 +67,10 @@ function tutoDone() {
             $("#tutorial-container").hide()
         )
 }
-document.getElementById('tuto-button').addEventListener('click', tutoDone, false);
+let tutoButton = document.getElementById('tuto-button')
+if (tutoButton) {
+    document.getElementById('tuto-button').addEventListener('click', tutoDone, false);
+
+}
 
 export { tuto, tutoDone }

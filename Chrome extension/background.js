@@ -2,7 +2,6 @@ import { config } from './js/config.js';
 import { bakingContent } from './js/bakingContent.js';
 import { saveTransaction } from './js/saveTransaction.js';
 import { updateCount } from './js/updateCount.js';
-import { checkProfile } from './js/checkProfile.js';
 firebase.initializeApp(config);
 chrome.runtime.onMessageExternal.addListener((message) => {
     let user = JSON.parse(localStorage.getItem('user'));
@@ -25,12 +24,7 @@ chrome.runtime.onMessageExternal.addListener((message) => {
     }
 });
 chrome.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
-    console.log(sender, request.payload)
-    localStorage.removeItem('sentImg');
-    localStorage.removeItem('sentTitle');
-    localStorage.removeItem('sentUrl');
-    localStorage.removeItem('sentKey');
-    localStorage.removeItem('lastProgress');
+    console.log(request.payload)
     chrome.browserAction.setIcon({ path: './logo/logo-base.png' });
     chrome.browserAction.setBadgeText({ text: '' });
     let user = JSON.parse(localStorage.getItem('user'));
@@ -47,7 +41,6 @@ chrome.runtime.onMessage.addListener(async function(request, sender, sendRespons
     }
     let artToSend;
     if (request.payload[0] || partnerUrls) {
-        console.log(request.payload)
         let authorKey = request.payload[0] ? request.payload[0] : partnerUrls.key;
         if (request.payload[3]) {
             localStorage.setItem('authorkey', authorKey);
@@ -68,6 +61,7 @@ chrome.runtime.onMessage.addListener(async function(request, sender, sendRespons
                     stopTime: null
                 };
                 artToSend = artTempStart;
+                // console.log(url)
                 bakingContent(authorKey, url, title, img, artToSend);
             } else if (request.payload[5] && JSON.parse(localStorage.getItem('"' + url + '"'))) {
                 // console.log("dep")
@@ -85,35 +79,26 @@ chrome.runtime.onMessage.addListener(async function(request, sender, sendRespons
         localStorage.removeItem('authorkey');
         localStorage.removeItem('url');
         localStorage.removeItem('progress');
-        localStorage.removeItem('lastUrl');
-        localStorage.removeItem('lastProgress');
-        localStorage.removeItem('lastKey');
     }
 });
 
-/* chrome.tabs.onHighlighted.addListener(function(tabId, changeInfo, tab) {
+chrome.tabs.onHighlighted.addListener(function(tabId, changeInfo, tab) {
     console.log('onHighlightedout');
     localStorage.removeItem('authorkey');
     localStorage.removeItem('url');
-    localStorage.removeItem('progress');
-    localStorage.removeItem('lastUrl');
-    localStorage.removeItem('lastProgress');
-    localStorage.removeItem('lastKey');
     chrome.browserAction.setIcon({ path: './logo/logo-base.png' });
     chrome.browserAction.setBadgeText({ text: '' });
     chrome.tabs.executeScript(null, {
         file: 'content.js'
     });
-}); */
+});
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab, TabStatus) {
     if (tab.active) {
-        localStorage.removeItem('lastProgress');
-        localStorage.removeItem('authorkey');
-        localStorage.removeItem('url');
-        localStorage.removeItem('progress');
+        console.log("tabupdated")
         localStorage.removeItem('lastUrl');
         localStorage.removeItem('lastKey');
-
+        localStorage.removeItem('authorkey');
+        localStorage.removeItem('url');
         chrome.browserAction.setIcon({ path: './logo/logo-base.png' });
         chrome.browserAction.setBadgeText({ text: '' });
         chrome.tabs.executeScript(null, {
@@ -127,17 +112,8 @@ chrome.windows.onFocusChanged.addListener(function(window) {
     console.log(window)
     localStorage.removeItem('authorkey');
     localStorage.removeItem('url');
-    localStorage.removeItem('progress');
-    localStorage.removeItem('lastUrl');
-    localStorage.removeItem('lastProgress');
-    localStorage.removeItem('lastKey');
-    console.log("focus changed")
-
     chrome.browserAction.setIcon({ path: "./logo/logo-base.png" });
     chrome.browserAction.setBadgeText({ text: "" });
-    chrome.tabs.query({ active: true }, function(tabs) {
-        console.log(tabs)
-    })
     chrome.tabs.executeScript(null, {
         "file": "content.js"
     });
@@ -150,45 +126,4 @@ chrome.windows.onRemoved.addListener((window) => {
     console.log('removed')
     localStorage.removeItem('authorkey');
     localStorage.removeItem('url');
-    localStorage.removeItem('progress');
-    localStorage.removeItem('lastUrl');
-    localStorage.removeItem('lastProgress');
-    localStorage.removeItem('lastKey');
 })
-
-
-/* chrome.runtime.onConnect.addListener(function(port) {
-    console.log(port)
-    port.onDisconnect.addListener(async function() {
-
-        let url = localStorage.getItem('sentUrl');
-        let authorKey = localStorage.getItem('sentKey');
-        let title = localStorage.getItem('sentTitle');
-        let img = localStorage.getItem('sentImg');
-        let user = await JSON.parse(localStorage.getItem('user'));
-        console.log(localStorage.getItem('sentProgress'), user.transactions)
-        let progress = localStorage.getItem('sentProgress') ? parseInt(localStorage.getItem('sentProgress')) : user.transactions[authorKey][url].count
-        console.log('disconnected ' + authorKey, url, user.uid, img, title)
-        localStorage.removeItem('sentProgress');
-        if (url) {
-            if (progress <= -1) {
-                chrome.browserAction.setBadgeText({ text: '<3' });
-                updateCount(-1, user.uid, url, authorKey);
-                user.transactions[authKey][url].count = -1;
-                user.transactions[authKey][url].status = 'paid';
-                localStorage.setItem('user', JSON.stringify(user));
-                saveTransaction(authorKey, url, user.uid, img, title, false);
-            } else {
-                updateCount(progress, user.uid, url, authorKey);
-                user.transactions[authKey][url].count = progress;
-                user.transactions[authKey][url].status = 'onGoing';
-                localStorage.setItem('user', JSON.stringify(user));
-            }
-        }
-
-        localStorage.removeItem('sentImg');
-        localStorage.removeItem('sentTitle');
-        localStorage.removeItem('sentUrl');
-        localStorage.removeItem('sentKey');
-    });
-}); */
