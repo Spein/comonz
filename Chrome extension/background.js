@@ -51,6 +51,8 @@ chrome.runtime.onMessage.addListener(async function(request, sender, sendRespons
         }
         saveTransaction(authorKey, url, user.uid, img, title, true);
         let userAuthkey = user.authorDetails ? user.authorDetails.key : null
+        var views = chrome.extension.getViews({ type: "popup" });
+
         if ((authorKey != userAuthkey) || !user.authorDetails) {
 
             //console.log(request.payload)
@@ -72,10 +74,21 @@ chrome.runtime.onMessage.addListener(async function(request, sender, sendRespons
                 bakingContent(authorKey, url, title, img, artToSend);
             }
         } else if (authorKey == userAuthkey) {
-            localStorage.setItem("yourcontent", true);
-            localStorage.setItem('lastKey', authorKey);
-            localStorage.setItem('lastUrl', url);
+            if (views.length >= 1 && request.payload[5]) {
+                setTimeout(() => {
+                    var views2 = chrome.extension.getViews({ type: "popup" });
+                    if (views2.length >= 1) {
+                        localStorage.setItem("yourcontent", true);
+                        localStorage.setItem('lastKey', authorKey);
+                        localStorage.setItem('lastUrl', url);
+
+                    }
+
+                }, 500)
+
+            }
             chrome.browserAction.setIcon({ path: './logo/logo-nowallet.png' });
+
 
 
         }
@@ -90,23 +103,16 @@ chrome.runtime.onMessage.addListener(async function(request, sender, sendRespons
 
 chrome.tabs.onHighlighted.addListener(function(tabId, changeInfo, tab) {
     console.log('onHighlightedout');
-    var views = chrome.extension.getViews({ type: "popup" });
-    if (views.length >= 1) {
-        localStorage.setItem("'lastProgress" + url + "'", actualCount);
-        localStorage.setItem('lastUrl', url);
-        localStorage.setItem('lastKey', authorKey);
-
-        localStorage.removeItem('url');
-
-    } else {
-        localStorage.removeItem('authorkey');
-        localStorage.removeItem('url');
-        localStorage.removeItem('lastUrl');
-        localStorage.removeItem('lastKey');
-        localStorage.removeItem('yourcontent');
 
 
-    }
+    localStorage.removeItem('authorkey');
+    localStorage.removeItem('url');
+    localStorage.removeItem('lastUrl');
+    localStorage.removeItem('lastKey');
+    localStorage.removeItem('yourcontent');
+
+
+
     chrome.browserAction.setIcon({ path: './logo/logo-base.png' });
     chrome.browserAction.setBadgeText({ text: '' });
     chrome.tabs.executeScript(null, {
@@ -116,23 +122,14 @@ chrome.tabs.onHighlighted.addListener(function(tabId, changeInfo, tab) {
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab, TabStatus) {
     if (tab.active) {
         console.log("tabupdated")
-        var views = chrome.extension.getViews({ type: "popup" });
 
-        if (views.length >= 1) {
-            localStorage.setItem("'lastProgress" + url + "'", actualCount);
-            localStorage.setItem('lastUrl', url);
-            localStorage.setItem('lastKey', authorKey);
+        localStorage.removeItem('authorkey');
+        localStorage.removeItem('url');
+        localStorage.removeItem('lastUrl');
+        localStorage.removeItem('lastKey');
+        localStorage.removeItem('yourcontent');
 
-            localStorage.removeItem('url');
 
-        } else {
-            localStorage.removeItem('authorkey');
-            localStorage.removeItem('url');
-            localStorage.removeItem('lastUrl');
-            localStorage.removeItem('lastKey');
-            localStorage.removeItem('yourcontent');
-
-        }
 
         chrome.tabs.executeScript(null, {
             file: 'content.js'
@@ -143,23 +140,13 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab, TabStatus) {
 });
 chrome.windows.onFocusChanged.addListener(function(window) {
     console.log(window)
-    var views = chrome.extension.getViews({ type: "popup" });
+    localStorage.removeItem('authorkey');
+    localStorage.removeItem('url');
+    localStorage.removeItem('lastUrl');
+    localStorage.removeItem('lastKey');
+    localStorage.removeItem('yourcontent');
 
-    if (views.length >= 1) {
-        localStorage.setItem("'lastProgress" + url + "'", actualCount);
-        localStorage.setItem('lastUrl', url);
-        localStorage.setItem('lastKey', authorKey);
 
-        localStorage.removeItem('url');
-
-    } else {
-        localStorage.removeItem('authorkey');
-        localStorage.removeItem('url');
-        localStorage.removeItem('lastUrl');
-        localStorage.removeItem('lastKey');
-        localStorage.removeItem('yourcontent');
-
-    }
     chrome.browserAction.setIcon({ path: "./logo/logo-base.png" });
     chrome.browserAction.setBadgeText({ text: "" });
     chrome.tabs.executeScript(null, {

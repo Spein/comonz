@@ -1,12 +1,15 @@
 export async function getComonzKey() {
-    let key = localStorage.getItem('lastKey');
+    let key = localStorage.getItem('lastKey') ? localStorage.getItem('lastKey') : localStorage.getItem('authorkey');
     localStorage.removeItem('lastKey');
+    localStorage.removeItem('authorkey');
 
     return key
 }
 export async function getUrl() {
-    let url = localStorage.getItem('lastUrl');
+    let url = localStorage.getItem('lastUrl') ? localStorage.getItem('lastUrl') : localStorage.getItem('url');
     localStorage.removeItem('lastUrl');
+    localStorage.removeItem('url');
+
     return url
 }
 export function getAuthorDetails(commonzkey, url) {

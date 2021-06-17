@@ -63,11 +63,13 @@ window.onblur = async function() {
         }
 
     } else {
-        getUrl()
+        let checkedUrl = await getUrl()
+        let key = await getKey()
+
         localKey = localStorage.getItem('authorKey') ? localStorage.getItem('authorKey') : null
         localUrl = localStorage.getItem('hashedUrl') ? localStorage.getItem('hashedUrl') : null
-        if (localKey && localUrl && localKey !== "null" && localKey !== "undefined") {
-            chrome.runtime.sendMessage({ payload: [localKey, localUrl, null, null, null, Date.now()] })
+        if (checkedUrl && key) {
+            chrome.runtime.sendMessage({ payload: [key, checkedUrl, null, null, null, Date.now()] })
             console.log("fblurocus")
             localStorage.removeItem("hashedUrl")
             localStorage.removeItem("authorKey")
@@ -153,7 +155,7 @@ async function fetchContent(key) {
                 let localKey = localStorage.getItem("authorKey")
 
                 console.log(localKey, localUrl, checkedUrl)
-                if (key && checkedUrl) {
+                if (localKey && localUrl) {
                     console.log(key, checkedUrl, title, img)
                     chrome.runtime.sendMessage({ payload: [key, checkedUrl, title, img, Date.now(), null] })
                 }
