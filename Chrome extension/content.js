@@ -13,12 +13,8 @@ if (document.title) {
     title = document.getElementsByTagName('h1')[0]
 
 };
-window.onhashchange = removeStorage
 
-function removeStorage() {
-    localStorage.removeItem("hashedUrl")
-    localStorage.removeItem("authorKey")
-}
+
 window.onload = setTimeout(onloadandfocus, 50)
 
 async function onloadandfocus() {
@@ -35,12 +31,10 @@ async function onloadandfocus() {
     } else {
 
         let key = await getKey()
-        localStorage.removeItem("hashedUrl")
-        localStorage.removeItem("authorKey")
+
 
 
         if (key) {
-            localStorage.setItem("authorKey", key)
             console.log("focus")
             console.log(key)
             fetchContent(key)
@@ -66,13 +60,10 @@ window.onblur = async function() {
         let checkedUrl = await getUrl()
         let key = await getKey()
 
-        localKey = localStorage.getItem('authorKey') ? localStorage.getItem('authorKey') : null
-        localUrl = localStorage.getItem('hashedUrl') ? localStorage.getItem('hashedUrl') : null
         if (checkedUrl && key) {
             chrome.runtime.sendMessage({ payload: [key, checkedUrl, null, null, null, Date.now()] })
             console.log("fblurocus")
-            localStorage.removeItem("hashedUrl")
-            localStorage.removeItem("authorKey")
+
         }
     }
 
@@ -87,7 +78,6 @@ window.onfocus = onloadandfocus
 async function getKey() {
     var elementOfInterest = document.getElementsByTagName('comonz') ? document.getElementsByTagName('comonz') : null
     var key = elementOfInterest.length > 0 ? elementOfInterest[0].id : null;
-    localStorage.setItem("authorKey", key)
 
     return key
 }
@@ -105,7 +95,6 @@ async function getUrl() {
     var preuRL = urlArr.join()
     let hashedUrl = preuRL.replace(/[,]/gi, '')
 
-    localStorage.setItem("hashedUrl", hashedUrl)
     return hashedUrl
 
 }
@@ -151,8 +140,6 @@ async function fetchContent(key) {
                     title = document.getElementsByTagName('h1')[0]
 
                 };
-                let localUrl = localStorage.getItem("hashedUrl")
-                let localKey = localStorage.getItem("authorKey")
 
                 console.log(localKey, localUrl, checkedUrl)
                 if (localKey && localUrl) {
