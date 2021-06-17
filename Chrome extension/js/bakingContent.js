@@ -32,11 +32,11 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
                 user.transactions[authorKey][url] = onGoingArticle;
                 localStorage.setItem('user', JSON.stringify(user));
             }
-            let preCount = localStorage.getItem('sentProgress')
+            let preCount = localStorage.getItem("'sentProgress" + url + "'")
                 // console.log(localStorage)
             let actualCount
             if (preCount) {
-                localStorage.removeItem('sentProgress');
+                localStorage.removeItem("'sentProgress" + url + "'");
                 actualCount = preCount
                     //console.log("actual count " + actualCount)
 
@@ -94,7 +94,7 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
                         console.log(url, user.transactions[authorKey][url].count)
                         localStorage.setItem('user', JSON.stringify(user));
                         if (views.length >= 1) {
-                            localStorage.setItem('lastProgress', actualCount);
+                            localStorage.setItem("'lastProgress" + url + "'", actualCount);
                             localStorage.setItem('lastUrl', url);
                             localStorage.setItem('lastKey', authorKey);
 
@@ -104,7 +104,10 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
                             localStorage.removeItem('authorkey');
                             localStorage.removeItem('url');
                             localStorage.removeItem('lastUrl');
-                            localStorage.removeItem('lastProgress');
+                            localStorage.removeItem("'lastProgress" + url + "'");
+                            localStorage.removeItem('lastKey');
+                            localStorage.removeItem('yourcontent');
+
                         }
 
 

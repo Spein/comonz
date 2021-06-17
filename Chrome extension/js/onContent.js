@@ -46,85 +46,95 @@ async function getContent() {
     $('#comment').html('   ');
     var editables = document.getElementsByClassName('editable');
     if (user.wallet) {
-        progress = JSON.parse(localStorage.getItem('lastProgress')) ? parseInt(JSON.parse(localStorage.getItem('lastProgress'))) : user.transactions[keyzz][rulzzz].count
-        localStorage.removeItem('lastProgress');
+        let ownContent = JSON.parse(localStorage.getItem("yourcontent"))
+        localStorage.removeItem("yourcontent");
+
         $('#wallet-on').show();
         $('#wallet-off').hide();
-        if (progress > -1) {
+        if (ownContent) {
+            $('#statut-transaction').html('')
+            $("#vcomment-field").hide()
+            $('#statut-transaction').html("<p>This is your content. It would be a bit egotic to be your own patron, right?</p>")
 
-            setInterval(function() {
-                $('#statut-transaction').html('<p>CoMonZ dropped in :<br>' + (parseInt(progress) - 1) + ' seconds</p>');
-                progress--;
-                localStorage.setItem('sentProgress', parseInt(progress));
-                if (progress <= -1) {
-                    clearInterval()
-                    if (dateofFunding) {
-                        const diffTime =
-                            Date.parse(user.wallet.endDate.substring(1, 25)) > Date.parse(dateofFunding.substring(1, 25));
-                        const fundDate = moment.tz(dateofFunding.substring(1, 25), tz).fromNow();
-                        $('#statut-transaction').hide();
-                        $('#content-fund').show();
-                        $('#funding-date').html(fundDate);
-                        console.log(diffTime);
-                        if (diffTime) {
-                            $('#cancel-fund').show();
-                        } else {
-                            $('#cancel-fund').hide();
+        } else if (!ownContent) {
+            progress = JSON.parse(localStorage.getItem("'lastProgress" + rulzzz + "'")) ? parseInt(JSON.parse(localStorage.getItem("'lastProgress" + rulzzz + "'"))) : user.transactions[keyzz][rulzzz].count
+            localStorage.removeItem("'lastProgress" + rulzzz + "'");
+            if (progress > -1) {
+                setInterval(function() {
+                    $('#statut-transaction').html('<p>CoMonZ dropped in :<br>' + (parseInt(progress) - 1) + ' seconds</p>');
+                    progress--;
+                    localStorage.setItem("'sentProgress" + rulzzz + "'", parseInt(progress));
+                    if (progress <= -1) {
+                        clearInterval()
+                        if (dateofFunding) {
+                            const diffTime =
+                                Date.parse(user.wallet.endDate.substring(1, 25)) > Date.parse(dateofFunding.substring(1, 25));
+                            const fundDate = moment.tz(dateofFunding.substring(1, 25), tz).fromNow();
+                            $('#statut-transaction').hide();
+                            $('#content-fund').show();
+                            $('#funding-date').html(fundDate);
+                            console.log(diffTime);
+                            if (diffTime) {
+                                $('#cancel-fund').show();
+                            } else {
+                                $('#cancel-fund').hide();
+                            }
                         }
                     }
+                }, 1000);
+                for (var i = 0; i < editables.length; i++) {
+                    (function(index) {
+                        editables[index].addEventListener('input', function() {
+                            if ($('#comment').html().length > 4 && progress > -1) {
+                                $('#vcomment').show();
+                                $('#vcomment').prop('disabled', true);
+                                $('#vcomment').text('No room for Trollz');
+                            } else if ($('#comment').html().length > 4 && progress <= -1) {
+                                $('#vcomment').show();
+                                $('#vcomment').prop('disabled', false);
+                                $('#vcomment').text('Express your feelings');
+                            } else {
+                                $('#vcomment').hide();
+                            }
+                        });
+                    })(i);
                 }
-            }, 1000);
-            for (var i = 0; i < editables.length; i++) {
-                (function(index) {
-                    editables[index].addEventListener('input', function() {
-                        if ($('#comment').html().length > 4 && progress > -1) {
-                            $('#vcomment').show();
-                            $('#vcomment').prop('disabled', true);
-                            $('#vcomment').text('No room for Trollz');
-                        } else if ($('#comment').html().length > 4 && progress <= -1) {
-                            $('#vcomment').show();
-                            $('#vcomment').prop('disabled', false);
-                            $('#vcomment').text('Express your feelings');
-                        } else {
-                            $('#vcomment').hide();
-                        }
-                    });
-                })(i);
-            }
-        } else if (progress <= -1) {
-            for (var i = 0; i < editables.length; i++) {
-                (function(index) {
-                    editables[index].addEventListener('input', function() {
-                        console.log('edit');
-                        if ($('#comment').html().length > 4 && progress > -1) {
-                            $('#vcomment').show();
-                            $('#vcomment').prop('disabled', true);
-                            $('#vcomment').text('No room for Trollz');
-                        } else if ($('#comment').html().length > 4 && (progress <= -1)) {
-                            $('#vcomment').show();
-                            $('#vcomment').prop('disabled', false);
-                            $('#vcomment').text('Express your feelings');
-                        } else {
-                            $('#vcomment').hide();
-                        }
-                    });
-                })(i);
-            }
-            console.log(dateofFunding)
-            if (dateofFunding) {
-                const diffTime =
-                    Date.parse(user.wallet.endDate.substring(1, 25)) > Date.parse(dateofFunding.substring(1, 25));
-                const fundDate = moment.tz(dateofFunding.substring(1, 25), tz).fromNow();
-                $('#statut-transaction').hide();
-                $('#content-fund').show();
-                $('#funding-date').html(fundDate);
-                console.log(diffTime);
-                if (diffTime) {
-                    $('#cancel-fund').show();
-                } else {
-                    $('#cancel-fund').hide();
+            } else if (progress <= -1 && !ownContent) {
+                for (var i = 0; i < editables.length; i++) {
+                    (function(index) {
+                        editables[index].addEventListener('input', function() {
+                            console.log('edit');
+                            if ($('#comment').html().length > 4 && progress > -1) {
+                                $('#vcomment').show();
+                                $('#vcomment').prop('disabled', true);
+                                $('#vcomment').text('No room for Trollz');
+                            } else if ($('#comment').html().length > 4 && (progress <= -1)) {
+                                $('#vcomment').show();
+                                $('#vcomment').prop('disabled', false);
+                                $('#vcomment').text('Express your feelings');
+                            } else {
+                                $('#vcomment').hide();
+                            }
+                        });
+                    })(i);
+                }
+                console.log(dateofFunding)
+                if (dateofFunding) {
+                    const diffTime =
+                        Date.parse(user.wallet.endDate.substring(1, 25)) > Date.parse(dateofFunding.substring(1, 25));
+                    const fundDate = moment.tz(dateofFunding.substring(1, 25), tz).fromNow();
+                    $('#statut-transaction').hide();
+                    $('#content-fund').show();
+                    $('#funding-date').html(fundDate);
+                    console.log(diffTime);
+                    if (diffTime) {
+                        $('#cancel-fund').show();
+                    } else {
+                        $('#cancel-fund').hide();
+                    }
                 }
             }
+
         }
     } else {
         $('#wallet-on').hide();
@@ -132,7 +142,7 @@ async function getContent() {
     }
     if (comoners) {
         blackhole.blackhole('#blackhole', comoners, 220, 220, 125);
-        $('#commoners').text('This work has already charmed ' + comoners + ' CoMonerZ. So they say...');
+        $('#commoners').html('<p>This work has already charmed <strong> ' + comoners + ' CoMonerZ</strong></p>.');
         if (comments) {
             console.log(comments)
             refreshComments(comments);

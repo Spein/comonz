@@ -71,6 +71,13 @@ chrome.runtime.onMessage.addListener(async function(request, sender, sendRespons
                 localStorage.removeItem('"' + url + '"');
                 bakingContent(authorKey, url, title, img, artToSend);
             }
+        } else if (authorKey == userAuthkey) {
+            localStorage.setItem("yourcontent", true);
+            localStorage.setItem('lastKey', authorKey);
+            localStorage.setItem('lastUrl', url);
+            chrome.browserAction.setIcon({ path: './logo/logo-nowallet.png' });
+
+
         }
 
     } else {
@@ -78,14 +85,28 @@ chrome.runtime.onMessage.addListener(async function(request, sender, sendRespons
         chrome.browserAction.setBadgeText({ text: '' });
         localStorage.removeItem('authorkey');
         localStorage.removeItem('url');
-        localStorage.removeItem('progress');
     }
 });
 
 chrome.tabs.onHighlighted.addListener(function(tabId, changeInfo, tab) {
     console.log('onHighlightedout');
-    localStorage.removeItem('authorkey');
-    localStorage.removeItem('url');
+    var views = chrome.extension.getViews({ type: "popup" });
+    if (views.length >= 1) {
+        localStorage.setItem("'lastProgress" + url + "'", actualCount);
+        localStorage.setItem('lastUrl', url);
+        localStorage.setItem('lastKey', authorKey);
+
+        localStorage.removeItem('url');
+
+    } else {
+        localStorage.removeItem('authorkey');
+        localStorage.removeItem('url');
+        localStorage.removeItem('lastUrl');
+        localStorage.removeItem('lastKey');
+        localStorage.removeItem('yourcontent');
+
+
+    }
     chrome.browserAction.setIcon({ path: './logo/logo-base.png' });
     chrome.browserAction.setBadgeText({ text: '' });
     chrome.tabs.executeScript(null, {
@@ -95,12 +116,24 @@ chrome.tabs.onHighlighted.addListener(function(tabId, changeInfo, tab) {
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab, TabStatus) {
     if (tab.active) {
         console.log("tabupdated")
-        localStorage.removeItem('lastUrl');
-        localStorage.removeItem('lastKey');
-        localStorage.removeItem('authorkey');
-        localStorage.removeItem('url');
-        chrome.browserAction.setIcon({ path: './logo/logo-base.png' });
-        chrome.browserAction.setBadgeText({ text: '' });
+        var views = chrome.extension.getViews({ type: "popup" });
+
+        if (views.length >= 1) {
+            localStorage.setItem("'lastProgress" + url + "'", actualCount);
+            localStorage.setItem('lastUrl', url);
+            localStorage.setItem('lastKey', authorKey);
+
+            localStorage.removeItem('url');
+
+        } else {
+            localStorage.removeItem('authorkey');
+            localStorage.removeItem('url');
+            localStorage.removeItem('lastUrl');
+            localStorage.removeItem('lastKey');
+            localStorage.removeItem('yourcontent');
+
+        }
+
         chrome.tabs.executeScript(null, {
             file: 'content.js'
         });
@@ -110,8 +143,23 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab, TabStatus) {
 });
 chrome.windows.onFocusChanged.addListener(function(window) {
     console.log(window)
-    localStorage.removeItem('authorkey');
-    localStorage.removeItem('url');
+    var views = chrome.extension.getViews({ type: "popup" });
+
+    if (views.length >= 1) {
+        localStorage.setItem("'lastProgress" + url + "'", actualCount);
+        localStorage.setItem('lastUrl', url);
+        localStorage.setItem('lastKey', authorKey);
+
+        localStorage.removeItem('url');
+
+    } else {
+        localStorage.removeItem('authorkey');
+        localStorage.removeItem('url');
+        localStorage.removeItem('lastUrl');
+        localStorage.removeItem('lastKey');
+        localStorage.removeItem('yourcontent');
+
+    }
     chrome.browserAction.setIcon({ path: "./logo/logo-base.png" });
     chrome.browserAction.setBadgeText({ text: "" });
     chrome.tabs.executeScript(null, {
@@ -126,4 +174,7 @@ chrome.windows.onRemoved.addListener((window) => {
     console.log('removed')
     localStorage.removeItem('authorkey');
     localStorage.removeItem('url');
+    localStorage.removeItem('lastUrl');
+    localStorage.removeItem('lastKey');
+    localStorage.removeItem('yourcontent');
 })
