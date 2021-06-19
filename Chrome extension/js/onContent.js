@@ -4,13 +4,15 @@ import * as setAuthor from '/js/setAuthor.js';
 
 let progress
 let url
+let key
 getContent()
 
 
 var tz = moment.tz.guess(true);
 async function getContent() {
-    const keyzz = await setAuthor.getComonzKey();
-    console.log(keyzz)
+    key = await setAuthor.getComonzKey();
+    const keyzz = key
+    console.log(key)
 
     url = await setAuthor.getUrl();
     const rulzzz = url
@@ -85,11 +87,11 @@ async function getContent() {
                 for (var i = 0; i < editables.length; i++) {
                     (function(index) {
                         editables[index].addEventListener('input', function() {
-                            if ($('#comment').html().length > 4 && progress > -1) {
+                            if ($('#comment').val().length > 4 && progress > -1) {
                                 $('#vcomment').show();
                                 $('#vcomment').prop('disabled', true);
                                 $('#vcomment').text('No room for Trollz');
-                            } else if ($('#comment').html().length > 4 && progress <= -1) {
+                            } else if ($('#comment').val().length > 4 && progress <= -1) {
                                 $('#vcomment').show();
                                 $('#vcomment').prop('disabled', false);
                                 $('#vcomment').text('Express your feelings');
@@ -104,11 +106,11 @@ async function getContent() {
                     (function(index) {
                         editables[index].addEventListener('input', function() {
                             console.log('edit');
-                            if ($('#comment').html().length > 4 && progress > -1) {
+                            if ($('#comment').val().length > 4 && progress > -1) {
                                 $('#vcomment').show();
                                 $('#vcomment').prop('disabled', true);
                                 $('#vcomment').text('No room for Trollz');
-                            } else if ($('#comment').html().length > 4 && (progress <= -1)) {
+                            } else if ($('#comment').val().length > 4 && (progress <= -1)) {
                                 $('#vcomment').show();
                                 $('#vcomment').prop('disabled', false);
                                 $('#vcomment').text('Express your feelings');
@@ -167,12 +169,7 @@ async function getContent() {
             console.log(comments[userId])
             commentsDiv.innerHTML +=
                 `<div class="transaction">
-                <div class="first-trcontainer">
-                    <div class="comment-container">
-                        <p class="tr-title">${comments[userId].content}</p>
-                        <p class="tr-date">${moment.tz(comments[userId].date.substring(1, 25), tz).fromNow()}</p>
-                    </div>
-                </div>
+
                 <div class='second-trcontainer'>
                         <div id="avatar-wrapper">
                             <div id="mini-background" style="background-image:url(../img/${comments[userId].photoURL.genre}/${comments[userId].photoURL.background}.png)"></div>
@@ -184,11 +181,19 @@ async function getContent() {
                             <p style="padding-top:10vw">${comments[userId].displayName}</p>
                         </div>
                 </div>
+                <div class="first-trcontainer">
+                    <div class="comment-container">
+                        <p class="tr-title">${comments[userId].content}</p>
+                    </div>
+                <div class="date-commcontainer">
+                <p class="tr-date">${moment.tz(comments[userId].date.substring(1, 25), tz).fromNow()}</p>
+                </div>
+
             </div>`;
         });
     }
     async function linkComment() {
-        const keyzz = await setAuthor.getComonzKey();
+        const keyzz = key;
         const rulzzz = url
         const user = await retrieveUser();
         console.log(keyzz)
@@ -196,7 +201,7 @@ async function getContent() {
         var comRef = firebase.database().ref('transactions/' + keyzz + '/' + rulzzz + '/comments/' + user.uid);
         var date = new Date();
         var parsedDate = JSON.stringify(date);
-        var comment = $('#comment').html();
+        var comment = $('#comment').val().trim();
         $('#pre-com').hide();
         $('#lcomment').show();
         var moDate = moment.tz(parsedDate.substring(1, 22), tz).fromNow();
@@ -216,7 +221,7 @@ async function getContent() {
     }
     document.getElementById('vcomment').addEventListener('click', linkComment, false);
     async function cancelFund() {
-        const keyzz = await setAuthor.getComonzKey();
+        const keyzz = key
         const rulzzz = url
         const user = await retrieveUser();
         var transRef = firebase.database().ref('transactions/' + keyzz + '/' + rulzzz + '/cTransactions/' + user.uid);
@@ -235,7 +240,7 @@ async function getContent() {
     document.getElementById('cancel-fund').addEventListener('click', cancelFund, false);
 
     function backProfile() {
-        $('#content-area').load('profile.html');
+        $('#container').load('../html/onProfile.html');
         $('#content-area').show();
     }
     document.getElementById('profile-back').addEventListener('click', backProfile, false);
@@ -244,6 +249,6 @@ async function getContent() {
 
 function goWallet() {
     $('#container').html('');
-    $('#container').load('profile.html');
+    $('#container').load('../html/onProfile.html');
 }
 document.getElementById('goWallet').addEventListener('click', goWallet, false);

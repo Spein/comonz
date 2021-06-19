@@ -121,7 +121,6 @@ export function minComonz() {
         $('#wallet-amount').html(parsedCount + '<br>');
         $('#euro-amount').html('Actual Amount: ' + parsedCount / 10 + ' €');
 
-        blackhole.blackhole('#blackhole', parsedCount, 220, 220, 125);
     }
 }
 document.getElementById('minus-commons').addEventListener('click', minComonz, false);
@@ -130,7 +129,11 @@ export function addComonz() {
     parsedCount = parsedCount + 10;
     $('#wallet-amount').html(parsedCount);
     $('#euro-amount').html('Actual Amount: ' + parsedCount / 10 + ' €');
-    blackhole.blackhole('#blackhole', parsedCount, 220, 220, 125);
+    if (parsedCount < 150) {
+        console.log(parsedCount)
+        blackhole.blackhole('#blackhole', parsedCount, 220, 220, 125);
+
+    }
 }
 document.getElementById('add-commons').addEventListener('click', addComonz, false);
 export async function saveWallet() {

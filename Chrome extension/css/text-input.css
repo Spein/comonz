@@ -2,8 +2,7 @@
     position: relative;
     z-index: 1;
     display: inline-block;
-    margin: 1em;
-    max-width: 350px;
+    margin: 1em 0;
     width: calc(100% - 4em);
     vertical-align: top;
 }
@@ -71,12 +70,6 @@
     overflow: hidden;
 }
 
-.input__field--hoshi {
-    padding: 0.85em 0.15em;
-    background: transparent;
-    color: #595F6E;
-}
-
 .input__label--hoshi {
     position: absolute;
     bottom: -27px;
@@ -84,7 +77,7 @@
     padding: 0 0.25em;
     width: 100%;
     height: calc(100% - 1em);
-    text-align: left;
+    color: red;
     pointer-events: none;
 }
 

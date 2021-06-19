@@ -2,16 +2,30 @@
 
 
 <div class="docs-demo columns" id="container">
-    <div id="blackhole" class="signin">
+    <div class="tutorial" id='tuto-scontainer' style="display:none;justify-content: center;">
+        <h6>Beware,</h6>
+        <p style="font-style:italic;font-size:3.9vw;padding: 4vw;text-align: justify;">You are about to <b></b>create your avatar. This is an important step, as it will be your <b>impersonification as one of members of Comonz</b>, but also <b>carved on the blockchain</b> through your NFT token. Carefully choose her &#128566; face,
+            &#128064;eyes, &#127933; clothes, &#129492; hair, &#128068; mouth and &#128306;background depending on what suits you best. Once you are satisfied, all you have to do is choose a <b>name</b>, indicate your <b>email</b> and set <b>your password </b>to
+            connect to the application. You can also enter a description if you wish. That's it that's all. Welcome home ...For helping us make the internet a <b>fairer place for creators</b> </p>
+
+        <p style="font-style:italic;font-size:4.5vw">Thank you</p>x0x
+        </p>
+        <button class="btn btn-primary btn-block" style="width: 33vw;" id="tuto-signup">I got it!</button>
+    </div>
+    <div id="blackholeSi" class="signin">
     </div>
     <div class="column col-12 col-xs-12">
         <p id="warning" style="color: #ff6262"></p>
     </div>
     <!--     Sign-up part  -->
     <div class="column col-12 col-xs-12" style="display: none" id="emailsignUp">
-        <div id="profile-header" style="margin-top: 13%;">
+        <div id="profile-header">
             <div id="general-wrapper">
-                <div id="avatar-wrapper">
+                <div id="genre" style="position: absolute; z-index: 9;margin-top: -7%;">
+                    <button class="signIn-buttons" id="male" style="margin-right: 23vw;">&#127814;</button>
+                    <button class="signIn-buttons selected" style="margin-left: 26vw;" id="female">&#127825;</button>
+                </div>
+                <div id="avatar-wrapper" style="margin-top: 3%;">
                     <div id="background" style="background-image: url(../img/female/background4.png);"></div>
                     <div id="face" style="background-image: url(../img/female/face1.png);"></div>
                     <div id="head" style="background-image: url(../img/female/head1.png);"></div>
@@ -21,66 +35,61 @@
 
                 </div>
                 <div id="settings-row">
-                    <div id="genre">
-                        <button class="signIn-buttons" id="male"><i class="fas fa-male"></i></button>
-                        <button class="signIn-buttons" id="female"><i class="fas fa-female"></i></button>
-                    </div>
+
                     <div id="select-attribute">
                         <button class="signIn-buttons" id="previous"><i class="fas fa-chevron-left"></i></button>
 
                         <select name="attribute" id="attribute" autofocus>
-                            <option value="face">Face</option>
-                            <option value="head">Hear</option>
-                            <option value="eye">Eyes</option>
-                            <option value="mouth">Mouth</option>
-                            <option value="clothes">Clothes</option>
-                            <option value="background">Background</option>
-
-<!--                             <option value="background">background</option>
- -->                        </select>
+                            <option value="face">&#128566;  Face</option>
+                            <option value="head">&#129492; Hair</option>
+                            <option value="eye">&#128064; Eyes</option>
+                            <option value="mouth">&#128068; Mouth</option>
+                            <option value="clothes">&#127933; Clothes</option>
+                            <option value="background">&#128306; Background</option>
+               </select>
                         <button class="signIn-buttons" id="next"><i class="fas fa-chevron-right"></i></button>
 
                     </div>
                 </div>
             </div>
-            <!-- <figure class="avatar avatar-lg"><label for="file" class="label-file"><i class="fas fa-upload"></i></label>
-                <input id="file" class="input-file" type="file"><img id='img-wrap' style="background: none;opacity: 0.4;padding: 13px;" src="./logo/logo-off-base.png" alt=" ">
-            </figure> -->
+
         </div>
 
         <!-- pattern validation example for Email -->
         <span class="input input--hoshi username-field">
-                    <i class="icon icon-people"></i>
+            <i class="icon icon-people"></i>
 
-                <input class="input__field input__field--hoshi"  id="displayName" placeholder="Username" type="text"/>
-                <label class="input__label input__label--hoshi input__label--hoshi-color-2" >
+            <input class="input__field input__field--hoshi" id="displayName" placeholder="Username" type="text" />
+            <label class="input__label input__label--hoshi input__label--hoshi-color-2">
             </label>
-            </span>
+        </span>
         <!-- pattern validation example for Email -->
         <span class="input input--hoshi description-field">
             <i class="icon icon-message"></i>
 
-        <input class="input__field input__field--hoshi"  placeholder="description" id="description" type="text"/>
-        <label class="input__label input__label--hoshi input__label--hoshi-color-2"  >
-               </label>
-    </span>
-        <span class="input input--hoshi email-field">
-                    <i class="icon icon-mail"></i>
-
-                <input class="input__field input__field--hoshi" id="email"placeholder=" email"  type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,14}$" />
-                <label class="input__label input__label--hoshi input__label--hoshi-color-2 ">  
+            <input class="input__field input__field--hoshi" placeholder="description" id="description" type="text" />
+            <label class="input__label input__label--hoshi input__label--hoshi-color-2">
             </label>
-            </span>
+        </span>
+        <span class="input input--hoshi email-field">
+            <i class="icon icon-mail"></i>
+
+            <input class="input__field input__field--hoshi" id="email" placeholder=" email" type="email"
+                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,14}$" />
+            <label class="input__label input__label--hoshi input__label--hoshi-color-2">
+            </label>
+        </span>
 
 
         <!-- pattern validation example for password (8 or more characters that are of at least one number, and one uppercase and lowercase letter) -->
         <span class="input input--hoshi password-field">
-                    <i class="icon icon-link"></i>
+            <i class="icon icon-link"></i>
 
-                <input class="input__field input__field--hoshi"  id="password" placeholder="Password" type="password" pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$"  />
-                <label class="input__label input__label--hoshi input__label--hoshi-color-2 password-field" >
+            <input class="input__field input__field--hoshi" id="password" placeholder="Password" type="password"
+                pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$" />
+            <label class="input__label input__label--hoshi input__label--hoshi-color-2 password-field">
             </label>
-            </span>
+        </span>
         <button class="btn btn-primary btn-block" id="signUp">Signup</button>
         <p class="link" id="existing-member"><u>Already a member?</u></p>
 
@@ -88,24 +97,26 @@
 </div>
 <!--     Sign-in part  -->
 <div class="column col-12 col-xs-12" id="emailsignIn">
-    <div style="display:flex;justify-content:center;margin-top:19%"><img style="max-width: 25vw;margin:4%" src="./logo/logo-colour.png" alt=""></div>
-    <h2>Hi, ComonR!</h2>
-    <h6>Let's enrich the intenets, one commitment at a time</h6>
+    <div style="display:flex;justify-content:center;margin-top:10%;margin-bottom:4vw"><img style="max-width: 34vw;margin:4%" src="./logo/logo-colour.png" alt=""></div>
+    <h2 style="margin:0">Hi, Comoner!</h2>
+    <h6>Let's enrich the internets altogether</h6>
 
     <span class="input input--hoshi email-field">
-                <i class="icon icon-mail"></i>
+        <i class="icon icon-mail"></i>
 
-        <input class="input__field input__field--hoshi" id="emails" placeholder="email" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,14}$" />
+        <input class="input__field input__field--hoshi" id="emails" placeholder="email" type="email"
+            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,14}$" />
         <label class="input__label input__label--hoshi input__label--hoshi-color-1">
         </label>
-        </span>
+    </span>
     <span class="input input--hoshi password-field">
-                <i class="icon icon-link"></i>
+        <i class="icon icon-link"></i>
 
-					<input class="input__field input__field--hoshi" id="passwords" placeholder="Password" type="password" pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$"  />
-					<label class="input__label input__label--hoshi input__label--hoshi-color-2" >
+        <input class="input__field input__field--hoshi" id="passwords" placeholder="Password" type="password"
+            pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$" />
+        <label class="input__label input__label--hoshi input__label--hoshi-color-2">
         </label>
-        </span>
+    </span>
 
 
     <button class="btn btn-primary btn-block" id="signIn">Sign-in</button>

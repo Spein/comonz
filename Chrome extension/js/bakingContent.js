@@ -53,6 +53,7 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
             console.log(url, transaction)
             if (actualCount >= -1 && actualCount > -2) {
                 let interval = setInterval(function() {
+
                     triggerOn = true;
                     if (actualCount) {
                         let badgeCount = actualCount.toString();
@@ -130,7 +131,7 @@ async function bakingContent(authorKey, url, title, img, artToSend) {
                 // console.log('déja paye')
                 localStorage.setItem('lastUrl', url);
                 localStorage.setItem('lastKey', authorKey);
-                chrome.browserAction.setBadgeText({ text: '💔' });
+                chrome.browserAction.setBadgeText({ text: '❤' });
                 chrome.browserAction.setBadgeBackgroundColor({ color: '#fff' });
 
                 localStorage.removeItem('"' + url + '"');

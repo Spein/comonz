@@ -15,9 +15,11 @@ if (document.title) {
 };
 
 
-window.onload = setTimeout(onloadandfocus, 50)
+window.onload = setTimeout(onloadandfocus, 25)
+window.onfocus = setTimeout(onloadandfocus, 25)
 
 async function onloadandfocus() {
+
     if (window.location.host === "www.youtube.com") {
         partnerUrl = "yt-" + window.location.search.split("&")[0].split('=')[1]
         console.log(partnerUrl)
@@ -73,7 +75,6 @@ window.onblur = async function() {
 
 
 }
-window.onfocus = onloadandfocus
 
 async function getKey() {
     var elementOfInterest = document.getElementsByTagName('comonz') ? document.getElementsByTagName('comonz') : null
@@ -129,7 +130,7 @@ async function fetchContent(key) {
                 if (document.getElementsByTagName('img')[0]) {
                     img = document.getElementsByTagName('img')[0].src
                 } else {
-                    img = './andrea.jpg'
+                    img = './logo/logo-base.png'
 
                 }
 
@@ -141,8 +142,8 @@ async function fetchContent(key) {
 
                 };
 
-                console.log(localKey, localUrl, checkedUrl)
-                if (localKey && localUrl) {
+                console.log(key, checkedUrl)
+                if (key && checkedUrl) {
                     console.log(key, checkedUrl, title, img)
                     chrome.runtime.sendMessage({ payload: [key, checkedUrl, title, img, Date.now(), null] })
                 }

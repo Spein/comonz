@@ -4,7 +4,7 @@ function saveTransaction(authorKey, url, userId, featuredImage, title, firstShot
 
         dbRef.once('value').then(function(snapshot) {
             var contentUrl = snapshot.val();
-            if (contentUrl == undefined) {
+            if (!contentUrl) {
                 console.log("firstshot saved")
 
                 dbRef.set({

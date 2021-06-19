@@ -12,7 +12,7 @@ function getUrl() {
             })
             .then((updates) => {
                 $('#wishes').html(
-                    "<i style='color:#d95555' class='fas fa-seedling'></i><p>Thank you! What a pleasure to expand the family, we will contact our next Creator</p>"
+                    "<i style='color:#d95555' class='fas fa-seedling'></i><p>Thank you! We will contact our next member as we're sure he will love to know he's got a lot of support already.</p>"
                 );
             });
     });

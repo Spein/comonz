@@ -22,8 +22,8 @@
         </div>
         <div id="blackhole" class="boc content"></div>
 
-        <h3 style="margin-top: 42%;" id="user-container"></h3>
-        <h6 id="description-container"></h6>
+        <h3 style="margin-top: 46%; margin-bottom:0" id="user-container"></h3>
+        <h6 id="description-container" style="font-size:12px"></h6>
         <div class="column col12 col-xs-12">
 
             <div id="wallet-on" style="display:none">
@@ -36,20 +36,18 @@
                 <div id="vcomment-field">
                     <div id="pre-com">
                         <p style="font-style:13px">Link a <span style="color: #ff5454"> comment </span> with your contribution: </p>
-                        <div style="display: flex; flex-direction:column">
-                            <i style="font-size:larger;float:right" class="far fa-comment-dots"></i>
-                            <p id="comment" class="panel-title mt-10 editable" contenteditable="true" style="width:60vw;padding-left: 5%;">
-                            </p>
-                            <button class="btn btn-primary btn-block" style="display:none" id="vcomment" type="submit" name=""></button>
-
+                        <div style="display: flex;">
+                            <textarea type='text' id="comment" class="panel-title mt-10 editable" maxlength="70" placeholder="Max. 150 characters" contenteditable="true"/>
+                            <i class="far fa-comment-dots"></i>
                         </div>
+                            <button class="btn btn-primary btn-block" style="display:none" id="vcomment" type="submit" name=""></button>
 
 
                     </div>
                     <div id="lcomment" style="display: none;">
                         <p>Your comment :</p>
                         <div id="ownCom" style="display: flex;">
-                            <p id=ownCom-text></p>
+                            <p id='ownCom-text'></p>
                             <i class='far fa-comment-dots'></i>
                         </div>
                         <p id="ownComdate"></p>

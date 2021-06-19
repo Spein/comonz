@@ -40,7 +40,9 @@ chrome.runtime.onMessage.addListener(async function(request, sender, sendRespons
         img = request.payload[3];
     }
     let artToSend;
-    if (request.payload[0] || partnerUrls) {
+    var views = chrome.extension.getViews({ type: "popup" });
+
+    if ((request.payload[0] || partnerUrls)) {
         let authorKey = request.payload[0] ? request.payload[0] : partnerUrls.key;
         if (request.payload[3]) {
             localStorage.setItem('authorkey', authorKey);
@@ -51,8 +53,7 @@ chrome.runtime.onMessage.addListener(async function(request, sender, sendRespons
         }
         saveTransaction(authorKey, url, user.uid, img, title, true);
         let userAuthkey = user.authorDetails ? user.authorDetails.key : null
-        var views = chrome.extension.getViews({ type: "popup" });
-
+        console.log(views)
         if ((authorKey != userAuthkey) || !user.authorDetails) {
 
             //console.log(request.payload)
@@ -113,8 +114,6 @@ chrome.tabs.onHighlighted.addListener(function(tabId, changeInfo, tab) {
 
 
 
-    chrome.browserAction.setIcon({ path: './logo/logo-base.png' });
-    chrome.browserAction.setBadgeText({ text: '' });
     chrome.tabs.executeScript(null, {
         file: 'content.js'
     });
@@ -147,8 +146,6 @@ chrome.windows.onFocusChanged.addListener(function(window) {
     localStorage.removeItem('yourcontent');
 
 
-    chrome.browserAction.setIcon({ path: "./logo/logo-base.png" });
-    chrome.browserAction.setBadgeText({ text: "" });
     chrome.tabs.executeScript(null, {
         "file": "content.js"
     });
