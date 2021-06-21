@@ -21,12 +21,8 @@ window.onfocus = setTimeout(onloadandfocus, 25)
 async function onloadandfocus() {
 
     if (window.location.host === "www.youtube.com") {
-        partnerUrl = "yt-" + window.location.search.split("&")[0].split('=')[1]
-        console.log(partnerUrl)
+        let partnerUrl = await getYoutube(window.location.search)
         img = "youtube-img"
-        localStorage.setItem("partnerUrl", partnerUrl)
-
-
         chrome.runtime.sendMessage({ payload: [null, partnerUrl, title, img, Date.now(), null] })
 
 
@@ -47,13 +43,11 @@ async function onloadandfocus() {
 window.onblur = async function() {
     if (window.location.host === "www.youtube.com") {
         img = "youtube-img"
-
-        parnerUrl = localStorage.getItem('partnerUrl') ? localStorage.getItem('partnerUrl') : null
+        let partnerUrl = await getYoutube(window.location.search)
         console.log(partnerUrl)
 
         if (parnerUrl) {
             chrome.runtime.sendMessage({ payload: [null, parnerUrl, null, img, null, Date.now()] })
-            localStorage.removeItem("parnerUrl")
             console.log("fblurocus")
 
         }
@@ -63,8 +57,9 @@ window.onblur = async function() {
         let key = await getKey()
 
         if (checkedUrl && key) {
+            console.log(key, checkedUrl)
+
             chrome.runtime.sendMessage({ payload: [key, checkedUrl, null, null, null, Date.now()] })
-            console.log("fblurocus")
 
         }
     }
@@ -82,7 +77,10 @@ async function getKey() {
 
     return key
 }
-
+async function getYoutube(url) {
+    let partnerUrl = "yt-" + url.split("&")[0].split('=')[1]
+    return partnerUrl
+}
 async function getUrl() {
     var urlArr = []
     var rawURL = window.location.host.replace(/[^\w\s]/gi, '').substring(3) + window.location.pathname.replace(/[^\w\s]/gi, '')
@@ -103,7 +101,6 @@ async function getUrl() {
 
 
 async function fetchContent(key) {
-    getUrl()
     let checkedUrl = await getUrl()
 
     url = window.location.href

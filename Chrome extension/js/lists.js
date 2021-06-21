@@ -18,60 +18,63 @@ export function getUserpaidContents() {
     `
     let user = JSON.parse(localStorage.getItem('user'));
     let transactions = user.transactions;
-    var urls = Object.keys(transactions);
+    var authorKeys = Object.keys(transactions);
     let userId = user.uid;
     if (transactions) {
-        urls.forEach(async function(transaction) {
-            let urlTrans = Object.keys(transactions[transaction])
-            console.log(transactions[transaction][urlTrans])
-            var authorKey = transaction;
-            var status = transactions[transaction][urlTrans].status;
-            var count = transactions[transaction][urlTrans].count;
-            //console.log(authorKey, status, count)
-            if (status === 'paid') {
-                let transactionDetails = await firebase
-                    .database()
-                    .ref('/transactions/' + authorKey)
-                    .once('value')
-                    .then(function(data) {
+        authorKeys.forEach(async function(authorKey) {
+            let sampleTransaction = Object.keys(transactions[authorKey])
+            console.log(transactions[authorKey])
+
+            sampleTransaction.forEach(async(url, index) => {
+                let transaction = transactions[authorKey][url]
+                var status = transaction.status;
+                var count = transaction.count
+                if (status === 'paid') {
+                    let transactionDetails = await firebase
+                        .database()
+                        .ref('/transactions/' + authorKey)
+                        .once('value')
+                        .then(function(data) {
+                            return data.val();
+                        });
+                    let authorId = transactionDetails.authorId;
+                    let authorInfo = await firebase.database().ref('/users/' + authorId).once('value').then(function(data) {
                         return data.val();
                     });
-                let authorId = transactionDetails.authorId;
-                let authorInfo = await firebase.database().ref('/users/' + authorId).once('value').then(function(data) {
-                    return data.val();
-                });
-                var authorDisplayname = authorInfo.displayName;
-                var authorphotoURL = authorInfo.photoURL;
-                let contentDetail = transactionDetails[urlTrans];
-                console.log(transactionDetails[urlTrans])
-                var img = contentDetail.img;
-                var title = contentDetail.title;
-                console.log(authorDisplayname, authorphotoURL, contentDetail.cTransactions[userId]);
-                let userTransDetails = contentDetail.cTransactions[userId];
-                var date = userTransDetails.date;
-                var subDate = date.substring(1, 25);
-                var moDate = moment.tz(subDate, tz).fromNow();
-                var shortTitle = title.substring(0, 35) + '...';
-                div.innerHTML +=
-                    `<div class="transaction payed">
-                        <div class="first-trcontainer">
-                            <p class="tr-title">${shortTitle}</p>
-                            <p class="tr-date">${moDate}</p>
+                    var authorDisplayname = authorInfo.displayName;
+                    var authorphotoURL = authorInfo.photoURL;
+                    let contentDetail = transactionDetails[url];
+                    var img = contentDetail.img;
+                    var title = contentDetail.title;
+                    console.log(authorDisplayname, authorphotoURL, contentDetail.cTransactions[userId]);
+                    let userTransDetails = contentDetail.cTransactions[userId];
+                    var date = userTransDetails.date;
+                    var subDate = date.substring(1, 25);
+                    var moDate = moment.tz(subDate, tz).fromNow();
+                    var shortTitle = title.substring(0, 35) + '...';
+                    div.innerHTML +=
+                        `<div class="transaction payed">
+                            <div class="first-trcontainer">
+                                <p class="tr-title">${shortTitle}</p>
+                                <p class="tr-date">${moDate}</p>
+                            </div>
+                            <div class='second-trcontainer'>
+                            <div id="avatar-wrapper">
+                                <div id="mini-background" style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.background}.png)"></div>
+                                <div id="mini-face"style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.face}.png)"></div>
+                                <div id="mini-head" style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.head}.png)"></div>
+                                <div id="mini-eye" style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.eye}.png)"></div>
+                                <div id="mini-mouth" style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.mouth}.png)"></div>
+                                <div id="mini-clothes" style="style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.clothes}.png)""></div>
+                                <p style="padding-top:10vw">${authorDisplayname}</p>
+                            </div>
                         </div>
-                        <div class='second-trcontainer'>
-                        <div id="avatar-wrapper">
-                            <div id="mini-background" style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.background}.png)"></div>
-                            <div id="mini-face"style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.face}.png)"></div>
-                            <div id="mini-head" style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.head}.png)"></div>
-                            <div id="mini-eye" style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.eye}.png)"></div>
-                            <div id="mini-mouth" style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.mouth}.png)"></div>
-                            <div id="mini-clothes" style="border: 3px solid #d95555;style="background-image:url(../img/${authorphotoURL.genre}/${authorphotoURL.clothes}.png)""></div>
-                            <p style="padding-top:10vw">${authorDisplayname}</p>
-                        </div>
-                    </div>
-                    `
+                        `
 
-            }
+                }
+            });;
+            //console.log(authorKey, status, count)
+
         });
         $('#footer-sent').show();
     } else if (!urls) {

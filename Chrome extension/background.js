@@ -114,6 +114,8 @@ chrome.tabs.onHighlighted.addListener(function(tabId, changeInfo, tab) {
 
 
 
+    chrome.browserAction.setIcon({ path: './logo/logo-base.png' });
+    chrome.browserAction.setBadgeText({ text: '' });
     chrome.tabs.executeScript(null, {
         file: 'content.js'
     });
@@ -146,6 +148,8 @@ chrome.windows.onFocusChanged.addListener(function(window) {
     localStorage.removeItem('yourcontent');
 
 
+    chrome.browserAction.setIcon({ path: "./logo/logo-base.png" });
+    chrome.browserAction.setBadgeText({ text: "" });
     chrome.tabs.executeScript(null, {
         "file": "content.js"
     });

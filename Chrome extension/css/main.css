@@ -212,6 +212,20 @@ element.style {
     border-radius: 45%;
 }
 
+#background {
+    border: 3px solid rgb(217, 85, 85);
+    background-size: cover;
+    width: 47vw;
+    height: 47vw;
+}
+
+#mini-background {
+    border: 2px solid rgb(217, 85, 85);
+    width: 11vw;
+    background-size: cover;
+    height: 11vw;
+}
+
 #general-wrapper,
 #avatar-wrapper,
 #settings-row,

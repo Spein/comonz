@@ -172,12 +172,12 @@ async function getContent() {
 
                 <div class='second-trcontainer'>
                         <div id="avatar-wrapper">
-                            <div id="mini-background" style="background-image:url(../img/${comments[userId].photoURL.genre}/${comments[userId].photoURL.background}.png)"></div>
+                            <div id="mini-background"background-image:url(../img/${comments[userId].photoURL.genre}/${comments[userId].photoURL.background}.png)"></div>
                             <div id="mini-face"style="background-image:url(../img/${comments[userId].photoURL.genre}/${comments[userId].photoURL.face}.png)"></div>
                             <div id="mini-head" style="background-image:url(../img/${comments[userId].photoURL.genre}/${comments[userId].photoURL.head}.png)"></div>
                             <div id="mini-eye" style="background-image:url(../img/${comments[userId].photoURL.genre}/${comments[userId].photoURL.eye}.png)"></div>
                             <div id="mini-mouth" style="background-image:url(../img/${comments[userId].photoURL.genre}/${comments[userId].photoURL.mouth}.png)"></div>
-                            <div id="mini-clothes" style="border: 3px solid #d95555;style="background-image:url(../img/${comments[userId].photoURL.genre}/${comments[userId].photoURL.clothes}.png)""></div>
+                            <div id="mini-clothes" style="background-image:url(../img/${comments[userId].photoURL.genre}/${comments[userId].photoURL.clothes}.png)""></div>
                             <p style="padding-top:10vw">${comments[userId].displayName}</p>
                         </div>
                 </div>
