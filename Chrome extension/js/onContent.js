@@ -59,7 +59,7 @@ async function getContent() {
             $('#statut-transaction').html("<p>This is your content. It would be a bit egotic to be your own patron, right?</p>")
 
         } else if (!ownContent) {
-            progress = JSON.parse(localStorage.getItem("'lastProgress" + rulzzz + "'")) ? parseInt(JSON.parse(localStorage.getItem("'lastProgress" + rulzzz + "'"))) : user.transactions[keyzz][rulzzz].count
+            progress = localStorage.getItem("'lastProgress" + rulzzz + "'") ? parseInt(localStorage.getItem("'lastProgress" + rulzzz + "'")) : user.transactions[keyzz][rulzzz].count
             localStorage.removeItem("'lastProgress" + rulzzz + "'");
             if (progress > -1) {
                 setInterval(function() {

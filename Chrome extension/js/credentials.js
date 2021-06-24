@@ -6,15 +6,18 @@ firebase.initializeApp(config);
 
 export async function displayView() {
     //console.log(currentUser)
-    const authorKey = localStorage.getItem('lastKey') ? localStorage.getItem('lastKey') : localStorage.getItem('authorkey');
-    const url = localStorage.getItem('lastUrl') ? localStorage.getItem('lastUrl') : localStorage.getItem('url');;
-    console.log(authorKey, url)
-    if (!authorKey || !url) {
-        console.log('profile loaded');
-        $('#container').load('./html/onProfile.html');
-    } else {
-        $('#container').load('./html/onContent.html');
-    }
+    setTimeout(() => {
+        const authorKey = localStorage.getItem('lastKey') ? localStorage.getItem('lastKey') : localStorage.getItem('authorkey');
+        const url = localStorage.getItem('lastUrl') ? localStorage.getItem('lastUrl') : localStorage.getItem('url');
+        console.log(authorKey, url)
+        if (!authorKey || !url) {
+            console.log('profile loaded');
+            $('#container').load('./html/onProfile.html');
+        } else {
+            $('#container').load('./html/onContent.html');
+        }
+    }, 450);
+
 }
 
 function initApp() {
