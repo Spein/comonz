@@ -27,7 +27,7 @@ let entryUrl = null
 var views = chrome.extension.getViews({ type: "popup" });
 
 chrome.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
-    console.log(views)
+
     if (views.length < 1) {
 
         console.log(request.payload, entryUrl)

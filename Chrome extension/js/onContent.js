@@ -223,7 +223,12 @@ async function getContent() {
     async function cancelFund() {
         const keyzz = key
         const rulzzz = url
-        const user = await retrieveUser();
+        let user = JSON.parse(localStorage.getItem('user'));
+        console.log(user.transactions[keyzz][rulzzz])
+        user.transactions[keyzz][rulzzz].count = user.wallet.Attcounter;
+        user.transactions[keyzz][rulzzz].status = "canceled"
+        localStorage.setItem("user", user)
+
         var transRef = firebase.database().ref('transactions/' + keyzz + '/' + rulzzz + '/cTransactions/' + user.uid);
         var comRef = firebase.database().ref('transactions/' + keyzz + '/' + rulzzz + '/comments/' + user.uid);
         var userRef = firebase.database().ref('users/' + user.uid + '/transactions/' + keyzz + '/' + rulzzz);
